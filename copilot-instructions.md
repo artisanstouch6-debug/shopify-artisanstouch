@@ -1,0 +1,1 @@
+/Users/insafinhaam/projects/clients/shopify-artisanstouch/artisanstouch/AGENTS.md
