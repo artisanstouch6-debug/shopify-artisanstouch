@@ -2,12 +2,12 @@
   <div class="site-header__inner">
     <div class="site-header__logo">
       {% if section.settings.logo %}
-        <a href="{{ routes.root_url }}">
-          {{ section.settings.logo | image_url: width: 220 | image_tag: alt: shop.name, class: 'site-header__logo-img', loading: 'eager' }}
+        <a href="{{ routes.root_url }}" class="site-header__logo-link">
+          {{ section.settings.logo | image_url: width: 400 | image_tag: alt: shop.name, class: 'site-header__logo-img', loading: 'eager', style: 'height:100px;width:auto;display:block;object-fit:contain;' }}
         </a>
       {% else %}
-        <a href="{{ routes.root_url }}">
-          <img src="{{ 'at-logo.png' | asset_url }}" alt="{{ shop.name }}" class="site-header__logo-img" loading="eager">
+        <a href="{{ routes.root_url }}" class="site-header__logo-link">
+          <img src="{{ 'at-logo.png' | asset_url }}" alt="{{ shop.name }}" loading="eager" style="height:100px;width:auto;display:block;object-fit:contain;max-width:240px;">
         </a>
       {% endif %}
     </div>
@@ -39,6 +39,50 @@
   </div>
 </header>
 
+<script>
+  (function () {
+    var lastY   = 0;
+    var ticking = false;
+
+    function run() {
+      var y      = window.pageYOffset || document.documentElement.scrollTop || 0;
+      var header = document.querySelector('.site-header');
+      var body   = document.body;
+
+      /* Transparent at top; dark glass when scrolled */
+      if (y > 60) {
+        if (header) header.classList.add('site-header--scrolled');
+      } else {
+        if (header) header.classList.remove('site-header--scrolled');
+        body.classList.remove('nav-hidden');
+        lastY   = y;
+        ticking = false;
+        return;
+      }
+
+      /* Hide on scroll-down, show on scroll-up */
+      if (y > lastY + 5) {
+        body.classList.add('nav-hidden');
+      } else if (y < lastY - 5) {
+        body.classList.remove('nav-hidden');
+      }
+
+      lastY   = y;
+      ticking = false;
+    }
+
+    window.addEventListener('scroll', function () {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(run);
+      }
+    }, { passive: true });
+
+    /* Set correct initial state */
+    run();
+  })();
+</script>
+
 {% stylesheet %}
   .site-header {
     position: relative;
@@ -58,10 +102,6 @@
     -webkit-backdrop-filter: blur(12px);
   }
 
-  .site-header--hidden {
-    transform: translateY(-100%);
-  }
-
   .site-header__inner {
     display: flex;
     align-items: center;
@@ -72,11 +112,18 @@
     margin: 0 auto;
   }
 
+  .site-header__logo-link {
+    display: flex;
+    align-items: center;
+    height: 100%;
+  }
+
   .site-header__logo-img {
-    height: 81px;
+    height: 100px;
     width: auto;
     display: block;
     object-fit: contain;
+    max-width: 240px;
   }
 
   .site-header__logo-text {
@@ -153,51 +200,6 @@
     .site-header { height: 80px; }
   }
 {% endstylesheet %}
-
-{% javascript %}
-  (function () {
-    var header = document.querySelector('.site-header');
-    if (!header) return;
-
-    var lastY = 0;
-    var ticking = false;
-
-    function update() {
-      var y = window.pageYOffset || document.documentElement.scrollTop;
-
-      /* Background: transparent at top, dark glass when scrolled */
-      if (y > 60) {
-        header.classList.add('site-header--scrolled');
-      } else {
-        header.classList.remove('site-header--scrolled');
-        header.classList.remove('site-header--hidden');
-        lastY = y;
-        ticking = false;
-        return;
-      }
-
-      /* Hide on scroll-down, reveal on scroll-up */
-      if (y > lastY + 4) {
-        header.classList.add('site-header--hidden');
-      } else if (y < lastY - 4) {
-        header.classList.remove('site-header--hidden');
-      }
-
-      lastY = y;
-      ticking = false;
-    }
-
-    window.addEventListener('scroll', function () {
-      if (!ticking) {
-        requestAnimationFrame(update);
-        ticking = true;
-      }
-    }, { passive: true });
-
-    /* Run once on load to set initial state */
-    update();
-  })();
-{% endjavascript %}
 
 {% schema %}
 {

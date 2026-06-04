@@ -115,6 +115,12 @@ p:empty {
   right: 0;
   z-index: 100;
   width: 100%;
+  transition: transform 0.35s ease;
+}
+
+/* JS adds .nav-hidden to <body> on scroll-down, removes on scroll-up */
+body.nav-hidden .shopify-section-group-header-group {
+  transform: translateY(-100%);
 }
 
 body:not(.template-index) {

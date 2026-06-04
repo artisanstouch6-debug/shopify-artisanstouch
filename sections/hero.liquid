@@ -129,7 +129,8 @@
   .hero__content {
     position: relative;
     z-index: 1;
-    padding: 203px 120px 64px;
+    /* Figma: content frame starts at y=203 (128px header + 75px gap), ends at y=857 */
+    padding: 203px 120px 60px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -149,7 +150,7 @@
     font-family: var(--font-heading);
     font-size: 64px;
     font-weight: 400;
-    line-height: 1.15;
+    line-height: 1.2;
     color: white;
     max-width: 793px;
     margin: 0;
