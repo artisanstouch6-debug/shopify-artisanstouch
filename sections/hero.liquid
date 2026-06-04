@@ -1,0 +1,369 @@
+<div class="hero full-width">
+  <div class="hero__bg">
+    {% if section.settings.background_image %}
+      {{ section.settings.background_image | image_url: width: 2000 | image_tag: class: 'hero__bg-img', loading: 'eager', fetchpriority: 'high', alt: '' }}
+    {% else %}
+      <div class="hero__bg-placeholder"></div>
+    {% endif %}
+    <div class="hero__overlay"></div>
+  </div>
+
+  <div class="hero__content">
+    <div class="hero__text-group">
+      <h1 class="hero__heading">{{ section.settings.heading }}</h1>
+      <div class="hero__row">
+        <a href="{{ section.settings.button_url }}" class="hero__btn">
+          {{ section.settings.button_label }}
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M5 12H19M12 5L19 12L12 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+        {% if section.settings.subheading != blank %}
+          <p class="hero__subheading">{{ section.settings.subheading }}</p>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="hero__bottom">
+      <div class="hero__stats">
+        <div class="hero__stat">
+          <span class="hero__stat-num">{{ section.settings.stat_1_number }}</span>
+          <span class="hero__stat-label">{{ section.settings.stat_1_label }}</span>
+        </div>
+        <div class="hero__divider" aria-hidden="true"></div>
+        <div class="hero__stat">
+          <span class="hero__stat-num">{{ section.settings.stat_2_number }}</span>
+          <span class="hero__stat-label">{{ section.settings.stat_2_label }}</span>
+        </div>
+        <div class="hero__divider" aria-hidden="true"></div>
+        <div class="hero__stat">
+          <span class="hero__stat-num">{{ section.settings.stat_3_number }}</span>
+          <span class="hero__stat-label">{{ section.settings.stat_3_label }}</span>
+        </div>
+      </div>
+
+      <a href="{{ section.settings.explore_url }}" class="hero__explore">
+        <div class="hero__explore-btn" aria-hidden="true">
+          <svg width="50" height="50" viewBox="0 0 24 24" fill="none">
+            <path d="M12 5L12 19M19 12L12 19L5 12" stroke="#ff9696" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <span>{{ section.settings.explore_label }}</span>
+      </a>
+    </div>
+  </div>
+
+  <div class="hero__dots" aria-hidden="true">
+    <span class="hero__dot hero__dot--active"></span>
+    <span class="hero__dot"></span>
+    <span class="hero__dot"></span>
+  </div>
+</div>
+
+{% stylesheet %}
+  .hero {
+    position: relative;
+    min-height: 943px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    color: white;
+  }
+
+  .hero__bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+  }
+
+  .hero__bg-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+    display: block;
+  }
+
+  .hero__bg-placeholder {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #2c1810 0%, #4a2c1a 100%);
+  }
+
+  .hero__overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+  }
+
+  .hero__content {
+    position: relative;
+    z-index: 1;
+    padding: 203px 120px 80px;
+    display: flex;
+    flex-direction: column;
+    gap: 147px;
+    max-width: 1440px;
+    margin: 0 auto;
+    width: 100%;
+    flex: 1;
+  }
+
+  .hero__text-group {
+    display: flex;
+    flex-direction: column;
+    gap: 56px;
+  }
+
+  .hero__heading {
+    font-family: var(--font-heading);
+    font-size: 64px;
+    font-weight: 400;
+    line-height: 1.2;
+    color: white;
+    max-width: 793px;
+    margin: 0;
+  }
+
+  .hero__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: 40px;
+  }
+
+  .hero__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    border: 1px solid var(--coral-pink, #ff9696);
+    color: var(--coral-pink, #ff9696);
+    padding: 10px 20px;
+    border-radius: 24px;
+    text-decoration: none;
+    font-family: var(--font-body);
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+    flex-shrink: 0;
+    transition: background-color 0.2s, color 0.2s;
+  }
+
+  .hero__btn:hover {
+    background-color: var(--coral-pink, #ff9696);
+    color: white;
+  }
+
+  .hero__subheading {
+    font-family: var(--font-heading);
+    font-size: 16px;
+    color: var(--light-c-pink, #ffc4c4);
+    text-align: right;
+    max-width: 579px;
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  .hero__bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .hero__stats {
+    display: flex;
+    align-items: center;
+    gap: 48px;
+  }
+
+  .hero__stat {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .hero__stat-num {
+    font-family: var(--font-heading);
+    font-size: 96px;
+    line-height: 1;
+    color: var(--light-c-pink, #ffc4c4);
+    font-weight: 400;
+  }
+
+  .hero__stat-label {
+    font-family: var(--font-body);
+    font-size: 16px;
+    color: white;
+    font-weight: 400;
+  }
+
+  .hero__divider {
+    width: 1px;
+    height: 50px;
+    background: rgba(255, 255, 255, 0.35);
+    flex-shrink: 0;
+  }
+
+  .hero__explore {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    text-decoration: none;
+    color: white;
+    font-family: var(--font-body);
+    font-size: 14px;
+    width: 90px;
+    text-align: center;
+  }
+
+  .hero__explore-btn {
+    width: 90px;
+    height: 90px;
+    border-radius: 100px;
+    background-color: rgba(255, 150, 150, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+  }
+
+  .hero__explore:hover .hero__explore-btn {
+    background-color: rgba(255, 150, 150, 0.75);
+  }
+
+  .hero__dots {
+    position: absolute;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+    z-index: 1;
+  }
+
+  .hero__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.4);
+    display: block;
+  }
+
+  .hero__dot--active {
+    background-color: white;
+    width: 30px;
+    border-radius: 4px;
+  }
+
+  @media (max-width: 1100px) {
+    .hero__heading { font-size: 44px; }
+    .hero__stat-num { font-size: 64px; }
+    .hero__content { padding: 160px 40px 60px; gap: 80px; }
+    .hero__subheading { display: none; }
+    .hero__explore { display: none; }
+  }
+
+  @media (max-width: 768px) {
+    .hero { min-height: 600px; }
+    .hero__heading { font-size: 32px; }
+    .hero__content { padding: 120px 20px 60px; gap: 60px; }
+    .hero__stat-num { font-size: 48px; }
+    .hero__stats { gap: 20px; }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Hero",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "Background image"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Jewellery to Make an Impression for all the Occasion"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Subheading (right side)",
+      "default": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec tristique suscipit quam, in sagittis massa porttitor nec. Vivamus sed turpis diam."
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label",
+      "default": "SHOP NOW"
+    },
+    {
+      "type": "url",
+      "id": "button_url",
+      "label": "Button link"
+    },
+    {
+      "type": "header",
+      "content": "Stats bar"
+    },
+    {
+      "type": "text",
+      "id": "stat_1_number",
+      "label": "Stat 1 – number",
+      "default": "12"
+    },
+    {
+      "type": "text",
+      "id": "stat_1_label",
+      "label": "Stat 1 – label",
+      "default": "All Over Country"
+    },
+    {
+      "type": "text",
+      "id": "stat_2_number",
+      "label": "Stat 2 – number",
+      "default": "150+"
+    },
+    {
+      "type": "text",
+      "id": "stat_2_label",
+      "label": "Stat 2 – label",
+      "default": "Product Available"
+    },
+    {
+      "type": "text",
+      "id": "stat_3_number",
+      "label": "Stat 3 – number",
+      "default": "1K+"
+    },
+    {
+      "type": "text",
+      "id": "stat_3_label",
+      "label": "Stat 3 – label",
+      "default": "Product Reviews"
+    },
+    {
+      "type": "text",
+      "id": "explore_label",
+      "label": "Explore button label",
+      "default": "Explore All"
+    },
+    {
+      "type": "url",
+      "id": "explore_url",
+      "label": "Explore button link"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Hero"
+    }
+  ]
+}
+{% endschema %}

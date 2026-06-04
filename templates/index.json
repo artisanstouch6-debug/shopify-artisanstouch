@@ -1,20 +1,100 @@
-/*
- * ------------------------------------------------------------
- * IMPORTANT: The contents of this file are auto-generated.
- *
- * This file may be updated by the Shopify admin theme editor
- * or related systems. Please exercise caution as any changes
- * made to this file may be overwritten.
- * ------------------------------------------------------------
- */
 {
   "sections": {
-    "main": {
-      "type": "hello-world",
-      "settings": {}
+    "hero": {
+      "type": "hero",
+      "settings": {
+        "heading": "Jewellery to Make an Impression for all the Occasion",
+        "subheading": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec tristique suscipit quam, in sagittis massa porttitor nec. Vivamus sed turpis diam.",
+        "button_label": "SHOP NOW",
+        "stat_1_number": "12",
+        "stat_1_label": "All Over Country",
+        "stat_2_number": "150+",
+        "stat_2_label": "Product Available",
+        "stat_3_number": "1K+",
+        "stat_3_label": "Product Reviews",
+        "explore_label": "Explore All"
+      }
+    },
+    "category_cards": {
+      "type": "category-cards",
+      "settings": {
+        "heading": "Discover Jewellery Collection",
+        "card_1_title": "Bridal Jewellery",
+        "card_1_description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam condimentum, enim et scelerisque rutrum, purus ligula iaculis diam,",
+        "card_1_bg": "#ffe4e4",
+        "card_1_button": "SHOP NOW",
+        "card_2_title": "Costume Jewellery",
+        "card_2_description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam condimentum, enim et scelerisque rutrum, purus ligula iaculis diam, ac pretium justo mi elementum turpis.",
+        "card_2_bg": "#fff6e4",
+        "card_2_button": "SHOP NOW"
+      }
+    },
+    "new_arrivals": {
+      "type": "new-arrivals",
+      "settings": {
+        "heading": "New Arrival",
+        "subheading": "Anyone can get dresses up and glamorous, but it is how people dress in their days off.",
+        "products_count": 4
+      }
+    },
+    "feature_story": {
+      "type": "feature-story",
+      "settings": {
+        "heading": "Creates Lasting Memories of Each occasion",
+        "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras consectetur, massa sed viverra aliquet, sem justo finibus eros, semper suscipit tellus neque sed dui.",
+        "button_label": "SHOP NOW"
+      }
+    },
+    "bestseller": {
+      "type": "bestseller",
+      "settings": {
+        "heading": "Bestseller Product",
+        "subheading": "It is a long established fact that a reader will be distracted by the readable content.",
+        "products_count": 4
+      }
+    },
+    "image_banner": {
+      "type": "image-banner",
+      "settings": {
+        "overlay_opacity": 0
+      }
+    },
+    "testimonials": {
+      "type": "testimonials",
+      "settings": {
+        "heading": "What People Say"
+      },
+      "blocks": {
+        "review_1": {
+          "type": "review",
+          "settings": {
+            "quote": "Amazing service. My ring was a bit too big and they offered to resize it for free and very swiftly.",
+            "author_name": "Binguni Sanjana",
+            "author_location": "Pannipitiya"
+          }
+        }
+      },
+      "block_order": ["review_1"]
+    },
+    "instagram_gallery": {
+      "type": "instagram-gallery",
+      "settings": {},
+      "blocks": {
+        "photo_1": { "type": "photo", "settings": {} },
+        "photo_2": { "type": "photo", "settings": {} },
+        "photo_3": { "type": "photo", "settings": {} }
+      },
+      "block_order": ["photo_1", "photo_2", "photo_3"]
     }
   },
   "order": [
-    "main"
+    "hero",
+    "category_cards",
+    "new_arrivals",
+    "feature_story",
+    "bestseller",
+    "image_banner",
+    "testimonials",
+    "instagram_gallery"
   ]
 }

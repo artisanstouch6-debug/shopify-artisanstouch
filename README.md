@@ -158,3 +158,32 @@ Visit our [CONTRIBUTING.md](./CONTRIBUTING.md) for a detailed overview of our pr
 ## License
 
 Skeleton Theme is open-sourced under the [MIT](./LICENSE.md) License.
+
+
+---
+
+## Quick Start
+
+### Login / Deploy
+
+```bash
+shopify theme push --store=ucqv7z-0z.myshopify.com --theme=157648781557 --nodelete
+```
+
+### Run (local dev)
+
+```bash
+shopify theme dev --store=ucqv7z-0z.myshopify.com
+```
+
+```bash
+shopify theme push --store=1a3121 --theme=139089576181 --only templates/page.reviews.json --only sections/reviews-section.liquid
+```
+
+
+
+shopify logout
+
+shopify login --store=ucqv7z-0z.myshopify.com
+
+shopify theme dev --store=ucqv7z-0z.myshopify.com

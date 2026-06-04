@@ -1,0 +1,260 @@
+<div class="testimonials">
+  <h2 class="testimonials__heading">{{ section.settings.heading }}</h2>
+
+  {%- if section.blocks.size > 0 -%}
+    <div class="testimonials__slider" id="testimonials-{{ section.id }}">
+      {%- for block in section.blocks -%}
+        <div class="testimonials__slide {% if forloop.first %}testimonials__slide--active{% endif %}" {{ block.shopify_attributes }}>
+          <div class="testimonials__quote-wrap">
+            <div class="testimonials__quote-mark" aria-hidden="true">
+              <svg width="75" height="48" viewBox="0 0 75 48" fill="none">
+                <path d="M48 24C48 10.7 58.7 0 72 0V0C72 13.3 61.3 24 48 24Z" fill="var(--coral-pink, #ff9696)"/>
+                <path d="M21 24C21 10.7 31.7 0 45 0V0C45 13.3 34.3 24 21 24Z" fill="var(--coral-pink, #ff9696)"/>
+              </svg>
+            </div>
+            <div class="testimonials__content">
+              <p class="testimonials__text">{{ block.settings.quote }}</p>
+              <div class="testimonials__author">
+                <p class="testimonials__author-name">{{ block.settings.author_name }}</p>
+                <p class="testimonials__author-location">{{ block.settings.author_location }}</p>
+              </div>
+            </div>
+          </div>
+
+          {% if block.settings.author_image %}
+            <div class="testimonials__portrait">
+              {{ block.settings.author_image | image_url: width: 245, height: 321, crop: 'center' | image_tag: class: 'testimonials__portrait-img', loading: 'lazy', alt: block.settings.author_name }}
+            </div>
+          {% endif %}
+        </div>
+      {%- endfor -%}
+    </div>
+
+    <div class="testimonials__controls" data-slider-id="{{ section.id }}">
+      <button class="pgrid__nav-btn" aria-label="Previous review" data-testimonials-prev="{{ section.id }}">
+        <svg width="50" height="50" viewBox="0 0 50 50" fill="none">
+          <circle cx="25" cy="25" r="24" stroke="#828282" stroke-width="1.5"/>
+          <path d="M28 17L20 25L28 33" stroke="#828282" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <button class="pgrid__nav-btn" aria-label="Next review" data-testimonials-next="{{ section.id }}">
+        <svg width="50" height="50" viewBox="0 0 50 50" fill="none">
+          <circle cx="25" cy="25" r="24" stroke="#333" stroke-width="1.5"/>
+          <path d="M22 17L30 25L22 33" stroke="#333" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+  {%- endif -%}
+</div>
+
+{% stylesheet %}
+  .testimonials {
+    padding: 80px 120px;
+    max-width: 1440px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 64px;
+  }
+
+  .testimonials__heading {
+    font-family: var(--font-heading);
+    font-size: 48px;
+    font-weight: 700;
+    color: #000;
+    margin: 0;
+    text-align: center;
+  }
+
+  .testimonials__slider {
+    width: 100%;
+    max-width: 996px;
+    position: relative;
+  }
+
+  .testimonials__slide {
+    display: none;
+    align-items: center;
+    gap: 97px;
+  }
+
+  .testimonials__slide--active {
+    display: flex;
+  }
+
+  .testimonials__quote-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 68px;
+    flex: 1;
+  }
+
+  .testimonials__quote-mark {
+    align-self: flex-start;
+  }
+
+  .testimonials__content {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    padding-left: 81px;
+  }
+
+  .testimonials__text {
+    font-family: var(--font-body);
+    font-size: 24px;
+    color: #000;
+    margin: 0;
+    line-height: 1.5;
+    font-weight: 400;
+  }
+
+  .testimonials__author {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .testimonials__author-name {
+    font-family: var(--font-body);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--gray, #828282);
+    margin: 0;
+  }
+
+  .testimonials__author-location {
+    font-family: var(--font-body);
+    font-size: 12px;
+    color: var(--gray, #828282);
+    margin: 0;
+    font-weight: 400;
+  }
+
+  .testimonials__portrait {
+    width: 245px;
+    height: 321px;
+    border-radius: 122.5px 122.5px 12px 12px;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  .testimonials__portrait-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .testimonials__controls {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    align-self: flex-start;
+    padding-left: calc(120px + 0px);
+  }
+
+  @media (max-width: 1100px) {
+    .testimonials { padding: 60px 40px; }
+    .testimonials__slide { flex-direction: column; gap: 40px; }
+    .testimonials__controls { padding-left: 0; align-self: center; }
+  }
+
+  @media (max-width: 768px) {
+    .testimonials { padding: 48px 20px; gap: 40px; }
+    .testimonials__heading { font-size: 36px; }
+    .testimonials__text { font-size: 18px; }
+    .testimonials__content { padding-left: 0; }
+    .testimonials__portrait { width: 180px; height: 240px; }
+  }
+{% endstylesheet %}
+
+{% javascript %}
+  (function() {
+    document.querySelectorAll('[data-testimonials-next]').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var id = btn.getAttribute('data-testimonials-next');
+        var slider = document.getElementById('testimonials-' + id);
+        if (!slider) return;
+        var slides = slider.querySelectorAll('.testimonials__slide');
+        var active = slider.querySelector('.testimonials__slide--active');
+        var idx = Array.from(slides).indexOf(active);
+        slides[idx].classList.remove('testimonials__slide--active');
+        slides[(idx + 1) % slides.length].classList.add('testimonials__slide--active');
+      });
+    });
+    document.querySelectorAll('[data-testimonials-prev]').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var id = btn.getAttribute('data-testimonials-prev');
+        var slider = document.getElementById('testimonials-' + id);
+        if (!slider) return;
+        var slides = slider.querySelectorAll('.testimonials__slide');
+        var active = slider.querySelector('.testimonials__slide--active');
+        var idx = Array.from(slides).indexOf(active);
+        slides[idx].classList.remove('testimonials__slide--active');
+        slides[(idx - 1 + slides.length) % slides.length].classList.add('testimonials__slide--active');
+      });
+    });
+  })();
+{% endjavascript %}
+
+{% schema %}
+{
+  "name": "Testimonials",
+  "blocks": [
+    {
+      "type": "review",
+      "name": "Review",
+      "settings": [
+        {
+          "type": "textarea",
+          "id": "quote",
+          "label": "Quote",
+          "default": "Amazing service. My ring was a bit too big and they offered to resize it for free very swiftly."
+        },
+        {
+          "type": "text",
+          "id": "author_name",
+          "label": "Author name",
+          "default": "Customer Name"
+        },
+        {
+          "type": "text",
+          "id": "author_location",
+          "label": "Location",
+          "default": "Sri Lanka"
+        },
+        {
+          "type": "image_picker",
+          "id": "author_image",
+          "label": "Author photo"
+        }
+      ]
+    }
+  ],
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Section heading",
+      "default": "What People Say"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Testimonials",
+      "blocks": [
+        {
+          "type": "review",
+          "settings": {
+            "quote": "Amazing service. My ring was a bit too big and they offered to resize it for free and very swiftly.",
+            "author_name": "Binguni Sanjana",
+            "author_location": "Pannipitiya"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,5 +1,4 @@
 {% style %}
-  {% # Loads all font variantions with display: swap %}
   {{ settings.type_primary_font | font_face: font_display: 'swap' }}
   {{ settings.type_primary_font | font_modify: 'weight', 'bold' | font_face: font_display: 'swap' }}
   {{ settings.type_primary_font | font_modify: 'weight', 'bold' | font_modify: 'style', 'italic' | font_face: font_display: 'swap' }}
@@ -14,5 +13,14 @@
     --color-background: {{ settings.background_color }};
     --color-foreground: {{ settings.foreground_color }};
     --style-border-radius-inputs: {{ settings.input_corner_radius }}px;
+
+    --coral-pink: {{ settings.brand_coral_pink }};
+    --light-c-pink: {{ settings.brand_light_pink }};
+    --accent: {{ settings.brand_accent }};
+    --brand-gold: {{ settings.brand_gold }};
+    --footer-bg: {{ settings.brand_footer_bg }};
+    --gray: #828282;
+    --font-heading: 'Playfair Display', Georgia, serif;
+    --font-body: 'Poppins', sans-serif;
   }
 {% endstyle %}

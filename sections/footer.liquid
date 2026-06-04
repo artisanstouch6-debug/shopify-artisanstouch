@@ -1,39 +1,302 @@
-<footer>
-  <div class="footer__copyright">
-    &copy;
-    {{ 'now' | date: '%Y' }}
-    {{ shop.name | link_to: routes.root_url }}, {{ powered_by_link }}
+<footer class="site-footer full-width">
+  <div class="site-footer__inner">
+    <div class="site-footer__col site-footer__col--brand">
+      {% if section.settings.logo %}
+        <a href="{{ routes.root_url }}" class="site-footer__logo-link">
+          {{ section.settings.logo | image_url: width: 200 | image_tag: alt: shop.name, class: 'site-footer__logo', loading: 'lazy' }}
+        </a>
+      {% else %}
+        <a href="{{ routes.root_url }}" class="site-footer__brand-name">{{ shop.name }}</a>
+      {% endif %}
+      {% if section.settings.description != blank %}
+        <p class="site-footer__brand-desc">{{ section.settings.description }}</p>
+      {% endif %}
+    </div>
+
+    <div class="site-footer__col">
+      <h3 class="site-footer__col-heading">{{ section.settings.links_heading }}</h3>
+      <ul class="site-footer__links">
+        {%- for link in linklists[section.settings.menu].links -%}
+          <li><a href="{{ link.url }}" class="site-footer__link">{{ link.title }}</a></li>
+        {%- endfor -%}
+      </ul>
+    </div>
+
+    <div class="site-footer__col">
+      <h3 class="site-footer__col-heading">{{ section.settings.contact_heading }}</h3>
+      <ul class="site-footer__links">
+        {% if section.settings.phone != blank %}
+          <li><a href="tel:{{ section.settings.phone | remove: ' ' }}" class="site-footer__link">{{ section.settings.phone }}</a></li>
+        {% endif %}
+        {% if section.settings.email != blank %}
+          <li><a href="mailto:{{ section.settings.email }}" class="site-footer__link">{{ section.settings.email }}</a></li>
+        {% endif %}
+        {% if section.settings.address != blank %}
+          <li class="site-footer__link">{{ section.settings.address }}</li>
+        {% endif %}
+      </ul>
+      <div class="site-footer__social">
+        {% if section.settings.facebook_url != blank %}
+          <a href="{{ section.settings.facebook_url }}" class="site-footer__social-link" target="_blank" rel="noopener" aria-label="Facebook">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none"><path d="M18 2H15C13.6739 2 12.4021 2.52678 11.4645 3.46447C10.5268 4.40215 10 5.67392 10 7V10H7V14H10V22H14V14H17L18 10H14V7C14 6.73478 14.1054 6.48043 14.2929 6.29289C14.4804 6.10536 14.7348 6 15 6H18V2Z" stroke="#a88754" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+        {% endif %}
+        {% if section.settings.instagram_url != blank %}
+          <a href="{{ section.settings.instagram_url }}" class="site-footer__social-link" target="_blank" rel="noopener" aria-label="Instagram">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none"><rect x="2" y="2" width="20" height="20" rx="5" ry="5" stroke="#a88754" stroke-width="1.5"/><circle cx="12" cy="12" r="4" stroke="#a88754" stroke-width="1.5"/><circle cx="17.5" cy="6.5" r="1" fill="#a88754"/></svg>
+          </a>
+        {% endif %}
+        {% if section.settings.tiktok_url != blank %}
+          <a href="{{ section.settings.tiktok_url }}" class="site-footer__social-link" target="_blank" rel="noopener" aria-label="TikTok">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5" stroke="#a88754" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+        {% endif %}
+        {% if section.settings.youtube_url != blank %}
+          <a href="{{ section.settings.youtube_url }}" class="site-footer__social-link" target="_blank" rel="noopener" aria-label="YouTube">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46a2.78 2.78 0 0 0-1.95 1.96C1 8.12 1 12 1 12s0 3.88.46 5.58a2.78 2.78 0 0 0 1.95 1.96C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.96C23 15.88 23 12 23 12s0-3.88-.46-5.58z" stroke="#a88754" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" stroke="#a88754" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="site-footer__col">
+      <h3 class="site-footer__col-heading">{{ section.settings.newsletter_heading }}</h3>
+      <p class="site-footer__newsletter-sub">{{ section.settings.newsletter_subheading }}</p>
+      {% form 'customer', id: 'footer-newsletter' %}
+        <div class="site-footer__newsletter-form">
+          <input type="hidden" name="contact[tags]" value="newsletter">
+          <input class="site-footer__newsletter-input" type="email" name="contact[email]" placeholder="{{ section.settings.newsletter_placeholder }}" required autocomplete="email">
+          <button type="submit" class="site-footer__newsletter-btn" aria-label="Subscribe">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+              <path d="M5 12H19M12 5L19 12L12 19" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </div>
+      {% endform %}
+
+      <div class="site-footer__payment">
+        {% for type in shop.enabled_payment_types %}
+          {{ type | payment_type_svg_tag: class: 'site-footer__payment-icon' }}
+        {% endfor %}
+      </div>
+    </div>
   </div>
 
-  <div class="footer__links">
-    {% for link in section.settings.menu.links %}
-      {{ link.title | link_to: link.url }}
-    {% endfor %}
-  </div>
-
-  <div class="footer__payment">
-    {% if section.settings.show_payment_icons %}
-      {% for type in shop.enabled_payment_types %}
-        {{ type | payment_type_svg_tag }}
-      {% endfor %}
-    {% endif %}
+  <div class="site-footer__bottom">
+    <div class="site-footer__bottom-inner">
+      <p class="site-footer__copyright">{{ section.settings.copyright_text | replace: '[year]', 'now' | date: '%Y' }}</p>
+      <div class="site-footer__bottom-links">
+        <a href="{{ pages['terms-conditions'].url | default: '#' }}" class="site-footer__bottom-link">Terms</a>
+        <span class="site-footer__bottom-sep" aria-hidden="true">|</span>
+        <a href="{{ pages['privacy-policy'].url | default: '#' }}" class="site-footer__bottom-link">Privacy Policy</a>
+      </div>
+    </div>
   </div>
 </footer>
 
 {% stylesheet %}
-  footer {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 2rem;
+  .site-footer {
+    background-color: var(--footer-bg, #1b1400);
+    color: var(--brand-gold, #a88754);
   }
-  footer a {
+
+  .site-footer__inner {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 40px;
+    padding: 64px 120px 40px;
+    max-width: 1440px;
+    margin: 0 auto;
+  }
+
+  .site-footer__col {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .site-footer__logo-link {
+    display: block;
+  }
+
+  .site-footer__logo {
+    max-width: 200px;
+    height: auto;
+    display: block;
+    object-fit: contain;
+  }
+
+  .site-footer__brand-name {
+    font-family: var(--font-heading);
+    font-size: 1.25rem;
+    color: var(--brand-gold, #a88754);
     text-decoration: none;
-    color: var(--color-foreground);
+    font-weight: 600;
   }
-  footer .footer__links,
-  footer .footer__payment {
+
+  .site-footer__brand-desc {
+    font-family: var(--font-heading);
+    font-size: 14px;
+    color: var(--brand-gold, #a88754);
+    margin: 0;
+    line-height: 1.6;
+    font-weight: 400;
+  }
+
+  .site-footer__col-heading {
+    font-family: var(--font-heading);
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--brand-gold, #a88754);
+    margin: 0;
+  }
+
+  .site-footer__links {
+    list-style: none;
+    margin: 0;
+    padding: 0;
     display: flex;
-    gap: 1rem;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .site-footer__link {
+    font-family: var(--font-heading);
+    font-size: 16px;
+    color: var(--brand-gold, #a88754);
+    text-decoration: none;
+    font-weight: 400;
+    display: block;
+    line-height: 1.5;
+    transition: opacity 0.2s;
+  }
+
+  .site-footer__link:hover { opacity: 0.7; }
+
+  .site-footer__social {
+    display: flex;
+    gap: 18px;
+    align-items: center;
+  }
+
+  .site-footer__social-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.2s;
+  }
+
+  .site-footer__social-link:hover { opacity: 0.7; }
+
+  .site-footer__newsletter-sub {
+    font-family: var(--font-heading);
+    font-size: 12px;
+    color: var(--brand-gold, #a88754);
+    margin: 0;
+    line-height: 1.4;
+    font-weight: 400;
+  }
+
+  .site-footer__newsletter-form {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    padding: 10px;
+    gap: 8px;
+  }
+
+  .site-footer__newsletter-input {
+    background: none;
+    border: none;
+    outline: none;
+    font-family: var(--font-heading);
+    font-size: 12px;
+    color: var(--brand-gold, #a88754);
+    flex: 1;
+    min-width: 0;
+  }
+
+  .site-footer__newsletter-input::placeholder {
+    color: var(--gray, #828282);
+  }
+
+  .site-footer__newsletter-btn {
+    background: var(--brand-gold, #a88754);
+    border: none;
+    border-radius: 4px;
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: opacity 0.2s;
+  }
+
+  .site-footer__newsletter-btn:hover { opacity: 0.8; }
+
+  .site-footer__payment {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-top: 8px;
+  }
+
+  .site-footer__payment-icon {
+    height: 32px;
+    width: auto;
+    opacity: 0.8;
+  }
+
+  .site-footer__bottom {
+    border-top: 1px solid rgba(168, 135, 84, 0.3);
+    padding: 0 120px 28px;
+  }
+
+  .site-footer__bottom-inner {
+    max-width: 1440px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 20px;
+  }
+
+  .site-footer__copyright,
+  .site-footer__bottom-link {
+    font-family: var(--font-heading);
+    font-size: 12px;
+    color: var(--brand-gold, #a88754);
+    margin: 0;
+    font-weight: 400;
+    text-decoration: none;
+  }
+
+  .site-footer__bottom-links {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .site-footer__bottom-sep {
+    color: var(--brand-gold, #a88754);
+    opacity: 0.4;
+    font-size: 12px;
+  }
+
+  @media (max-width: 1100px) {
+    .site-footer__inner { grid-template-columns: 1fr 1fr; padding: 48px 40px 32px; }
+    .site-footer__bottom { padding: 0 40px 24px; }
+  }
+
+  @media (max-width: 768px) {
+    .site-footer__inner { grid-template-columns: 1fr; padding: 40px 20px 28px; }
+    .site-footer__bottom { padding: 0 20px 20px; }
+    .site-footer__bottom-inner { flex-direction: column; gap: 12px; text-align: center; }
   }
 {% endstylesheet %}
 
@@ -42,9 +305,114 @@
   "name": "t:general.footer",
   "settings": [
     {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Footer logo"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Brand description",
+      "default": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam consectetur sed enim ac venenatis."
+    },
+    {
+      "type": "header",
+      "content": "Quick Links column"
+    },
+    {
+      "type": "text",
+      "id": "links_heading",
+      "label": "Column heading",
+      "default": "Quick Links"
+    },
+    {
       "type": "link_list",
       "id": "menu",
       "label": "t:labels.menu"
+    },
+    {
+      "type": "header",
+      "content": "Contact Details column"
+    },
+    {
+      "type": "text",
+      "id": "contact_heading",
+      "label": "Column heading",
+      "default": "Contact Details"
+    },
+    {
+      "type": "text",
+      "id": "phone",
+      "label": "Phone number",
+      "default": "+94 11 234 5678"
+    },
+    {
+      "type": "text",
+      "id": "email",
+      "label": "Email address",
+      "default": "artisanstouch@gmail.com"
+    },
+    {
+      "type": "text",
+      "id": "address",
+      "label": "Address",
+      "default": "No.02, Main Road, Malabe"
+    },
+    {
+      "type": "header",
+      "content": "Social Media"
+    },
+    {
+      "type": "url",
+      "id": "facebook_url",
+      "label": "Facebook URL"
+    },
+    {
+      "type": "url",
+      "id": "instagram_url",
+      "label": "Instagram URL"
+    },
+    {
+      "type": "url",
+      "id": "tiktok_url",
+      "label": "TikTok URL"
+    },
+    {
+      "type": "url",
+      "id": "youtube_url",
+      "label": "YouTube URL"
+    },
+    {
+      "type": "header",
+      "content": "Newsletter column"
+    },
+    {
+      "type": "text",
+      "id": "newsletter_heading",
+      "label": "Column heading",
+      "default": "Subscribe Newsletter"
+    },
+    {
+      "type": "text",
+      "id": "newsletter_subheading",
+      "label": "Subheading",
+      "default": "New Customer Get 50% off..."
+    },
+    {
+      "type": "text",
+      "id": "newsletter_placeholder",
+      "label": "Input placeholder",
+      "default": "Enter Email Address"
+    },
+    {
+      "type": "header",
+      "content": "Bottom bar"
+    },
+    {
+      "type": "text",
+      "id": "copyright_text",
+      "label": "Copyright text",
+      "default": "Copyright © [year] ARTISANS TOUCH. All rights reserved."
     },
     {
       "type": "checkbox",

@@ -1,0 +1,150 @@
+<div class="insta-gallery">
+  <div class="insta-gallery__grid">
+    {%- for block in section.blocks -%}
+      <div class="insta-gallery__item" {{ block.shopify_attributes }}>
+        {% if block.settings.image %}
+          {{ block.settings.image | image_url: width: 285, height: 285, crop: 'center' | image_tag: class: 'insta-gallery__img', loading: 'lazy', alt: '' }}
+        {% else %}
+          <div class="insta-gallery__img insta-gallery__placeholder"></div>
+        {% endif %}
+      </div>
+    {%- endfor -%}
+
+    <a href="{{ section.settings.instagram_url }}" class="insta-gallery__cta" target="_blank" rel="noopener" aria-label="Join our Instagram">
+      <div class="insta-gallery__cta-inner">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <rect x="2" y="2" width="20" height="20" rx="5" ry="5" stroke="white" stroke-width="1.5"/>
+          <circle cx="12" cy="12" r="4" stroke="white" stroke-width="1.5"/>
+          <circle cx="17.5" cy="6.5" r="1" fill="white"/>
+        </svg>
+        <p class="insta-gallery__cta-text">Join Our<br>Instagram</p>
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M5 12H19M12 5L19 12L12 19" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+    </a>
+  </div>
+</div>
+
+{% stylesheet %}
+  .insta-gallery {
+    padding: 60px 120px;
+    max-width: 1440px;
+    margin: 0 auto;
+  }
+
+  .insta-gallery__grid {
+    display: flex;
+    gap: 20px;
+    align-items: stretch;
+  }
+
+  .insta-gallery__item {
+    width: 285px;
+    height: 285px;
+    border-radius: 12px;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  .insta-gallery__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.3s;
+  }
+
+  .insta-gallery__item:hover .insta-gallery__img {
+    transform: scale(1.05);
+  }
+
+  .insta-gallery__placeholder {
+    background: #eee;
+  }
+
+  .insta-gallery__cta {
+    width: 285px;
+    height: 285px;
+    border-radius: 12px;
+    background-color: var(--coral-pink, #ff9696);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    flex-shrink: 0;
+    transition: background-color 0.2s;
+  }
+
+  .insta-gallery__cta:hover {
+    background-color: #ff7b7b;
+  }
+
+  .insta-gallery__cta-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    width: 85px;
+  }
+
+  .insta-gallery__cta-text {
+    font-family: var(--font-body);
+    font-size: 16px;
+    font-weight: 500;
+    color: white;
+    text-align: center;
+    margin: 0;
+    line-height: 1.4;
+  }
+
+  @media (max-width: 1200px) {
+    .insta-gallery { padding: 48px 40px; }
+    .insta-gallery__grid { flex-wrap: wrap; }
+    .insta-gallery__item,
+    .insta-gallery__cta { width: calc(50% - 10px); height: 240px; }
+  }
+
+  @media (max-width: 768px) {
+    .insta-gallery { padding: 40px 20px; }
+    .insta-gallery__item,
+    .insta-gallery__cta { width: calc(50% - 10px); height: 180px; }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Instagram Gallery",
+  "max_blocks": 3,
+  "blocks": [
+    {
+      "type": "photo",
+      "name": "Photo",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Photo"
+        }
+      ]
+    }
+  ],
+  "settings": [
+    {
+      "type": "url",
+      "id": "instagram_url",
+      "label": "Instagram profile URL"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Instagram Gallery",
+      "blocks": [
+        { "type": "photo" },
+        { "type": "photo" },
+        { "type": "photo" }
+      ]
+    }
+  ]
+}
+{% endschema %}

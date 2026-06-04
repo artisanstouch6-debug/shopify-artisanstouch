@@ -1,9 +1,9 @@
 [
   {
     "name": "theme_info",
-    "theme_name": "Skeleton",
-    "theme_version": "0.1.0",
-    "theme_author": "Shopify",
+    "theme_name": "Artisans Touch",
+    "theme_version": "1.0.0",
+    "theme_author": "Artisans Touch",
     "theme_documentation_url": "https://help.shopify.com/manual/online-store/themes",
     "theme_support_url": "https://support.shopify.com/"
   },
@@ -59,7 +59,7 @@
       {
         "type": "color",
         "id": "background_color",
-        "default": "#FFFFFF",
+        "default": "#fff8f8",
         "label": "t:labels.background"
       },
       {
@@ -77,6 +77,41 @@
         "unit": "px",
         "label": "t:labels.input_corner_radius",
         "default": 4
+      }
+    ]
+  },
+  {
+    "name": "Brand Colors",
+    "settings": [
+      {
+        "type": "color",
+        "id": "brand_coral_pink",
+        "label": "Coral Pink (buttons, accents)",
+        "default": "#ff9696"
+      },
+      {
+        "type": "color",
+        "id": "brand_light_pink",
+        "label": "Light Pink (headings on dark)",
+        "default": "#ffc4c4"
+      },
+      {
+        "type": "color",
+        "id": "brand_accent",
+        "label": "Accent (section backgrounds)",
+        "default": "#f5e6da"
+      },
+      {
+        "type": "color",
+        "id": "brand_gold",
+        "label": "Gold (footer text)",
+        "default": "#a88754"
+      },
+      {
+        "type": "color",
+        "id": "brand_footer_bg",
+        "label": "Footer background",
+        "default": "#1b1400"
       }
     ]
   }
