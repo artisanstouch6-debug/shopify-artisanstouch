@@ -26,8 +26,8 @@
       <div class="hero__row">
         <a href="{{ section.settings.button_url }}" class="hero__btn hero-anim hero-anim--up" style="--delay:.5s">
           {{ section.settings.button_label }}
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-            <path d="M5 12H19M13 6L19 12L13 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          <svg width="20" height="20" viewBox="0 0 50 50" fill="none" aria-hidden="true" style="transform:rotate(90deg);flex-shrink:0;">
+            <path d="M10.4167 16.6667C11.9625 16.6667 14.2708 15.1396 16.2083 13.5937C18.7083 11.6062 20.8896 9.23125 22.5542 6.50833C23.8021 4.46667 25 1.99167 25 0M25 0C25 1.99167 26.1979 4.46875 27.4458 6.50833C29.1125 9.23125 31.2937 11.6062 33.7896 13.5937C35.7292 15.1396 38.0417 16.6667 39.5833 16.6667M25 0V50" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
           </svg>
         </a>
         {%- if section.settings.subheading != blank -%}
@@ -56,8 +56,8 @@
 
       <a href="{{ section.settings.explore_url }}" class="hero__explore hero-anim hero-anim--up" style="--delay:.7s">
         <div class="hero__explore-btn" aria-hidden="true">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
-            <path d="M12 5L12 19M5 12L12 19L19 12" stroke="#ff9696" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          <svg width="28" height="28" viewBox="0 0 50 50" fill="none" style="transform:rotate(180deg);flex-shrink:0;">
+            <path d="M10.4167 16.6667C11.9625 16.6667 14.2708 15.1396 16.2083 13.5937C18.7083 11.6062 20.8896 9.23125 22.5542 6.50833C23.8021 4.46667 25 1.99167 25 0M25 0C25 1.99167 26.1979 4.46875 27.4458 6.50833C29.1125 9.23125 31.2937 11.6062 33.7896 13.5937C35.7292 15.1396 38.0417 16.6667 39.5833 16.6667M25 0V50" stroke="white" stroke-width="4" stroke-linecap="round"/>
           </svg>
         </div>
         <span>{{ section.settings.explore_label }}</span>
