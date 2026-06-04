@@ -26,9 +26,7 @@
         },
         "slide_3": {
           "type": "slide",
-          "settings": {
-            "image": "shopify://shop_images/Property_1_photo_2.png"
-          }
+          "settings": {}
         }
       },
       "block_order": [
