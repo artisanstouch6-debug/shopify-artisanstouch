@@ -129,8 +129,8 @@
   .hero__content {
     position: relative;
     z-index: 1;
-    /* Figma: content frame starts at y=203 (128px header + 75px gap), ends at y=857 */
-    padding: 203px 120px 60px;
+    /* Figma: content y=203 to y=857, bottom gap = 943-857 = 86px */
+    padding: 203px 120px 86px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -201,22 +201,24 @@
     display: flex;
     align-items: flex-end;
     justify-content: space-between;
+    width: 100%;
   }
 
   .hero__stats {
     display: flex;
-    align-items: center;
+    align-items: flex-end;
     gap: 48px;
   }
 
   .hero__stat {
     display: flex;
     flex-direction: column;
+    gap: 4px;
   }
 
   .hero__stat-num {
     font-family: var(--font-heading);
-    font-size: 96px;
+    font-size: 90px;
     line-height: 1;
     color: var(--light-c-pink, #ffc4c4);
     font-weight: 400;
@@ -226,14 +228,17 @@
     font-family: var(--font-body);
     font-size: 16px;
     color: white;
+    white-space: nowrap;
+    margin-top:.7rem;
   }
 
   .hero__divider {
     width: 1px;
-    height: 50px;
+    height: 60px;
     background: rgba(255, 255, 255, 0.35);
     flex-shrink: 0;
-    align-self: center;
+    align-self: flex-end;
+    margin-bottom: 35px;
   }
 
   .hero__explore {
@@ -327,7 +332,7 @@
   @media (max-width: 1100px) {
     .hero { height: auto; min-height: 700px; }
     .hero__heading { font-size: 44px; }
-    .hero__stat-num { font-size: 64px; }
+    .hero__stat-num { font-size: 74px; }
     .hero__content { padding: 160px 40px 60px; }
     .hero__subheading { display: none; }
     .hero__explore { display: none; }
@@ -337,7 +342,7 @@
     .hero { min-height: 600px; }
     .hero__heading { font-size: 32px; }
     .hero__content { padding: 120px 20px 60px; }
-    .hero__stat-num { font-size: 48px; }
+    .hero__stat-num { font-size: 58px; }
     .hero__stats { gap: 20px; }
     .hero__stat-label { font-size: 13px; }
   }
