@@ -3,6 +3,8 @@
     "hero": {
       "type": "hero",
       "settings": {
+        "autoplay": true,
+        "autoplay_speed": 5000,
         "heading": "Jewellery to Make an Impression for all the Occasion",
         "subheading": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec tristique suscipit quam, in sagittis massa porttitor nec. Vivamus sed turpis diam.",
         "button_label": "SHOP NOW",
@@ -13,7 +15,13 @@
         "stat_3_number": "1K+",
         "stat_3_label": "Product Reviews",
         "explore_label": "Explore All"
-      }
+      },
+      "blocks": {
+        "slide_1": { "type": "slide", "settings": {} },
+        "slide_2": { "type": "slide", "settings": {} },
+        "slide_3": { "type": "slide", "settings": {} }
+      },
+      "block_order": ["slide_1", "slide_2", "slide_3"]
     },
     "category_cards": {
       "type": "category-cards",

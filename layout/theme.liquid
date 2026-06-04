@@ -22,7 +22,7 @@
     {{ content_for_header }}
   </head>
 
-  <body>
+  <body class="template-{{ template.name }}">
     {% sections 'header-group' %}
 
     {{ content_for_layout }}

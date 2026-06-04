@@ -1,31 +1,43 @@
-<div class="hero full-width">
-  <div class="hero__bg">
-    {% if section.settings.background_image %}
-      {{ section.settings.background_image | image_url: width: 2000 | image_tag: class: 'hero__bg-img', loading: 'eager', fetchpriority: 'high', alt: '' }}
-    {% else %}
-      <img src="{{ 'hero-bg.jpg' | asset_url }}" alt="" class="hero__bg-img" loading="eager" fetchpriority="high">
-    {% endif %}
-    <div class="hero__overlay"></div>
+<div class="hero full-width" id="hero-{{ section.id }}">
+
+  <div class="hero__carousel">
+    {%- if section.blocks.size > 0 -%}
+      {%- for block in section.blocks -%}
+        <div class="hero__slide{% if forloop.first %} hero__slide--active{% endif %}" {{ block.shopify_attributes }}>
+          {%- if block.settings.image -%}
+            {{ block.settings.image | image_url: width: 2000 | image_tag: class: 'hero__slide-img', loading: 'eager', fetchpriority: 'high', alt: '' }}
+          {%- else -%}
+            <img src="{{ 'hero-bg.jpg' | asset_url }}" alt="" class="hero__slide-img" loading="eager" fetchpriority="high">
+          {%- endif -%}
+          <div class="hero__overlay"></div>
+        </div>
+      {%- endfor -%}
+    {%- else -%}
+      <div class="hero__slide hero__slide--active">
+        <img src="{{ 'hero-bg.jpg' | asset_url }}" alt="" class="hero__slide-img" loading="eager" fetchpriority="high">
+        <div class="hero__overlay"></div>
+      </div>
+    {%- endif -%}
   </div>
 
   <div class="hero__content">
     <div class="hero__text-group">
-      <h1 class="hero__heading">{{ section.settings.heading }}</h1>
+      <h1 class="hero__heading hero-anim hero-anim--left">{{ section.settings.heading }}</h1>
       <div class="hero__row">
-        <a href="{{ section.settings.button_url }}" class="hero__btn">
+        <a href="{{ section.settings.button_url }}" class="hero__btn hero-anim hero-anim--up" style="--delay:.5s">
           {{ section.settings.button_label }}
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-            <path d="M5 12H19M12 5L19 12L12 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M5 12H19M13 6L19 12L13 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </a>
-        {% if section.settings.subheading != blank %}
-          <p class="hero__subheading">{{ section.settings.subheading }}</p>
-        {% endif %}
+        {%- if section.settings.subheading != blank -%}
+          <p class="hero__subheading hero-anim hero-anim--right" style="--delay:.3s">{{ section.settings.subheading }}</p>
+        {%- endif -%}
       </div>
     </div>
 
     <div class="hero__bottom">
-      <div class="hero__stats">
+      <div class="hero__stats hero-anim hero-anim--up" style="--delay:.6s">
         <div class="hero__stat">
           <span class="hero__stat-num">{{ section.settings.stat_1_number }}</span>
           <span class="hero__stat-label">{{ section.settings.stat_1_label }}</span>
@@ -42,10 +54,10 @@
         </div>
       </div>
 
-      <a href="{{ section.settings.explore_url }}" class="hero__explore">
+      <a href="{{ section.settings.explore_url }}" class="hero__explore hero-anim hero-anim--up" style="--delay:.7s">
         <div class="hero__explore-btn" aria-hidden="true">
-          <svg width="50" height="50" viewBox="0 0 24 24" fill="none">
-            <path d="M12 5L12 19M19 12L12 19L5 12" stroke="#ff9696" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+            <path d="M12 5L12 19M5 12L12 19L19 12" stroke="#ff9696" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </div>
         <span>{{ section.settings.explore_label }}</span>
@@ -53,41 +65,59 @@
     </div>
   </div>
 
-  <div class="hero__dots" aria-hidden="true">
-    <span class="hero__dot hero__dot--active"></span>
-    <span class="hero__dot"></span>
-    <span class="hero__dot"></span>
-  </div>
+  {%- assign slide_count = section.blocks.size -%}
+  {%- if slide_count > 1 -%}
+    <div class="hero__dots" role="tablist" aria-label="Slideshow navigation">
+      {%- for i in (1..slide_count) -%}
+        <button class="hero__dot{% if forloop.first %} hero__dot--active{% endif %}"
+                role="tab"
+                aria-label="Slide {{ i }}"
+                aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
+                data-slide="{{ forloop.index0 }}">
+        </button>
+      {%- endfor -%}
+    </div>
+  {%- else -%}
+    <div class="hero__dots" aria-hidden="true">
+      <span class="hero__dot hero__dot--active"></span>
+      <span class="hero__dot"></span>
+      <span class="hero__dot"></span>
+    </div>
+  {%- endif -%}
+
 </div>
 
 {% stylesheet %}
   .hero {
     position: relative;
-    min-height: 943px;
+    height: 943px;
     display: flex;
     flex-direction: column;
     overflow: hidden;
     color: white;
   }
 
-  .hero__bg {
+  .hero__carousel {
     position: absolute;
     inset: 0;
     z-index: 0;
   }
 
-  .hero__bg-img {
+  .hero__slide {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 1s ease;
+  }
+
+  .hero__slide--active { opacity: 1; }
+
+  .hero__slide-img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     object-position: center top;
     display: block;
-  }
-
-  .hero__bg-placeholder {
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(135deg, #2c1810 0%, #4a2c1a 100%);
   }
 
   .hero__overlay {
@@ -99,15 +129,14 @@
   .hero__content {
     position: relative;
     z-index: 1;
-    /* 128px header height + 75px gap before heading */
-    padding: 203px 120px 80px;
+    padding: 203px 120px 64px;
     display: flex;
     flex-direction: column;
-    gap: 147px;
+    justify-content: space-between;
+    flex: 1;
     max-width: 1440px;
     margin: 0 auto;
     width: 100%;
-    flex: 1;
   }
 
   .hero__text-group {
@@ -120,7 +149,7 @@
     font-family: var(--font-heading);
     font-size: 64px;
     font-weight: 400;
-    line-height: 1.2;
+    line-height: 1.15;
     color: white;
     max-width: 793px;
     margin: 0;
@@ -140,16 +169,16 @@
     gap: 10px;
     border: 1px solid var(--coral-pink, #ff9696);
     color: var(--coral-pink, #ff9696);
-    padding: 10px 20px;
+    padding: 10px 22px;
     border-radius: 24px;
     text-decoration: none;
     font-family: var(--font-body);
     font-size: 16px;
     font-weight: 600;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.08em;
     white-space: nowrap;
     flex-shrink: 0;
-    transition: background-color 0.2s, color 0.2s;
+    transition: background-color 0.25s, color 0.25s;
   }
 
   .hero__btn:hover {
@@ -163,15 +192,14 @@
     color: var(--light-c-pink, #ffc4c4);
     text-align: right;
     max-width: 579px;
-    line-height: 1.5;
+    line-height: 1.6;
     margin: 0;
   }
 
   .hero__bottom {
     display: flex;
-    align-items: center;
+    align-items: flex-end;
     justify-content: space-between;
-    width: 100%;
   }
 
   .hero__stats {
@@ -183,7 +211,6 @@
   .hero__stat {
     display: flex;
     flex-direction: column;
-    gap: 0;
   }
 
   .hero__stat-num {
@@ -198,7 +225,6 @@
     font-family: var(--font-body);
     font-size: 16px;
     color: white;
-    font-weight: 400;
   }
 
   .hero__divider {
@@ -206,19 +232,21 @@
     height: 50px;
     background: rgba(255, 255, 255, 0.35);
     flex-shrink: 0;
+    align-self: center;
   }
 
   .hero__explore {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 4px;
+    gap: 6px;
     text-decoration: none;
     color: white;
     font-family: var(--font-body);
     font-size: 14px;
     width: 90px;
     text-align: center;
+    flex-shrink: 0;
   }
 
   .hero__explore-btn {
@@ -229,11 +257,11 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: background-color 0.2s;
+    transition: background-color 0.25s;
   }
 
   .hero__explore:hover .hero__explore-btn {
-    background-color: rgba(255, 150, 150, 0.75);
+    background-color: rgba(255, 150, 150, 0.8);
   }
 
   .hero__dots {
@@ -242,8 +270,9 @@
     left: 50%;
     transform: translateX(-50%);
     display: flex;
-    gap: 8px;
-    z-index: 1;
+    gap: 10px;
+    z-index: 2;
+    align-items: center;
   }
 
   .hero__dot {
@@ -252,18 +281,53 @@
     border-radius: 50%;
     background-color: rgba(255, 255, 255, 0.4);
     display: block;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    transition: width 0.3s, background-color 0.3s, border-radius 0.3s;
   }
 
   .hero__dot--active {
     background-color: white;
-    width: 30px;
+    width: 32px;
     border-radius: 4px;
   }
 
+  /* ── Hero entrance animations — pure CSS, no JS needed ─────────── */
+  @keyframes heroLeft {
+    from { opacity: 0; transform: translateX(-40px); }
+    to   { opacity: 1; transform: none; }
+  }
+  @keyframes heroRight {
+    from { opacity: 0; transform: translateX(40px); }
+    to   { opacity: 1; transform: none; }
+  }
+  @keyframes heroUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  .hero-anim--left  { animation: heroLeft  0.8s ease both; animation-delay: var(--delay, 0.2s); }
+  .hero-anim--right { animation: heroRight 0.8s ease both; animation-delay: var(--delay, 0.3s); }
+  .hero-anim--up    { animation: heroUp    0.7s ease both; animation-delay: var(--delay, 0.5s); }
+
+  /* ── Scroll-reveal (shared across all sections) ──────────────── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+    transition-delay: var(--reveal-delay, 0s);
+  }
+  .reveal.revealed {
+    opacity: 1;
+    transform: none;
+  }
+
   @media (max-width: 1100px) {
+    .hero { height: auto; min-height: 700px; }
     .hero__heading { font-size: 44px; }
     .hero__stat-num { font-size: 64px; }
-    .hero__content { padding: 160px 40px 60px; gap: 80px; }
+    .hero__content { padding: 160px 40px 60px; }
     .hero__subheading { display: none; }
     .hero__explore { display: none; }
   }
@@ -271,20 +335,119 @@
   @media (max-width: 768px) {
     .hero { min-height: 600px; }
     .hero__heading { font-size: 32px; }
-    .hero__content { padding: 120px 20px 60px; gap: 60px; }
+    .hero__content { padding: 120px 20px 60px; }
     .hero__stat-num { font-size: 48px; }
     .hero__stats { gap: 20px; }
+    .hero__stat-label { font-size: 13px; }
   }
 {% endstylesheet %}
+
+{% javascript %}
+  (function () {
+    var heroEl = document.getElementById('hero-{{ section.id }}');
+    if (!heroEl) return;
+
+    /* Carousel */
+    var slides = heroEl.querySelectorAll('.hero__slide');
+    var dots   = heroEl.querySelectorAll('.hero__dot');
+    if (slides.length < 2) {
+      bootReveal();
+      return;
+    }
+
+    var current = 0;
+    var timer;
+    var speed = {{ section.settings.autoplay_speed | default: 5000 }};
+    var autoplay = {{ section.settings.autoplay | default: true }};
+
+    function goTo(idx) {
+      slides[current].classList.remove('hero__slide--active');
+      if (dots[current]) {
+        dots[current].classList.remove('hero__dot--active');
+        dots[current].setAttribute('aria-selected', 'false');
+      }
+      current = (idx + slides.length) % slides.length;
+      slides[current].classList.add('hero__slide--active');
+      if (dots[current]) {
+        dots[current].classList.add('hero__dot--active');
+        dots[current].setAttribute('aria-selected', 'true');
+      }
+    }
+
+    function startTimer() {
+      clearInterval(timer);
+      if (autoplay) timer = setInterval(function () { goTo(current + 1); }, speed);
+    }
+
+    dots.forEach(function (dot) {
+      dot.addEventListener('click', function () {
+        goTo(parseInt(dot.getAttribute('data-slide'), 10));
+        startTimer();
+      });
+    });
+
+    startTimer();
+    bootReveal();
+
+    /* Scroll-reveal for all .reveal elements on the page */
+    function bootReveal() {
+      if (!('IntersectionObserver' in window)) {
+        document.querySelectorAll('.reveal').forEach(function (el) { el.classList.add('revealed'); });
+        return;
+      }
+      var obs = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('revealed');
+            obs.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.15 });
+      document.querySelectorAll('.reveal').forEach(function (el) { obs.observe(el); });
+    }
+  })();
+{% endjavascript %}
 
 {% schema %}
 {
   "name": "Hero",
+  "max_blocks": 5,
+  "blocks": [
+    {
+      "type": "slide",
+      "name": "Slide",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Background image"
+        }
+      ]
+    }
+  ],
   "settings": [
     {
-      "type": "image_picker",
-      "id": "background_image",
-      "label": "Background image"
+      "type": "header",
+      "content": "Carousel"
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "Auto-play slideshow",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "autoplay_speed",
+      "label": "Slide duration (ms)",
+      "min": 2000,
+      "max": 9500,
+      "step": 500,
+      "default": 5000
+    },
+    {
+      "type": "header",
+      "content": "Content"
     },
     {
       "type": "text",
@@ -363,7 +526,12 @@
   ],
   "presets": [
     {
-      "name": "Hero"
+      "name": "Hero",
+      "blocks": [
+        { "type": "slide" },
+        { "type": "slide" },
+        { "type": "slide" }
+      ]
     }
   ]
 }
