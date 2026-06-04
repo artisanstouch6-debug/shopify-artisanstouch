@@ -15,14 +15,14 @@
       {% if section.settings.image %}
         {{ section.settings.image | image_url: width: 452, height: 622, crop: 'center' | image_tag: class: 'feature-story__arch-img', loading: 'lazy', alt: section.settings.heading }}
       {% else %}
-        <div class="feature-story__arch-img feature-story__arch-placeholder"></div>
+        <img src="{{ 'feature-story-arch.jpg' | asset_url }}" alt="{{ section.settings.heading }}" class="feature-story__arch-img">
       {% endif %}
     </div>
     <div class="feature-story__circle">
       {% if section.settings.circle_image %}
         {{ section.settings.circle_image | image_url: width: 316, height: 316, crop: 'center' | image_tag: class: 'feature-story__circle-img', loading: 'lazy', alt: '' }}
       {% else %}
-        <div class="feature-story__circle-img feature-story__circle-placeholder"></div>
+        <img src="{{ 'feature-story-circle.jpg' | asset_url }}" alt="" class="feature-story__circle-img">
       {% endif %}
     </div>
   </div>

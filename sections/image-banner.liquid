@@ -2,7 +2,7 @@
   {% if section.settings.image %}
     {{ section.settings.image | image_url: width: 2000 | image_tag: class: 'img-banner__img', loading: 'lazy', alt: section.settings.heading | default: '' }}
   {% else %}
-    <div class="img-banner__img img-banner__placeholder"></div>
+    <img src="{{ 'image-banner.jpg' | asset_url }}" alt="" class="img-banner__img" loading="lazy">
   {% endif %}
   {% if section.settings.overlay_opacity > 0 %}
     <div class="img-banner__overlay" style="opacity: {{ section.settings.overlay_opacity | divided_by: 100.0 }};"></div>

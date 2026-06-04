@@ -21,7 +21,7 @@
         {% if section.settings.card_1_image %}
           {{ section.settings.card_1_image | image_url: width: 320, height: 420, crop: 'center' | image_tag: class: 'cat-card__img', loading: 'lazy', alt: section.settings.card_1_title }}
         {% else %}
-          <div class="cat-card__img-placeholder"></div>
+          <img src="{{ 'bridal-jewellery.jpg' | asset_url }}" alt="{{ section.settings.card_1_title }}" class="cat-card__img">
         {% endif %}
       </div>
     </div>
@@ -32,7 +32,7 @@
         {% if section.settings.card_2_image %}
           {{ section.settings.card_2_image | image_url: width: 260, height: 360, crop: 'center' | image_tag: class: 'cat-card__img cat-card__img--pill', loading: 'lazy', alt: section.settings.card_2_title }}
         {% else %}
-          <div class="cat-card__img-placeholder cat-card__img-placeholder--pill"></div>
+          <img src="{{ 'costume-jewellery.jpg' | asset_url }}" alt="{{ section.settings.card_2_title }}" class="cat-card__img cat-card__img--pill">
         {% endif %}
       </div>
       <div class="cat-card__text cat-card__text--right">

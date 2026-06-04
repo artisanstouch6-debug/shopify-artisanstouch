@@ -1,13 +1,13 @@
 <footer class="site-footer full-width">
   <div class="site-footer__inner">
     <div class="site-footer__col site-footer__col--brand">
-      {% if section.settings.logo %}
-        <a href="{{ routes.root_url }}" class="site-footer__logo-link">
+      <a href="{{ routes.root_url }}" class="site-footer__logo-link">
+        {% if section.settings.logo %}
           {{ section.settings.logo | image_url: width: 200 | image_tag: alt: shop.name, class: 'site-footer__logo', loading: 'lazy' }}
-        </a>
-      {% else %}
-        <a href="{{ routes.root_url }}" class="site-footer__brand-name">{{ shop.name }}</a>
-      {% endif %}
+        {% else %}
+          <img src="{{ 'at-logo.png' | asset_url }}" alt="{{ shop.name }}" class="site-footer__logo" loading="lazy">
+        {% endif %}
+      </a>
       {% if section.settings.description != blank %}
         <p class="site-footer__brand-desc">{{ section.settings.description }}</p>
       {% endif %}

@@ -21,11 +21,13 @@
             </div>
           </div>
 
-          {% if block.settings.author_image %}
-            <div class="testimonials__portrait">
+          <div class="testimonials__portrait">
+            {% if block.settings.author_image %}
               {{ block.settings.author_image | image_url: width: 245, height: 321, crop: 'center' | image_tag: class: 'testimonials__portrait-img', loading: 'lazy', alt: block.settings.author_name }}
-            </div>
-          {% endif %}
+            {% else %}
+              <img src="{{ 'testimonial-portrait.jpg' | asset_url }}" alt="{{ block.settings.author_name }}" class="testimonials__portrait-img" loading="lazy">
+            {% endif %}
+          </div>
         </div>
       {%- endfor -%}
     </div>

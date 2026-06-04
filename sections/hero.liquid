@@ -3,7 +3,7 @@
     {% if section.settings.background_image %}
       {{ section.settings.background_image | image_url: width: 2000 | image_tag: class: 'hero__bg-img', loading: 'eager', fetchpriority: 'high', alt: '' }}
     {% else %}
-      <div class="hero__bg-placeholder"></div>
+      <img src="{{ 'hero-bg.jpg' | asset_url }}" alt="" class="hero__bg-img" loading="eager" fetchpriority="high">
     {% endif %}
     <div class="hero__overlay"></div>
   </div>
@@ -99,6 +99,7 @@
   .hero__content {
     position: relative;
     z-index: 1;
+    /* 128px header height + 75px gap before heading */
     padding: 203px 120px 80px;
     display: flex;
     flex-direction: column;

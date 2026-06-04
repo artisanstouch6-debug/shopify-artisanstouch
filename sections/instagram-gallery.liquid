@@ -1,11 +1,12 @@
 <div class="insta-gallery">
   <div class="insta-gallery__grid">
+    {%- assign default_insta = 'instagram-1.jpg,instagram-2.jpg,instagram-3.jpg' | split: ',' -%}
     {%- for block in section.blocks -%}
       <div class="insta-gallery__item" {{ block.shopify_attributes }}>
         {% if block.settings.image %}
           {{ block.settings.image | image_url: width: 285, height: 285, crop: 'center' | image_tag: class: 'insta-gallery__img', loading: 'lazy', alt: '' }}
         {% else %}
-          <div class="insta-gallery__img insta-gallery__placeholder"></div>
+          <img src="{{ default_insta[forloop.index0] | asset_url }}" alt="" class="insta-gallery__img" loading="lazy">
         {% endif %}
       </div>
     {%- endfor -%}

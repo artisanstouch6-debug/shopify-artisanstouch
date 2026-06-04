@@ -11,6 +11,9 @@ body {
   flex-direction: column;
   margin: 0;
   min-height: 100svh;
+  font-family: var(--font-primary--family);
+  background-color: var(--color-background);
+  color: var(--color-foreground);
 }
 
 html:has(dialog[scroll-lock][open], details[scroll-lock][open]) {
@@ -47,6 +50,7 @@ dialog {
 p {
   text-wrap: pretty;
 }
+
 p,
 h1,
 h2,
@@ -71,25 +75,11 @@ p:empty {
   margin-block-end: 0;
 }
 
-/** Theme styles below */
-body {
-  font-family: var(--font-primary--family);
-  background-color: var(--color-background);
-  color: var(--color-foreground);
-}
-
-/** Section layout utilities */
-
-/**
- * Setup a grid that enables both full-width and constrained layouts
- * depending on the class of the child elements.
- *
- * By default, a minimum content margin is set on the left and right
- * sides of the section and the content is centered in the viewport to
- * not exceed the maximum page width.
- *
- * When a child element is given the `full-width` class, it will span
- * the entire viewport.
+/** Section layout utilities ─────────────────────────────────────────────────
+ * Each .shopify-section uses a 3-column grid:
+ *   col 1 & 3 = page margin gutters
+ *   col 2     = constrained content
+ * Children with .full-width span all three columns (full viewport).
  */
 .shopify-section {
   --content-width: min(
@@ -99,19 +89,40 @@ body {
   --content-margin: minmax(var(--page-margin), 1fr);
   --content-grid: var(--content-margin) var(--content-width) var(--content-margin);
 
-  /* This is required to make <img> elements work as background images */
   position: relative;
   grid-template-columns: var(--content-grid);
   display: grid;
   width: 100%;
 }
 
-/* Child elements, by default, are constrained to the central column of the grid. */
 .shopify-section > * {
   grid-column: 2;
 }
 
-/* Child elements that use the full-width utility class span the entire viewport. */
 .shopify-section > .full-width {
   grid-column: 1 / -1;
+}
+
+/** Header overlay ────────────────────────────────────────────────────────────
+ * Fixed positioning removes the header from document flow entirely.
+ * The hero section starts at y=0 with the header floating on top.
+ * Non-homepage pages get padding-top so content isn't hidden under the header.
+ */
+.shopify-section-group-header-group {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  width: 100%;
+}
+
+body:not(.template-index) {
+  padding-top: 128px;
+}
+
+@media (max-width: 768px) {
+  body:not(.template-index) {
+    padding-top: 80px;
+  }
 }

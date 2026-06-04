@@ -58,12 +58,17 @@
           </div>
         {%- endfor -%}
       {%- else -%}
-        {%- for i in (1..4) -%}
+        {%- assign demo_images = 'product-rose-gold-ring.jpg,product-gold-necklace.jpg,product-rose-gold-bracelet.jpg,product-diamond-earrings.jpg' | split: ',' -%}
+        {%- assign demo_titles = 'Rose Gold Casual Ring,Gold Wedding Necklace,Rose Gold Bracelet,Diamond Earrings' | split: ',' -%}
+        {%- assign demo_prices = 'LKR 14,000.00,LKR 25,000.00,LKR 10,500.00,LKR 7,800.00' | split: ',' -%}
+        {%- for i in (0..3) -%}
           <div class="pcard">
-            <div class="pcard__img pcard__img--placeholder">{{ 'product-' | append: i | placeholder_svg_tag }}</div>
+            <div class="pcard__image-link">
+              <img src="{{ demo_images[i] | asset_url }}" alt="{{ demo_titles[i] }}" class="pcard__img" loading="lazy">
+            </div>
             <div class="pcard__info">
               <div class="pcard__row">
-                <span class="pcard__title">Sample Product {{ i }}</span>
+                <span class="pcard__title">{{ demo_titles[i] }}</span>
                 <div class="pcard__actions">
                   <button class="pcard__action-btn" aria-label="Wishlist">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -72,7 +77,7 @@
                   </button>
                 </div>
               </div>
-              <p class="pcard__price">LKR 0.00</p>
+              <p class="pcard__price">{{ demo_prices[i] }}</p>
             </div>
           </div>
         {%- endfor -%}
