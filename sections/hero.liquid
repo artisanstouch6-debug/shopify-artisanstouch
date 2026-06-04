@@ -1,13 +1,17 @@
 <div class="hero full-width" id="hero-{{ section.id }}">
 
   <div class="hero__carousel">
+    {%- assign default_slides = 'hero-bg.jpg,hero-slide-2.jpg,hero-slide-3.jpg' | split: ',' -%}
     {%- if section.blocks.size > 0 -%}
       {%- for block in section.blocks -%}
         <div class="hero__slide{% if forloop.first %} hero__slide--active{% endif %}" {{ block.shopify_attributes }}>
           {%- if block.settings.image -%}
-            {{ block.settings.image | image_url: width: 2000 | image_tag: class: 'hero__slide-img', loading: 'eager', fetchpriority: 'high', alt: '' }}
+            {{ block.settings.image | image_url: width: 2000 | image_tag: class: 'hero__slide-img', loading: forloop.first | default: 'lazy', fetchpriority: forloop.first | default: 'auto', alt: '' }}
           {%- else -%}
-            <img src="{{ 'hero-bg.jpg' | asset_url }}" alt="" class="hero__slide-img" loading="eager" fetchpriority="high">
+            {%- assign default_img = default_slides[forloop.index0] | default: 'hero-bg.jpg' -%}
+            <img src="{{ default_img | asset_url }}" alt="" class="hero__slide-img"
+              loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+              fetchpriority="{% if forloop.first %}high{% else %}auto{% endif %}">
           {%- endif -%}
           <div class="hero__overlay"></div>
         </div>
@@ -86,6 +90,69 @@
   {%- endif -%}
 
 </div>
+
+<script>
+(function () {
+  var heroEl  = document.getElementById('hero-{{ section.id }}');
+  if (!heroEl) return;
+
+  var slides  = heroEl.querySelectorAll('.hero__slide');
+  var dots    = heroEl.querySelectorAll('.hero__dot[data-slide]');
+  var current = 0;
+  var speed   = {{ section.settings.autoplay_speed | default: 5000 }};
+  var doAuto  = {{ section.settings.autoplay | default: true }};
+  var timer;
+
+  function goTo(idx) {
+    slides[current].classList.remove('hero__slide--active');
+    if (dots[current]) {
+      dots[current].classList.remove('hero__dot--active');
+      dots[current].setAttribute('aria-selected', 'false');
+    }
+    current = (idx + slides.length) % slides.length;
+    slides[current].classList.add('hero__slide--active');
+    if (dots[current]) {
+      dots[current].classList.add('hero__dot--active');
+      dots[current].setAttribute('aria-selected', 'true');
+    }
+  }
+
+  function startTimer() {
+    clearInterval(timer);
+    if (doAuto) {
+      timer = setInterval(function () { goTo(current + 1); }, speed);
+    }
+  }
+
+  /* Dot click navigation */
+  dots.forEach(function (dot) {
+    dot.addEventListener('click', function () {
+      goTo(parseInt(dot.getAttribute('data-slide'), 10));
+      startTimer();
+    });
+  });
+
+  /* Start autoplay only if there are multiple slides */
+  if (slides.length > 1) {
+    startTimer();
+  }
+
+  /* Scroll-reveal for .reveal elements on the page */
+  if ('IntersectionObserver' in window) {
+    var obs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) {
+          e.target.classList.add('revealed');
+          obs.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.15 });
+    document.querySelectorAll('.reveal').forEach(function (el) { obs.observe(el); });
+  } else {
+    document.querySelectorAll('.reveal').forEach(function (el) { el.classList.add('revealed'); });
+  }
+})();
+</script>
 
 {% stylesheet %}
   .hero {
