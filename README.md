@@ -167,7 +167,7 @@ Skeleton Theme is open-sourced under the [MIT](./LICENSE.md) License.
 ### Login / Deploy
 
 ```bash
-shopify theme push --store=ucqv7z-0z.myshopify.com --theme=157648781557 --nodelete
+shopify theme push --store=ucqv7z-0z.myshopify.com --theme=154964525194 --nodelete
 ```
 
 ### Run (local dev)
