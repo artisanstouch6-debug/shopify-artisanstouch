@@ -1,27 +1,57 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
     "hero": {
       "type": "hero",
+      "blocks": {
+        "slide_yWjCJh": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/Rectangle_2.png"
+          }
+        },
+        "slide_2": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/Property_1_photo_2.png"
+          }
+        },
+        "slide_3": {
+          "type": "slide",
+          "settings": {
+            "image": "shopify://shop_images/Property_1_photo_2.png"
+          }
+        }
+      },
+      "block_order": [
+        "slide_yWjCJh",
+        "slide_2",
+        "slide_3"
+      ],
       "settings": {
         "autoplay": true,
         "autoplay_speed": 5000,
         "heading": "Jewellery to Make an Impression for all the Occasion",
         "subheading": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec tristique suscipit quam, in sagittis massa porttitor nec. Vivamus sed turpis diam.",
         "button_label": "SHOP NOW",
+        "button_url": "",
         "stat_1_number": "12",
         "stat_1_label": "All Over Country",
         "stat_2_number": "150+",
         "stat_2_label": "Product Available",
         "stat_3_number": "1K+",
         "stat_3_label": "Product Reviews",
-        "explore_label": "Explore All"
-      },
-      "blocks": {
-        "slide_1": { "type": "slide", "settings": {} },
-        "slide_2": { "type": "slide", "settings": {} },
-        "slide_3": { "type": "slide", "settings": {} }
-      },
-      "block_order": ["slide_1", "slide_2", "slide_3"]
+        "explore_label": "Explore All",
+        "explore_url": ""
+      }
     },
     "category_cards": {
       "type": "category-cards",
@@ -31,10 +61,12 @@
         "card_1_description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam condimentum, enim et scelerisque rutrum, purus ligula iaculis diam,",
         "card_1_bg": "#ffe4e4",
         "card_1_button": "SHOP NOW",
+        "card_1_url": "",
         "card_2_title": "Costume Jewellery",
         "card_2_description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam condimentum, enim et scelerisque rutrum, purus ligula iaculis diam, ac pretium justo mi elementum turpis.",
         "card_2_bg": "#fff6e4",
-        "card_2_button": "SHOP NOW"
+        "card_2_button": "SHOP NOW",
+        "card_2_url": ""
       }
     },
     "new_arrivals": {
@@ -42,6 +74,7 @@
       "settings": {
         "heading": "New Arrival",
         "subheading": "Anyone can get dresses up and glamorous, but it is how people dress in their days off.",
+        "collection": "",
         "products_count": 4
       }
     },
@@ -50,7 +83,8 @@
       "settings": {
         "heading": "Creates Lasting Memories of Each occasion",
         "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras consectetur, massa sed viverra aliquet, sem justo finibus eros, semper suscipit tellus neque sed dui.",
-        "button_label": "SHOP NOW"
+        "button_label": "SHOP NOW",
+        "button_url": ""
       }
     },
     "bestseller": {
@@ -58,20 +92,19 @@
       "settings": {
         "heading": "Bestseller Product",
         "subheading": "It is a long established fact that a reader will be distracted by the readable content.",
+        "collection": "",
         "products_count": 4
       }
     },
     "image_banner": {
       "type": "image-banner",
       "settings": {
-        "overlay_opacity": 0
+        "overlay_opacity": 0,
+        "heading": ""
       }
     },
     "testimonials": {
       "type": "testimonials",
-      "settings": {
-        "heading": "What People Say"
-      },
       "blocks": {
         "review_1": {
           "type": "review",
@@ -82,17 +115,37 @@
           }
         }
       },
-      "block_order": ["review_1"]
+      "block_order": [
+        "review_1"
+      ],
+      "settings": {
+        "heading": "What People Say"
+      }
     },
     "instagram_gallery": {
       "type": "instagram-gallery",
-      "settings": {},
       "blocks": {
-        "photo_1": { "type": "photo", "settings": {} },
-        "photo_2": { "type": "photo", "settings": {} },
-        "photo_3": { "type": "photo", "settings": {} }
+        "photo_1": {
+          "type": "photo",
+          "settings": {}
+        },
+        "photo_2": {
+          "type": "photo",
+          "settings": {}
+        },
+        "photo_3": {
+          "type": "photo",
+          "settings": {}
+        }
       },
-      "block_order": ["photo_1", "photo_2", "photo_3"]
+      "block_order": [
+        "photo_1",
+        "photo_2",
+        "photo_3"
+      ],
+      "settings": {
+        "instagram_url": ""
+      }
     }
   },
   "order": [
