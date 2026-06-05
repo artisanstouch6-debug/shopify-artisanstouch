@@ -123,8 +123,10 @@
   .cat-card__text--right {
     left: auto;
     right: 0;
-    top: 59px;
-    width: 40.2%;
+    top: 36px;
+    width: 52%;
+    padding-right: 20px;
+    padding-left:10px;
   }
 
   .cat-card__title {
@@ -145,7 +147,7 @@
   }
 
   /* Card 1 only: cap desc width so it doesn't run behind the right-side product image */
-  .cat-card--left .cat-card__desc { width: 48%; }
+  .cat-card--left .cat-card__desc { width: 56%; }
 
   .at-btn {
     display: inline-flex;
@@ -174,19 +176,19 @@
 
   .cat-card--left .at-btn {
     position: absolute;
-    bottom: 100px;
+    bottom: 80px;
     left: 6.7%;
   }
 
   .cat-card--right .at-btn {
     position: absolute;
-    bottom: 100px;
-    left: 6.7%;
+    bottom: 76px;
+    right: 24px;
   }
 
   .cat-card__image--right {
     position: absolute;
-    right: 0;
+    right: -10px;
     top: 137px;
     width: 56.1%;
     height: 419px;
@@ -235,10 +237,10 @@
     .cat-card__bg               { width: 387px; }
     .cat-card--right .cat-card__bg { width: 378px; height: 510px; }
     .cat-card__text             { left: 38px; width: 314px; }
-    .cat-card__text--right      { width: 227px; }
+    .cat-card__text--right      { width: 328px; padding-right: 20px; }
     .cat-card--left .cat-card__desc { width: 151px; }
-    .cat-card--left .at-btn,
-    .cat-card--right .at-btn    { left: 38px; }
+    .cat-card--left .at-btn     { left: 38px; }
+    .cat-card--right .at-btn    { right: 24px; left: auto; }
     .cat-card__image--right     { width: 317px; }
     .cat-card__image--left      { width: 256px; }
   }

@@ -13,25 +13,27 @@
     </div>
 
     <div class="site-header__actions">
-      <a href="{{ routes.search_url }}" class="site-header__icon" aria-label="Search">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <button class="site-header__icon js-at-modal" data-modal="search" aria-label="Search" aria-expanded="false">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
           <circle cx="11" cy="11" r="8" stroke="white" stroke-width="1.5"/>
           <path d="M21 21L16.65 16.65" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
         </svg>
-      </a>
+      </button>
 
-      <a href="{{ routes.cart_url }}" class="site-header__icon site-header__cart" aria-label="{{ 'cart.title' | t }}">
+      <button class="site-header__icon site-header__cart js-at-modal" data-modal="cart" aria-label="{{ 'cart.title' | t }}" aria-expanded="false">
         {% if cart.item_count > 0 %}
-          <span class="site-header__cart-count">{{ cart.item_count }}</span>
+          <span class="site-header__cart-count js-cart-badge">{{ cart.item_count }}</span>
+        {% else %}
+          <span class="site-header__cart-count js-cart-badge" style="display:none;">0</span>
         {% endif %}
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
           <path d="M6 2L3 6V20C3 21.1 3.9 22 5 22H19C20.1 22 21 21.1 21 20V6L18 2H6Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
           <path d="M3 6H21" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
           <path d="M16 10C16 12.2 14.2 14 12 14C9.8 14 8 12.2 8 10" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
-      </a>
+      </button>
 
-      <button class="site-header__hamburger" aria-label="Open menu" aria-expanded="false">
+      <button class="site-header__hamburger js-at-modal" data-modal="nav" aria-label="Open menu" aria-expanded="false">
         <span></span>
         <span class="site-header__hamburger-short"></span>
       </button>
@@ -39,51 +41,353 @@
   </div>
 </header>
 
+{%- comment -%} ── NAV MODAL ── {%- endcomment -%}
+<div id="at-modal-nav" class="at-modal" role="dialog" aria-modal="true" aria-label="Navigation menu" aria-hidden="true">
+  <div class="at-modal__bar">
+    <div class="at-modal__bar-logo">
+      {% if section.settings.logo %}
+        <a href="{{ routes.root_url }}">{{ section.settings.logo | image_url: width: 400 | image_tag: alt: shop.name, class: 'at-modal__logo-img', loading: 'lazy' }}</a>
+      {% else %}
+        <a href="{{ routes.root_url }}"><img src="{{ 'at-logo.png' | asset_url }}" alt="{{ shop.name }}" class="at-modal__logo-img"></a>
+      {% endif %}
+    </div>
+    <div class="at-modal__bar-actions">
+      <button class="at-modal__icon js-at-modal" data-modal="search" aria-label="Search">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="8" stroke="white" stroke-width="1.5"/><path d="M21 21L16.65 16.65" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </button>
+      <button class="at-modal__icon at-modal__cart-btn js-at-modal" data-modal="cart" aria-label="Cart">
+        {% if cart.item_count > 0 %}<span class="site-header__cart-count js-cart-badge">{{ cart.item_count }}</span>{% else %}<span class="site-header__cart-count js-cart-badge" style="display:none;">0</span>{% endif %}
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M6 2L3 6V20C3 21.1 3.9 22 5 22H19C20.1 22 21 21.1 21 20V6L18 2H6Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 6H21" stroke="white" stroke-width="1.5" stroke-linecap="round"/><path d="M16 10C16 12.2 14.2 14 12 14C9.8 14 8 12.2 8 10" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <button class="at-modal__icon js-at-close" aria-label="Close menu">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18" stroke="white" stroke-width="1.5" stroke-linecap="round"/><path d="M6 6L18 18" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <nav class="at-modal__nav">
+    <ul class="at-modal__nav-list">
+      {% if linklists[section.settings.menu].links.size > 0 %}
+        {% for link in linklists[section.settings.menu].links %}
+          <li><a href="{{ link.url }}" class="at-modal__nav-link">{{ link.title }}</a></li>
+        {% endfor %}
+      {% else %}
+        <li><a href="{{ routes.root_url }}" class="at-modal__nav-link">Home</a></li>
+        <li><a href="/collections/bridal-jewellery" class="at-modal__nav-link">Bridal Jewellery</a></li>
+        <li><a href="/collections/costume-jewellery" class="at-modal__nav-link">Costume Jewellery</a></li>
+        <li><a href="/pages/contact" class="at-modal__nav-link">Contact Us</a></li>
+        <li><a href="/pages/about" class="at-modal__nav-link">About Us</a></li>
+      {% endif %}
+    </ul>
+  </nav>
+
+  <div class="at-modal__social">
+    <a href="{{ section.settings.social_facebook | default: '#' }}" class="at-modal__social-icon" aria-label="Facebook" {% if section.settings.social_facebook != blank %}target="_blank" rel="noopener"{% endif %}>
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>
+    </a>
+    <a href="{{ section.settings.social_instagram | default: '#' }}" class="at-modal__social-icon" aria-label="Instagram" {% if section.settings.social_instagram != blank %}target="_blank" rel="noopener"{% endif %}>
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><circle cx="17.5" cy="6.5" r="0.5" fill="white" stroke="none"/></svg>
+    </a>
+    <a href="{{ section.settings.social_tiktok | default: '#' }}" class="at-modal__social-icon" aria-label="TikTok" {% if section.settings.social_tiktok != blank %}target="_blank" rel="noopener"{% endif %}>
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.34 6.34 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.78 1.54V6.79a4.85 4.85 0 01-1-.1z"/></svg>
+    </a>
+    <a href="{{ section.settings.social_youtube | default: '#' }}" class="at-modal__social-icon" aria-label="YouTube" {% if section.settings.social_youtube != blank %}target="_blank" rel="noopener"{% endif %}>
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M22.54 6.42a2.78 2.78 0 00-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46a2.78 2.78 0 00-1.95 1.96A29 29 0 001 12a29 29 0 00.46 5.58A2.78 2.78 0 003.41 19.6C5.12 20.06 12 20.06 12 20.06s6.88 0 8.59-.46a2.78 2.78 0 001.95-1.96A29 29 0 0023 12a29 29 0 00-.46-5.58z"/><polygon points="9.75,15.02 15.5,12 9.75,8.98 9.75,15.02" fill="#222"/></svg>
+    </a>
+  </div>
+</div>
+
+{%- comment -%} ── SEARCH MODAL ── {%- endcomment -%}
+<div id="at-modal-search" class="at-modal" role="dialog" aria-modal="true" aria-label="Search" aria-hidden="true">
+  <div class="at-modal__bar">
+    <div class="at-modal__bar-logo">
+      {% if section.settings.logo %}
+        <a href="{{ routes.root_url }}">{{ section.settings.logo | image_url: width: 400 | image_tag: alt: shop.name, class: 'at-modal__logo-img', loading: 'lazy' }}</a>
+      {% else %}
+        <a href="{{ routes.root_url }}"><img src="{{ 'at-logo.png' | asset_url }}" alt="{{ shop.name }}" class="at-modal__logo-img"></a>
+      {% endif %}
+    </div>
+    <div class="at-modal__bar-actions">
+      <button class="at-modal__icon js-at-modal" data-modal="search" aria-label="Search" aria-current="true">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="8" stroke="white" stroke-width="1.5"/><path d="M21 21L16.65 16.65" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </button>
+      <button class="at-modal__icon at-modal__cart-btn js-at-modal" data-modal="cart" aria-label="Cart">
+        {% if cart.item_count > 0 %}<span class="site-header__cart-count js-cart-badge">{{ cart.item_count }}</span>{% else %}<span class="site-header__cart-count js-cart-badge" style="display:none;">0</span>{% endif %}
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M6 2L3 6V20C3 21.1 3.9 22 5 22H19C20.1 22 21 21.1 21 20V6L18 2H6Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 6H21" stroke="white" stroke-width="1.5" stroke-linecap="round"/><path d="M16 10C16 12.2 14.2 14 12 14C9.8 14 8 12.2 8 10" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <button class="at-modal__icon js-at-close" aria-label="Close">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18" stroke="white" stroke-width="1.5" stroke-linecap="round"/><path d="M6 6L18 18" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="at-modal__search-area">
+    <form action="{{ routes.search_url }}" method="get" class="at-modal__search-form" role="search">
+      <input type="search" name="q" placeholder="What are you looking for?" class="at-modal__search-input" autocomplete="off" aria-label="Search the store">
+      <button type="submit" class="at-modal__search-submit" aria-label="Submit search">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="8" stroke="white" stroke-width="1.5"/><path d="M21 21L16.65 16.65" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </button>
+    </form>
+  </div>
+
+  <div class="at-modal__social">
+    <a href="{{ section.settings.social_facebook | default: '#' }}" class="at-modal__social-icon" aria-label="Facebook"><svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg></a>
+    <a href="{{ section.settings.social_instagram | default: '#' }}" class="at-modal__social-icon" aria-label="Instagram"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><circle cx="17.5" cy="6.5" r="0.5" fill="white" stroke="none"/></svg></a>
+    <a href="{{ section.settings.social_tiktok | default: '#' }}" class="at-modal__social-icon" aria-label="TikTok"><svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.34 6.34 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.78 1.54V6.79a4.85 4.85 0 01-1-.1z"/></svg></a>
+    <a href="{{ section.settings.social_youtube | default: '#' }}" class="at-modal__social-icon" aria-label="YouTube"><svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M22.54 6.42a2.78 2.78 0 00-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46a2.78 2.78 0 00-1.95 1.96A29 29 0 001 12a29 29 0 00.46 5.58A2.78 2.78 0 003.41 19.6C5.12 20.06 12 20.06 12 20.06s6.88 0 8.59-.46a2.78 2.78 0 001.95-1.96A29 29 0 0023 12a29 29 0 00-.46-5.58z"/><polygon points="9.75,15.02 15.5,12 9.75,8.98 9.75,15.02" fill="#222"/></svg></a>
+  </div>
+</div>
+
+{%- comment -%} ── CART MODAL ── {%- endcomment -%}
+<div id="at-modal-cart" class="at-modal" role="dialog" aria-modal="true" aria-label="Shopping cart" aria-hidden="true">
+  <div class="at-modal__bar">
+    <div class="at-modal__bar-logo">
+      {% if section.settings.logo %}
+        <a href="{{ routes.root_url }}">{{ section.settings.logo | image_url: width: 400 | image_tag: alt: shop.name, class: 'at-modal__logo-img', loading: 'lazy' }}</a>
+      {% else %}
+        <a href="{{ routes.root_url }}"><img src="{{ 'at-logo.png' | asset_url }}" alt="{{ shop.name }}" class="at-modal__logo-img"></a>
+      {% endif %}
+    </div>
+    <div class="at-modal__bar-actions">
+      <button class="at-modal__icon js-at-modal" data-modal="search" aria-label="Search">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="8" stroke="white" stroke-width="1.5"/><path d="M21 21L16.65 16.65" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </button>
+      <button class="at-modal__icon at-modal__cart-btn js-at-modal" data-modal="cart" aria-label="Cart" aria-current="true">
+        {% if cart.item_count > 0 %}<span class="site-header__cart-count js-cart-badge">{{ cart.item_count }}</span>{% else %}<span class="site-header__cart-count js-cart-badge" style="display:none;">0</span>{% endif %}
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M6 2L3 6V20C3 21.1 3.9 22 5 22H19C20.1 22 21 21.1 21 20V6L18 2H6Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 6H21" stroke="white" stroke-width="1.5" stroke-linecap="round"/><path d="M16 10C16 12.2 14.2 14 12 14C9.8 14 8 12.2 8 10" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <button class="at-modal__icon js-at-close" aria-label="Close cart">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18" stroke="white" stroke-width="1.5" stroke-linecap="round"/><path d="M6 6L18 18" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="at-modal__cart-area">
+    <h2 class="at-modal__cart-title">Shopping Cart</h2>
+    <div id="at-cart-content">
+      {% if cart.item_count == 0 %}
+        <p class="at-cart-empty">Your cart is empty.</p>
+      {% else %}
+        <div class="at-cart-items">
+          {% for item in cart.items %}
+            <div class="at-cart-item" data-key="{{ item.key }}">
+              <div class="at-cart-item__img">
+                {% if item.image %}
+                  {{ item.image | image_url: width: 120, height: 120, crop: 'center' | image_tag: alt: item.title, loading: 'lazy' }}
+                {% endif %}
+              </div>
+              <div class="at-cart-item__info">
+                <p class="at-cart-item__title">{{ item.product.title }}</p>
+                {% unless item.variant.title == 'Default Title' %}
+                  <p class="at-cart-item__variant">{{ item.variant.title }}</p>
+                {% endunless %}
+                <div class="at-cart-item__qty-row">
+                  <span>Qty:</span>
+                  <div class="at-cart-item__qty-ctrl">
+                    <button class="js-cart-qty" data-key="{{ item.key }}" data-qty="{{ item.quantity | minus: 1 }}" aria-label="Decrease">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M5 12H19" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+                    </button>
+                    <span class="at-cart-item__qty-num">{{ item.quantity }}</span>
+                    <button class="js-cart-qty" data-key="{{ item.key }}" data-qty="{{ item.quantity | plus: 1 }}" aria-label="Increase">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              <p class="at-cart-item__price">{{ item.line_price | money }}</p>
+              <button class="at-cart-item__remove js-cart-remove" data-key="{{ item.key }}" aria-label="Remove {{ item.title }}">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+            </div>
+          {% endfor %}
+        </div>
+
+        <div class="at-cart-totals">
+          <div class="at-cart-totals__row">
+            <span>Total Amount</span>
+            <span class="js-cart-total">{{ cart.total_price | money }}</span>
+          </div>
+          <div class="at-cart-totals__row">
+            <span>Shipping Fee</span>
+            <span>Calculated at checkout</span>
+          </div>
+          <div class="at-cart-totals__row at-cart-totals__row--bold">
+            <span>Sub Total Amount</span>
+            <span class="js-cart-subtotal">{{ cart.total_price | money }}</span>
+          </div>
+        </div>
+        <div class="at-cart-footer">
+          <a href="{{ routes.checkout }}" class="at-btn at-cart-checkout">Proceed to Checkout</a>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
 <script>
   (function () {
-    var lastY   = 0;
-    var ticking = false;
-
-    function run() {
-      var y      = window.pageYOffset || document.documentElement.scrollTop || 0;
+    /* ── Scroll-hide behaviour ── */
+    var lastY = 0, ticking = false;
+    function runScroll() {
+      var y = window.pageYOffset || 0;
       var header = document.querySelector('.site-header');
-      var body   = document.body;
-
-      /* Transparent at top; dark glass when scrolled */
+      var body = document.body;
       if (y > 60) {
         if (header) header.classList.add('site-header--scrolled');
       } else {
         if (header) header.classList.remove('site-header--scrolled');
         body.classList.remove('nav-hidden');
-        lastY   = y;
-        ticking = false;
-        return;
+        lastY = y; ticking = false; return;
       }
+      if (y > lastY + 5) body.classList.add('nav-hidden');
+      else if (y < lastY - 5) body.classList.remove('nav-hidden');
+      lastY = y; ticking = false;
+    }
+    window.addEventListener('scroll', function () {
+      if (!ticking) { ticking = true; requestAnimationFrame(runScroll); }
+    }, { passive: true });
+    runScroll();
 
-      /* Hide on scroll-down, show on scroll-up */
-      if (y > lastY + 5) {
-        body.classList.add('nav-hidden');
-      } else if (y < lastY - 5) {
-        body.classList.remove('nav-hidden');
-      }
+    /* ── Modal system ── */
+    var modals = {
+      nav:    document.getElementById('at-modal-nav'),
+      search: document.getElementById('at-modal-search'),
+      cart:   document.getElementById('at-modal-cart')
+    };
 
-      lastY   = y;
-      ticking = false;
+    function openModal(name) {
+      Object.keys(modals).forEach(function(k) {
+        var m = modals[k];
+        if (!m) return;
+        if (k === name) {
+          m.classList.add('at-modal--open');
+          m.setAttribute('aria-hidden', 'false');
+          if (k === 'search') {
+            setTimeout(function() {
+              var inp = m.querySelector('.at-modal__search-input');
+              if (inp) inp.focus();
+            }, 200);
+          }
+        } else {
+          m.classList.remove('at-modal--open');
+          m.setAttribute('aria-hidden', 'true');
+        }
+      });
+      document.body.classList.add('at-modal-open');
     }
 
-    window.addEventListener('scroll', function () {
-      if (!ticking) {
-        ticking = true;
-        requestAnimationFrame(run);
-      }
-    }, { passive: true });
+    function closeAll() {
+      Object.values(modals).forEach(function(m) {
+        if (!m) return;
+        m.classList.remove('at-modal--open');
+        m.setAttribute('aria-hidden', 'true');
+      });
+      document.body.classList.remove('at-modal-open');
+    }
 
-    /* Set correct initial state */
-    run();
+    /* open triggers (header + inside modals) */
+    document.addEventListener('click', function(e) {
+      var btn = e.target.closest('.js-at-modal');
+      if (btn) {
+        var name = btn.dataset.modal;
+        if (modals[name] && modals[name].classList.contains('at-modal--open')) {
+          closeAll();
+        } else {
+          openModal(name);
+        }
+        return;
+      }
+      if (e.target.closest('.js-at-close')) { closeAll(); return; }
+    });
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') closeAll();
+    });
+
+    /* ── AJAX cart ── */
+    var moneyFormat = {{ shop.money_format | json }};
+
+    function formatMoney(cents) {
+      return moneyFormat.replace('{{amount}}', (cents / 100).toFixed(2))
+                        .replace('{{amount_no_decimals}}', Math.round(cents / 100));
+    }
+
+    function refreshBadges(count) {
+      document.querySelectorAll('.js-cart-badge').forEach(function(el) {
+        el.textContent = count;
+        el.style.display = count > 0 ? '' : 'none';
+      });
+    }
+
+    function renderCartContent(cart) {
+      var el = document.getElementById('at-cart-content');
+      if (!el) return;
+      if (cart.item_count === 0) {
+        el.innerHTML = '<p class="at-cart-empty">Your cart is empty.</p>';
+        return;
+      }
+      var items = cart.items.map(function(item) {
+        var img = item.image ? '<img src="' + item.image + '" alt="" loading="lazy">' : '';
+        var variant = (item.variant_title && item.variant_title !== 'Default Title')
+          ? '<p class="at-cart-item__variant">' + item.variant_title + '</p>' : '';
+        return '<div class="at-cart-item" data-key="' + item.key + '">' +
+          '<div class="at-cart-item__img">' + img + '</div>' +
+          '<div class="at-cart-item__info">' +
+            '<p class="at-cart-item__title">' + item.product_title + '</p>' + variant +
+            '<div class="at-cart-item__qty-row"><span>Qty:</span>' +
+              '<div class="at-cart-item__qty-ctrl">' +
+                '<button class="js-cart-qty" data-key="' + item.key + '" data-qty="' + (item.quantity - 1) + '" aria-label="Decrease"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M5 12H19" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></button>' +
+                '<span class="at-cart-item__qty-num">' + item.quantity + '</span>' +
+                '<button class="js-cart-qty" data-key="' + item.key + '" data-qty="' + (item.quantity + 1) + '" aria-label="Increase"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></button>' +
+              '</div></div>' +
+          '</div>' +
+          '<p class="at-cart-item__price">' + formatMoney(item.line_price) + '</p>' +
+          '<button class="at-cart-item__remove js-cart-remove" data-key="' + item.key + '" aria-label="Remove"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>' +
+        '</div>';
+      }).join('');
+
+      var totals = '<div class="at-cart-totals">' +
+        '<div class="at-cart-totals__row"><span>Total Amount</span><span class="js-cart-total">' + formatMoney(cart.total_price) + '</span></div>' +
+        '<div class="at-cart-totals__row"><span>Shipping Fee</span><span>Calculated at checkout</span></div>' +
+        '<div class="at-cart-totals__row at-cart-totals__row--bold"><span>Sub Total Amount</span><span class="js-cart-subtotal">' + formatMoney(cart.total_price) + '</span></div>' +
+        '</div>' +
+        '<div class="at-cart-footer"><a href="/checkout" class="at-btn at-cart-checkout">Proceed to Checkout</a></div>';
+
+      el.innerHTML = '<div class="at-cart-items">' + items + '</div>' + totals;
+    }
+
+    function cartChange(key, qty) {
+      fetch('/cart/change.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+        body: JSON.stringify({ id: key, quantity: qty })
+      })
+      .then(function(r) { return r.json(); })
+      .then(function(cart) {
+        refreshBadges(cart.item_count);
+        renderCartContent(cart);
+      });
+    }
+
+    document.addEventListener('click', function(e) {
+      var qtyBtn = e.target.closest('.js-cart-qty');
+      if (qtyBtn) {
+        e.preventDefault();
+        var qty = parseInt(qtyBtn.dataset.qty, 10);
+        cartChange(qtyBtn.dataset.key, Math.max(0, qty));
+        return;
+      }
+      var removeBtn = e.target.closest('.js-cart-remove');
+      if (removeBtn) {
+        e.preventDefault();
+        cartChange(removeBtn.dataset.key, 0);
+      }
+    });
   })();
 </script>
 
 {% stylesheet %}
+  /* ── Header ── */
   .site-header {
     position: relative;
     grid-column: 1 / -1;
@@ -94,14 +398,13 @@
     -webkit-backdrop-filter: none;
     transition: background-color 0.35s ease, transform 0.35s ease, backdrop-filter 0.35s ease;
     will-change: transform;
+    z-index: 100;
   }
-
   .site-header--scrolled {
     background-color: rgba(20, 10, 0, 0.75);
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
   }
-
   .site-header__inner {
     display: flex;
     align-items: center;
@@ -111,110 +414,212 @@
     max-width: 1440px;
     margin: 0 auto;
   }
-
-  .site-header__logo-link {
-    display: flex;
-    align-items: center;
-    height: 100%;
-  }
-
-  .site-header__logo-img {
-    height: 100px;
-    width: auto;
-    display: block;
-    object-fit: contain;
-    max-width: 240px;
-  }
-
-  .site-header__logo-text {
-    font-family: var(--font-heading);
-    font-size: 1.5rem;
-    color: white;
-    text-decoration: none;
-    font-weight: 600;
-    letter-spacing: 0.02em;
-  }
-
-  .site-header__actions {
-    display: flex;
-    align-items: center;
-    gap: 18px;
-  }
-
+  .site-header__logo-link { display: flex; align-items: center; height: 100%; }
+  .site-header__logo-img { height: 100px; width: auto; display: block; object-fit: contain; max-width: 240px; }
+  .site-header__actions { display: flex; align-items: center; gap: 18px; }
   .site-header__icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 24px;
-    height: 24px;
-    text-decoration: none;
-    position: relative;
-    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    width: 24px; height: 24px; text-decoration: none; position: relative;
+    flex-shrink: 0; background: none; border: none; cursor: pointer; padding: 0;
   }
-
   .site-header__cart { position: relative; }
-
   .site-header__cart-count {
-    position: absolute;
-    top: -8px;
-    right: -8px;
-    background-color: var(--coral-pink, #ff9696);
-    color: white;
-    font-size: 10px;
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: var(--font-body);
-    font-weight: 600;
+    position: absolute; top: -8px; right: -8px;
+    background-color: var(--coral-pink, #ff9696); color: white;
+    font-size: 10px; width: 16px; height: 16px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-body); font-weight: 600; pointer-events: none;
   }
-
   .site-header__hamburger {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    align-items: flex-end;
-    justify-content: center;
-    width: 27px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 0;
-    flex-shrink: 0;
+    display: flex; flex-direction: column; gap: 8px; align-items: flex-end;
+    justify-content: center; width: 27px; background: none; border: none;
+    cursor: pointer; padding: 0; flex-shrink: 0;
   }
-
-  .site-header__hamburger span {
-    display: block;
-    height: 4px;
-    width: 100%;
-    background-color: white;
-    border-radius: 10px;
-  }
-
+  .site-header__hamburger span { display: block; height: 4px; width: 100%; background-color: white; border-radius: 10px; }
   .site-header__hamburger-short { width: 18px !important; }
 
-  @media (max-width: 1100px) {
-    .site-header__inner { padding: 0 40px; }
+  /* ── Modals ── */
+  .at-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 150;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    display: flex;
+    flex-direction: column;
+    transform: translateY(-100%);
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+    will-change: transform, opacity;
+    overflow: hidden;
+  }
+  .at-modal--open {
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: all;
+  }
+  body.at-modal-open { overflow: hidden; }
+
+  /* Modal bar */
+  .at-modal__bar {
+    display: flex; align-items: center; justify-content: space-between;
+    height: 128px; padding: 0 120px; width: 100%; flex-shrink: 0;
+    max-width: 1440px; margin: 0 auto;
+  }
+  .at-modal__logo-img { height: 100px; width: auto; display: block; object-fit: contain; max-width: 220px; }
+  .at-modal__bar-actions { display: flex; align-items: center; gap: 32px; }
+  .at-modal__icon {
+    display: flex; align-items: center; justify-content: center;
+    width: 24px; height: 24px; background: none; border: none;
+    cursor: pointer; padding: 0; position: relative; flex-shrink: 0;
+  }
+  .at-modal__cart-btn { position: relative; }
+
+  /* Nav modal */
+  .at-modal__nav { flex: 1; display: flex; align-items: center; justify-content: center; }
+  .at-modal__nav-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 21px; text-align: center; }
+  .at-modal__nav-link {
+    font-family: 'Playfair Display', var(--font-heading), serif;
+    font-size: 32px; font-weight: 400; color: #ffc4c4;
+    text-decoration: none; display: block;
+    transition: color 0.2s, transform 0.2s;
+  }
+  .at-modal__nav-link:hover { color: white; transform: translateX(6px); }
+
+  /* Staggered entry animation for nav links */
+  .at-modal--open .at-modal__nav-list li { animation: navLinkIn 0.4s ease both; }
+  .at-modal--open .at-modal__nav-list li:nth-child(1) { animation-delay: 0.1s; }
+  .at-modal--open .at-modal__nav-list li:nth-child(2) { animation-delay: 0.15s; }
+  .at-modal--open .at-modal__nav-list li:nth-child(3) { animation-delay: 0.2s; }
+  .at-modal--open .at-modal__nav-list li:nth-child(4) { animation-delay: 0.25s; }
+  .at-modal--open .at-modal__nav-list li:nth-child(5) { animation-delay: 0.3s; }
+  .at-modal--open .at-modal__nav-list li:nth-child(6) { animation-delay: 0.35s; }
+  .at-modal--open .at-modal__nav-list li:nth-child(7) { animation-delay: 0.4s; }
+  @keyframes navLinkIn {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
   }
 
+  /* Social icons */
+  .at-modal__social {
+    display: flex; align-items: center; justify-content: center;
+    gap: 30px; padding: 32px 0 48px; flex-shrink: 0;
+  }
+  .at-modal__social-icon {
+    display: flex; align-items: center; justify-content: center;
+    width: 48px; height: 48px; text-decoration: none;
+    transition: opacity 0.2s, transform 0.2s;
+  }
+  .at-modal__social-icon:hover { opacity: 0.7; transform: translateY(-3px); }
+
+  /* Search modal */
+  .at-modal__search-area {
+    flex: 1; display: flex; align-items: flex-start;
+    justify-content: center; padding-top: 80px;
+  }
+  .at-modal__search-form {
+    display: flex; align-items: center; justify-content: space-between;
+    width: 794px; max-width: calc(100vw - 64px);
+    border-bottom: 2px solid white; padding: 20px 32px; gap: 16px;
+  }
+  .at-modal__search-input {
+    flex: 1; background: none; border: none; outline: none;
+    font-family: 'Playfair Display', var(--font-heading), serif;
+    font-size: 32px; color: white; caret-color: white;
+  }
+  .at-modal__search-input::placeholder { color: #c3c3c3; }
+  .at-modal__search-submit {
+    background: none; border: none; cursor: pointer; padding: 0;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+
+  /* Cart modal */
+  .at-modal__cart-area {
+    flex: 1; overflow-y: auto; padding: 0 120px 48px;
+    scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.2) transparent;
+  }
+  .at-modal__cart-title {
+    font-family: var(--font-heading); font-size: 48px;
+    font-weight: 400; color: white; margin: 0 0 28px;
+  }
+  .at-cart-items { display: flex; flex-direction: column; gap: 0; }
+  .at-cart-item {
+    display: flex; align-items: flex-start; gap: 24px;
+    padding: 16px 0; border-bottom: 1px solid #414141;
+  }
+  .at-cart-item__img { width: 101px; height: 101px; border-radius: 12px; overflow: hidden; flex-shrink: 0; }
+  .at-cart-item__img img { width: 100%; height: 100%; object-fit: cover; border-radius: 12px; display: block; }
+  .at-cart-item__info { flex: 1; display: flex; flex-direction: column; gap: 12px; }
+  .at-cart-item__title { font-family: var(--font-body); font-size: 16px; font-weight: 600; color: white; margin: 0; }
+  .at-cart-item__variant { font-family: var(--font-body); font-size: 14px; color: #828282; margin: 0; }
+  .at-cart-item__qty-row { display: flex; align-items: center; gap: 20px; }
+  .at-cart-item__qty-row > span { font-family: var(--font-body); font-size: 16px; font-weight: 600; color: white; }
+  .at-cart-item__qty-ctrl { display: flex; align-items: center; gap: 16px; }
+  .at-cart-item__qty-ctrl button {
+    background: none; border: none; cursor: pointer; padding: 0;
+    width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;
+  }
+  .at-cart-item__qty-num { font-family: var(--font-body); font-size: 16px; font-weight: 600; color: white; min-width: 20px; text-align: center; }
+  .at-cart-item__price { font-family: var(--font-body); font-size: 24px; color: white; margin: 0; white-space: nowrap; flex-shrink: 0; align-self: center; }
+  .at-cart-item__remove {
+    background: none; border: none; cursor: pointer; padding: 0;
+    width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; align-self: flex-start; margin-top: 4px; opacity: 0.7; transition: opacity 0.2s;
+  }
+  .at-cart-item__remove:hover { opacity: 1; }
+  .at-cart-empty { font-family: var(--font-body); color: #828282; font-size: 18px; text-align: center; padding: 60px 0; }
+  .at-cart-totals { display: flex; flex-direction: column; gap: 9px; padding-top: 24px; max-width: 794px; }
+  .at-cart-totals__row { display: flex; align-items: center; justify-content: space-between; }
+  .at-cart-totals__row span:first-child { font-family: var(--font-body); font-size: 16px; color: #828282; }
+  .at-cart-totals__row span:last-child { font-family: var(--font-body); font-size: 24px; color: #828282; }
+  .at-cart-totals__row--bold span { color: white !important; font-weight: 600; }
+  .at-cart-footer { padding-top: 20px; }
+  .at-cart-checkout {
+    display: inline-flex; align-items: center; gap: 10px;
+    border: 1px solid var(--coral-pink, #ff9696); color: var(--coral-pink, #ff9696);
+    padding: 10px 20px; border-radius: 24px; text-decoration: none;
+    font-family: var(--font-body); font-size: 16px; font-weight: 600;
+    letter-spacing: 0.05em; cursor: pointer; background: none;
+    transition: background-color 0.2s, color 0.2s;
+  }
+  .at-cart-checkout:hover { background-color: var(--coral-pink, #ff9696); color: white; }
+
+  /* Responsive */
+  @media (max-width: 1100px) {
+    .site-header__inner { padding: 0 40px; }
+    .at-modal__bar { padding: 0 40px; height: 100px; }
+    .at-modal__cart-area { padding: 0 40px 40px; }
+  }
   @media (max-width: 768px) {
     .site-header { height: 80px; }
     .site-header__inner { padding: 0 20px; }
     .site-header__logo-img { height: 65px !important; max-width: 180px; }
     .site-header__actions { gap: 14px; }
+    .at-modal__bar { height: 80px; padding: 0 20px; }
+    .at-modal__logo-img { height: 60px !important; max-width: 160px; }
+    .at-modal__bar-actions { gap: 18px; }
+    .at-modal__nav-link { font-size: 24px; }
+    .at-modal__nav-list { gap: 16px; }
+    .at-modal__search-input { font-size: 20px; }
+    .at-modal__search-form { padding: 16px 16px; }
+    .at-modal__cart-area { padding: 0 20px 32px; }
+    .at-modal__cart-title { font-size: 32px; }
+    .at-cart-item { gap: 14px; }
+    .at-cart-item__img { width: 80px; height: 80px; }
+    .at-cart-item__price { font-size: 18px; }
+    .at-modal__social { gap: 20px; padding: 24px 0 32px; }
   }
-
   @media (max-width: 480px) {
     .site-header { height: 70px; }
     .site-header__logo-img { height: 55px !important; max-width: 150px; }
     .site-header__inner { padding: 0 16px; }
-    .site-header__icon { width: 22px; height: 22px; }
-  }
-
-  @media (max-width: 375px) {
-    .site-header__logo-img { height: 48px !important; max-width: 130px; }
+    .at-modal__nav-link { font-size: 20px; }
+    .at-modal__search-input { font-size: 18px; }
+    .at-modal__cart-title { font-size: 26px; }
+    .at-cart-item { flex-wrap: wrap; }
+    .at-cart-item__price { flex-basis: 100%; order: 3; }
   }
 {% endstylesheet %}
 
@@ -233,10 +638,28 @@
       "label": "t:labels.menu"
     },
     {
-      "type": "link_list",
-      "id": "customer_account_menu",
-      "label": "t:labels.customer_account_menu",
-      "default": "customer-account-main-menu"
+      "type": "header",
+      "content": "Social Links"
+    },
+    {
+      "type": "text",
+      "id": "social_facebook",
+      "label": "Facebook URL"
+    },
+    {
+      "type": "text",
+      "id": "social_instagram",
+      "label": "Instagram URL"
+    },
+    {
+      "type": "text",
+      "id": "social_tiktok",
+      "label": "TikTok URL"
+    },
+    {
+      "type": "text",
+      "id": "social_youtube",
+      "label": "YouTube URL"
     }
   ]
 }
