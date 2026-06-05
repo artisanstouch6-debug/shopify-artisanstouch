@@ -396,22 +396,51 @@
     transform: none;
   }
 
+  /* ── 1100px: large tablet / small laptop ── */
   @media (max-width: 1100px) {
-    .hero { height: auto; min-height: 700px; }
-    .hero__heading { font-size: 44px; }
-    .hero__stat-num { font-size: 74px; }
-    .hero__content { padding: 160px 40px 60px; }
+    .hero { height: 800px; }
+    .hero__heading { font-size: 46px; max-width: 85%; }
+    .hero__stat-num { font-size: 60px; }
+    .hero__stats { gap: 32px; }
+    .hero__divider { margin-bottom: 20px; }
+    .hero__content { padding: 160px 90px 120px; }
     .hero__subheading { display: none; }
     .hero__explore { display: none; }
   }
 
+  /* ── 768px: tablet portrait ── */
   @media (max-width: 768px) {
-    .hero { min-height: 600px; }
-    .hero__heading { font-size: 32px; }
-    .hero__content { padding: 120px 20px 60px; }
-    .hero__stat-num { font-size: 58px; }
-    .hero__stats { gap: 20px; }
+    .hero { height: 680px; }
+    .hero__heading { font-size: 34px; max-width: 100%; }
+    .hero__content { padding: 160px 62px 102px; }
+    .hero__stat-num { font-size: 46px; }
+    .hero__stats { gap: 18px; }
     .hero__stat-label { font-size: 13px; }
+    .hero__divider { height: 36px; margin-bottom: 14px; }
+    .hero__btn { font-size: 14px; padding: 9px 18px; }
+  }
+
+  /* ── 480px: large mobile ── */
+  @media (max-width: 480px) {
+    .hero { height: 600px; }
+    .hero__heading { font-size: 28px; }
+    .hero__content { padding: 100px 24px 90px; }
+    .hero__stat-num { font-size: 38px; }
+    .hero__stats { gap: 12px; }
+    .hero__stat-label { font-size: 12px; white-space: normal; max-width: 72px; }
+    .hero__divider { height: 28px; margin-bottom: 10px; }
+    .hero__btn { font-size: 13px; padding: 8px 14px; }
+  }
+
+  /* ── 375px: small mobile ── */
+  @media (max-width: 375px) {
+    .hero { height: 560px; }
+    .hero__heading { font-size: 24px; }
+    .hero__content { padding: 110px 40px 90px; }
+    .hero__stat-num { font-size: 34px; }
+    .hero__stats { gap: 8px; }
+    .hero__stat-label { font-size: 11px; max-width: 60px; }
+    .hero__divider { height: 24px; margin-bottom: 8px; }
   }
 {% endstylesheet %}
 

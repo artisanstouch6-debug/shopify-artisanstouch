@@ -128,7 +128,9 @@ body:not(.template-index) {
 }
 
 @media (max-width: 768px) {
-  body:not(.template-index) {
-    padding-top: 80px;
-  }
+  body:not(.template-index) { padding-top: 80px; }
+}
+
+@media (max-width: 480px) {
+  body:not(.template-index) { padding-top: 70px; }
 }

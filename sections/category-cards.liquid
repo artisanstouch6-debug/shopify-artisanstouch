@@ -1,4 +1,4 @@
-<div class="cat-section">
+<div class="cat-section full-width">
   <div class="cat-section__heading-wrap">
     <h2 class="cat-section__heading">{{ section.settings.heading }}</h2>
   </div>
@@ -93,33 +93,33 @@
     border-radius: 12px;
     top: 42px;
     left: 0;
-    width: 387px;
+    width: 68.5%;
     height: 475px;
   }
 
   .cat-card--right .cat-card__bg {
     left: auto;
     right: 0;
-    width: 378px;
+    width: 66.9%;
     top: 0;
   }
 
   .cat-card__text {
     position: absolute;
     top: 0;
-    left: 38px;
+    left: 6.7%;
     display: flex;
     flex-direction: column;
     gap: 31px;
     z-index: 2;
-    width: 314px;
+    width: 55.6%;
   }
 
   .cat-card__text--right {
     left: auto;
     right: 0;
     top: 59px;
-    width: 227px;
+    width: 40.2%;
   }
 
   .cat-card__title {
@@ -137,7 +137,7 @@
     color: var(--gray, #828282);
     margin: 0;
     line-height: 1.6;
-    width: 151px;
+    width: 48%;
   }
 
   .at-btn {
@@ -168,20 +168,20 @@
   .cat-card--left .at-btn {
     position: absolute;
     bottom: 120px;
-    left: 38px;
+    left: 6.7%;
   }
 
   .cat-card--right .at-btn {
     position: absolute;
     bottom: 120px;
-    left: 38px;
+    left: 6.7%;
   }
 
   .cat-card__image--right {
     position: absolute;
     right: 0;
     top: 137px;
-    width: 317px;
+    width: 56.1%;
     height: 419px;
     z-index: 2;
   }
@@ -190,7 +190,7 @@
     position: absolute;
     left: 0;
     top: 28px;
-    width: 256px;
+    width: 45.3%;
     height: 360px;
     z-index: 2;
   }
@@ -220,12 +220,56 @@
 
   @media (max-width: 1100px) {
     .cat-section { padding: 48px 40px; }
-    .cat-section__cards { gap: 30px; flex-direction: column; }
+    .cat-section__cards { gap: 32px; flex-direction: column; }
     .cat-card { width: 100%; }
   }
 
+  /* ── Mobile: convert absolute layout to normal flow ── */
   @media (max-width: 768px) {
     .cat-section { padding: 40px 20px; }
+    .cat-section__cards { flex-direction: column; gap: 28px; }
+
+    .cat-card {
+      width: 100%;
+      height: auto;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      overflow: hidden;
+      border-radius: 16px;
+      background-color: var(--card-bg, #ffe4e4);
+      padding: 24px 20px 20px;
+    }
+
+    .cat-card__bg { display: none; }
+
+    .cat-card__text,
+    .cat-card__text--right {
+      position: static;
+      width: 100%;
+      gap: 12px;
+      order: 1;
+    }
+
+    .cat-card__image--right,
+    .cat-card__image--left {
+      position: static;
+      width: 100%;
+      height: 220px;
+      border-radius: 12px;
+      overflow: hidden;
+      margin-top: 20px;
+      order: 2;
+    }
+
+    .cat-card--left .at-btn,
+    .cat-card--right .at-btn {
+      position: static;
+      margin-top: 16px;
+    }
+
+    .cat-card__title { font-size: 28px; }
+    .cat-card__desc { width: auto; }
   }
 {% endstylesheet %}
 

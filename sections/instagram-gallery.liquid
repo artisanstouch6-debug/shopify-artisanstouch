@@ -1,4 +1,4 @@
-<div class="insta-gallery">
+<div class="insta-gallery full-width">
   <div class="insta-gallery__grid">
     {%- assign default_insta = 'instagram-1.jpg,instagram-2.jpg,instagram-3.jpg' | split: ',' -%}
     {%- for block in section.blocks -%}
@@ -100,14 +100,14 @@
   }
 
   @media (max-width: 1200px) {
-    .insta-gallery { padding: 48px 40px; }
+    .insta-gallery { padding: 48px 48px; }
     .insta-gallery__grid { flex-wrap: wrap; }
     .insta-gallery__item,
     .insta-gallery__cta { width: calc(50% - 10px); height: 240px; }
   }
 
   @media (max-width: 768px) {
-    .insta-gallery { padding: 40px 20px; }
+    .insta-gallery { padding: 40px 24px; }
     .insta-gallery__item,
     .insta-gallery__cta { width: calc(50% - 10px); height: 180px; }
   }
