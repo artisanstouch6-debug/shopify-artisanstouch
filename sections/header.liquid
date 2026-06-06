@@ -15,8 +15,8 @@
     <div class="site-header__actions">
       <button class="site-header__icon js-at-modal" data-modal="search" aria-label="Search" aria-expanded="false">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-          <circle cx="11" cy="11" r="8" stroke="white" stroke-width="1.5"/>
-          <path d="M21 21L16.65 16.65" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+          <circle cx="11" cy="11" r="8" stroke="#FF9696" stroke-width="1.5"/>
+          <path d="M21 21L16.65 16.65" stroke="#FF9696" stroke-width="1.5" stroke-linecap="round"/>
         </svg>
       </button>
 
@@ -26,10 +26,11 @@
         {% else %}
           <span class="site-header__cart-count js-cart-badge" style="display:none;">0</span>
         {% endif %}
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-          <path d="M6 2L3 6V20C3 21.1 3.9 22 5 22H19C20.1 22 21 21.1 21 20V6L18 2H6Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M3 6H21" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
-          <path d="M16 10C16 12.2 14.2 14 12 14C9.8 14 8 12.2 8 10" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M7.5 7.67001V6.70001C7.5 4.45001 9.31 2.24001 11.56 2.03001C14.24 1.77001 16.5 3.88001 16.5 6.51001V7.89001" stroke="#FF9696" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M8.99999 22H15C19.02 22 19.74 20.39 19.95 18.43L20.7 12.43C20.97 9.99 20.27 8 16 8H7.99999C3.72999 8 3.02999 9.99 3.29999 12.43L4.04999 18.43C4.25999 20.39 4.97999 22 8.99999 22Z" stroke="#FF9696" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M15.4955 12H15.5045" stroke="#FF9696" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M8.49451 12H8.50349" stroke="#FF9696" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
 
@@ -193,18 +194,18 @@
                   <span>Qty:</span>
                   <div class="at-cart-item__qty-ctrl">
                     <button class="js-cart-qty" data-key="{{ item.key }}" data-qty="{{ item.quantity | minus: 1 }}" aria-label="Decrease">
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M5 12H19" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M5 12H19" stroke="#FF9696" stroke-width="1.5" stroke-linecap="round"/></svg>
                     </button>
                     <span class="at-cart-item__qty-num">{{ item.quantity }}</span>
                     <button class="js-cart-qty" data-key="{{ item.key }}" data-qty="{{ item.quantity | plus: 1 }}" aria-label="Increase">
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="#FF9696" stroke-width="1.5" stroke-linecap="round"/></svg>
                     </button>
                   </div>
                 </div>
               </div>
               <p class="at-cart-item__price">{{ item.line_price | money }}</p>
               <button class="at-cart-item__remove js-cart-remove" data-key="{{ item.key }}" aria-label="Remove {{ item.title }}">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" stroke="#FF9696" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
               </button>
             </div>
           {% endfor %}
@@ -344,13 +345,13 @@
             '<p class="at-cart-item__title">' + item.product_title + '</p>' + variant +
             '<div class="at-cart-item__qty-row"><span>Qty:</span>' +
               '<div class="at-cart-item__qty-ctrl">' +
-                '<button class="js-cart-qty" data-key="' + item.key + '" data-qty="' + (item.quantity - 1) + '" aria-label="Decrease"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M5 12H19" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></button>' +
+                '<button class="js-cart-qty" data-key="' + item.key + '" data-qty="' + (item.quantity - 1) + '" aria-label="Decrease"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M5 12H19" stroke="#FF9696" stroke-width="1.5" stroke-linecap="round"/></svg></button>' +
                 '<span class="at-cart-item__qty-num">' + item.quantity + '</span>' +
-                '<button class="js-cart-qty" data-key="' + item.key + '" data-qty="' + (item.quantity + 1) + '" aria-label="Increase"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></button>' +
+                '<button class="js-cart-qty" data-key="' + item.key + '" data-qty="' + (item.quantity + 1) + '" aria-label="Increase"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="#FF9696" stroke-width="1.5" stroke-linecap="round"/></svg></button>' +
               '</div></div>' +
           '</div>' +
           '<p class="at-cart-item__price">' + formatMoney(item.line_price) + '</p>' +
-          '<button class="at-cart-item__remove js-cart-remove" data-key="' + item.key + '" aria-label="Remove"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>' +
+          '<button class="at-cart-item__remove js-cart-remove" data-key="' + item.key + '" aria-label="Remove"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" stroke="#FF9696" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>' +
         '</div>';
       }).join('');
 
@@ -424,7 +425,7 @@
   }
   .site-header__logo-link { display: flex; align-items: center; height: 100%; }
   .site-header__logo-img { height: 100px; width: auto; display: block; object-fit: contain; max-width: 240px; }
-  .site-header__actions { display: flex; align-items: center; gap: 18px; }
+  .site-header__actions { display: flex; align-items: center; gap: 28px; }
   .site-header__icon {
     display: flex; align-items: center; justify-content: center;
     width: 24px; height: 24px; text-decoration: none; position: relative;
@@ -625,7 +626,7 @@
   @media (max-width: 480px) {
     .site-header { height: 70px; }
     .site-header__logo-img { height: 55px !important; max-width: 150px; }
-    .site-header__inner { padding: 0 16px; }
+    .site-header__inner { padding: 0 16px 0 8px; }
     .at-modal__nav-link { font-size: 20px; }
     .at-modal__search-input { font-size: 18px; }
     .at-modal__cart-title { font-size: 26px; }
