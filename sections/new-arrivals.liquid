@@ -55,14 +55,14 @@
                       <path d="M12.62 20.8101C12.28 20.9301 11.72 20.9301 11.38 20.8101C8.48 19.8201 2 15.6901 2 8.6901C2 5.6001 4.49 3.1001 7.56 3.1001C9.38 3.1001 10.99 3.9801 12 5.3401C13.01 3.9801 14.63 3.1001 16.44 3.1001C19.51 3.1001 22 5.6001 22 8.6901C22 15.6901 15.52 19.8201 12.62 20.8101Z" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                   </button>
-                  <a href="{{ product.url }}" class="pcard__action-btn" aria-label="Add to cart">
+                  <button class="pcard__action-btn pcard__atc" aria-label="Add to cart" data-variant-id="{{ product.first_available_variant.id }}">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path d="M7.5 7.67001V6.70001C7.5 4.45001 9.31 2.24001 11.56 2.03001C14.24 1.77001 16.5 3.88001 16.5 6.51001V7.89001" stroke="black" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
                       <path d="M8.99999 22H15C19.02 22 19.74 20.39 19.95 18.43L20.7 12.43C20.97 9.99 20.27 8 16 8H7.99999C3.72999 8 3.02999 9.99 3.29999 12.43L4.04999 18.43C4.25999 20.39 4.97999 22 8.99999 22Z" stroke="black" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
                       <path d="M15.4955 12H15.5045" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                       <path d="M8.49451 12H8.50349" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
-                  </a>
+                  </button>
                 </div>
               </div>
               <p class="pcard__price">{{ product.price | money }}</p>
@@ -310,22 +310,43 @@
   }
 {% endstylesheet %}
 
-{% javascript %}
-  document.querySelectorAll('[data-carousel-next]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const id = btn.getAttribute('data-carousel-next');
-      const track = document.getElementById('pgrid-track-' + id);
-      if (track) track.scrollBy({ left: 305, behavior: 'smooth' });
+<script>
+  (function () {
+    /* ── Carousel ── */
+    document.querySelectorAll('[data-carousel-next]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var track = document.getElementById('pgrid-track-' + btn.getAttribute('data-carousel-next'));
+        if (track) track.scrollBy({ left: 305, behavior: 'smooth' });
+      });
     });
-  });
-  document.querySelectorAll('[data-carousel-prev]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const id = btn.getAttribute('data-carousel-prev');
-      const track = document.getElementById('pgrid-track-' + id);
-      if (track) track.scrollBy({ left: -305, behavior: 'smooth' });
+    document.querySelectorAll('[data-carousel-prev]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var track = document.getElementById('pgrid-track-' + btn.getAttribute('data-carousel-prev'));
+        if (track) track.scrollBy({ left: -305, behavior: 'smooth' });
+      });
     });
-  });
-{% endjavascript %}
+
+    /* ── Add to cart ── */
+    document.querySelectorAll('.pcard__atc').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var variantId = btn.getAttribute('data-variant-id');
+        if (!variantId) return;
+        btn.disabled = true;
+        fetch('/cart/add.js', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: variantId, quantity: 1 })
+        })
+        .then(function (res) { return res.json(); })
+        .then(function () {
+          document.dispatchEvent(new CustomEvent('cart:refresh'));
+          btn.disabled = false;
+        })
+        .catch(function () { btn.disabled = false; });
+      });
+    });
+  })();
+</script>
 
 {% schema %}
 {
@@ -359,9 +380,9 @@
       "id": "products_count",
       "label": "Products to show",
       "min": 2,
-      "max": 8,
+      "max": 12,
       "step": 1,
-      "default": 4
+      "default": 8
     }
   ],
   "presets": [
