@@ -109,20 +109,39 @@
     "testimonials": {
       "type": "testimonials",
       "blocks": {
-        "review_1": {
+        "review_w6PNjH": {
           "type": "review",
           "settings": {
-            "quote": "Amazing service. My ring was a bit too big and they offered to resize it for free and very swiftly.",
-            "author_name": "Binguni Sanjana",
-            "author_location": "Pannipitiya"
+            "quote": "Amazing service. My ring was a bit too big and they offered to resize it for free very swiftly.",
+            "author_name": "Customer Name",
+            "author_location": "Sri Lanka"
+          }
+        },
+        "review_BXX8jx": {
+          "type": "review",
+          "settings": {
+            "quote": "Amazing service. My ring was a bit too big and they offered to resize it for free very swiftly.",
+            "author_name": "Customer Name",
+            "author_location": "Sri Lanka"
+          }
+        },
+        "review_xdwWdd": {
+          "type": "review",
+          "settings": {
+            "quote": "Amazing service. My ring was a bit too big and they offered to resize it for free very swiftly.",
+            "author_name": "Customer Name",
+            "author_location": "Sri Lanka"
           }
         }
       },
       "block_order": [
-        "review_1"
+        "review_w6PNjH",
+        "review_BXX8jx",
+        "review_xdwWdd"
       ],
       "settings": {
-        "heading": "What People Say"
+        "heading_prefix": "What",
+        "heading_highlight": "People Say"
       }
     },
     "instagram_gallery": {
