@@ -54,6 +54,8 @@
     "category_cards": {
       "type": "category-cards",
       "settings": {
+        "heading_line1": "Discover Jewellery",
+        "heading_line2": "Collection",
         "card_1_title": "Bridal Jewellery",
         "card_1_description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam condimentum, enim et scelerisque rutrum, purus ligula iaculis diam,",
         "card_1_bg": "#ffe4e4",
@@ -69,6 +71,8 @@
     "new_arrivals": {
       "type": "new-arrivals",
       "settings": {
+        "heading_prefix": "New",
+        "heading_highlight": "Arrival",
         "subheading": "Anyone can get dresses up and glamorous, but it is how people dress in their days off.",
         "collection": "new",
         "products_count": 4
@@ -88,7 +92,7 @@
       "settings": {
         "heading": "Bestseller Product",
         "subheading": "It is a long established fact that a reader will be distracted by the readable content.",
-        "collection": "",
+        "collection": "bestseller",
         "products_count": 4
       }
     },
