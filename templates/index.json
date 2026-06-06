@@ -109,15 +109,6 @@
     "testimonials": {
       "type": "testimonials",
       "blocks": {
-        "review_w6PNjH": {
-          "type": "review",
-          "settings": {
-            "quote": "Amazing service. My ring was a bit too big and they offered to resize it for free very swiftly.",
-            "author_name": "James Paul",
-            "author_location": "Australia",
-            "author_image": "shopify://shop_images/360_F_370292674_QS5nA0bJgyRD6VzYycTQdSWhhSHQJbQZ.jpg"
-          }
-        },
         "review_BXX8jx": {
           "type": "review",
           "settings": {
@@ -125,6 +116,15 @@
             "author_name": "Binguni Sanjana",
             "author_location": "Pannipitiya",
             "author_image": "shopify://shop_images/eff572f23a963b5915590c8fc9428d5235fec581.jpg"
+          }
+        },
+        "review_w6PNjH": {
+          "type": "review",
+          "settings": {
+            "quote": "Amazing service. My ring was a bit too big and they offered to resize it for free very swiftly.",
+            "author_name": "James Paul",
+            "author_location": "Australia",
+            "author_image": "shopify://shop_images/360_F_370292674_QS5nA0bJgyRD6VzYycTQdSWhhSHQJbQZ.jpg"
           }
         },
         "review_xdwWdd": {
@@ -138,8 +138,8 @@
         }
       },
       "block_order": [
-        "review_w6PNjH",
         "review_BXX8jx",
+        "review_w6PNjH",
         "review_xdwWdd"
       ],
       "settings": {
