@@ -19,8 +19,9 @@
             <div class="testimonials__quote-mark" aria-hidden="true">
               <div class="testimonials__quote-icons">
                 <img src="{{ 'testimonial-quote.svg' | asset_url }}" alt="" class="testimonials__quote-icon">
-                <img src="{{ 'testimonial-quote.svg' | asset_url }}" alt="" class="testimonials__quote-icon">
+                <img src="{{ 'testimonial-quote.svg' | asset_url }}" alt="" class="testimonials__quote-icon second">
               </div>
+              
             </div>
 
             <div class="testimonials__content">
@@ -136,15 +137,20 @@
   .testimonials__quote-mark {
     align-self: flex-start;
   }
-  
+
   .testimonials__quote-icons {
     display: flex;
-    gap: 0;
+    gap: 0px;
     transform: scaleX(-1);
   }
 
-  .testimonials__quote-icon + .testimonials__quote-icon {
-    margin-left: -20px;
+  .testimonials__quote-icon {
+    width: 48px;
+    height: 48px;
+    display: block;
+  }
+   .testimonials__quote-icon.second{
+    margin-left:-20px;
   }
 
   .testimonials__content {
