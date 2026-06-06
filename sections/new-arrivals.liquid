@@ -312,22 +312,21 @@
 
 <script>
   (function () {
+    var sectionId = '{{ section.id }}';
+    var track = document.getElementById('pgrid-track-' + sectionId);
+
     /* ── Carousel ── */
-    document.querySelectorAll('[data-carousel-next]').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        var track = document.getElementById('pgrid-track-' + btn.getAttribute('data-carousel-next'));
-        if (track) track.scrollBy({ left: 305, behavior: 'smooth' });
-      });
+    var nextBtn = document.querySelector('[data-carousel-next="' + sectionId + '"]');
+    var prevBtn = document.querySelector('[data-carousel-prev="' + sectionId + '"]');
+    if (nextBtn) nextBtn.addEventListener('click', function () {
+      if (track) track.scrollBy({ left: 305, behavior: 'smooth' });
     });
-    document.querySelectorAll('[data-carousel-prev]').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        var track = document.getElementById('pgrid-track-' + btn.getAttribute('data-carousel-prev'));
-        if (track) track.scrollBy({ left: -305, behavior: 'smooth' });
-      });
+    if (prevBtn) prevBtn.addEventListener('click', function () {
+      if (track) track.scrollBy({ left: -305, behavior: 'smooth' });
     });
 
     /* ── Add to cart ── */
-    document.querySelectorAll('.pcard__atc').forEach(function (btn) {
+    if (track) track.querySelectorAll('.pcard__atc').forEach(function (btn) {
       btn.addEventListener('click', function () {
         var variantId = btn.getAttribute('data-variant-id');
         if (!variantId) return;

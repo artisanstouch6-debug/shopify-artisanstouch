@@ -317,8 +317,9 @@
     var moneyFormat = {{ shop.money_format | json }};
 
     function formatMoney(cents) {
-      return moneyFormat.replace('{{amount}}', (cents / 100).toFixed(2))
-                        .replace('{{amount_no_decimals}}', Math.round(cents / 100));
+      return moneyFormat
+        .replace(/\{\{amount\}\}/g, (cents / 100).toFixed(2))
+        .replace(/\{\{amount_no_decimals\}\}/g, Math.round(cents / 100));
     }
 
     function refreshBadges(count) {
@@ -410,7 +411,7 @@
     position: relative;
     grid-column: 1 / -1;
     width: 100%;
-    height: 128px;
+    height: 98px;
     background-color: transparent;
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
