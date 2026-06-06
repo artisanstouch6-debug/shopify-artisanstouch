@@ -21,7 +21,6 @@
                 <img src="{{ 'testimonial-quote.svg' | asset_url }}" alt="" class="testimonials__quote-icon">
                 <img src="{{ 'testimonial-quote.svg' | asset_url }}" alt="" class="testimonials__quote-icon second">
               </div>
-              
             </div>
 
             <div class="testimonials__content">
@@ -30,26 +29,6 @@
                 <p class="testimonials__author-name">{{ block.settings.author_name }}</p>
                 <p class="testimonials__author-location">{{ block.settings.author_location }}</p>
               </div>
-            </div>
-
-            <div class="testimonials__controls">
-              <button class="testimonials__nav-btn" aria-label="Previous review" data-testimonials-prev="{{ section.id }}">
-                <svg width="50" height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M16.6667 39.5834C16.6667 38.0375 15.1396 35.7292 13.5937 33.7917C11.6062 31.2917 9.23125 29.1105 6.50833 27.4459C4.46667 26.198 1.99167 25 0 25M0 25C1.99167 25 4.46875 23.8021 6.50833 22.5542C9.23125 20.8875 11.6062 18.7063 13.5937 16.2105C15.1396 14.2709 16.6667 11.9584 16.6667 10.4167M0 25H50" stroke="#FF9696" stroke-opacity="0.5" stroke-width="4"/>
-                </svg>
-              </button>
-              <button class="testimonials__nav-btn" aria-label="Next review" data-testimonials-next="{{ section.id }}">
-                <svg width="75" height="50" viewBox="0 0 75 50" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <g clip-path="url(#t-clip-{{ section.id }})">
-                    <path d="M50 10.4166C50 11.9625 52.2906 14.2708 54.6094 16.2083C57.5906 18.7083 61.1531 20.8895 65.2375 22.5541C68.3 23.802 72.0125 25 75 25M75 25C72.0125 25 68.2969 26.1979 65.2375 27.4458C61.1531 29.1125 57.5906 31.2937 54.6094 33.7895C52.2906 35.7291 50 38.0416 50 39.5833M75 25H0" stroke="#FF9696" stroke-width="4"/>
-                  </g>
-                  <defs>
-                    <clipPath id="t-clip-{{ section.id }}">
-                      <rect width="50" height="75" fill="white" transform="matrix(0 1 -1 0 75 0)"/>
-                    </clipPath>
-                  </defs>
-                </svg>
-              </button>
             </div>
           </div>
 
@@ -64,6 +43,28 @@
         </div>
       {%- endfor -%}
     </div>
+
+    {%- if section.blocks.size > 1 -%}
+      <div class="testimonials__controls">
+        <button class="testimonials__nav-btn" aria-label="Previous review" data-testimonials-prev="{{ section.id }}">
+          <svg width="50" height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M16.6667 39.5834C16.6667 38.0375 15.1396 35.7292 13.5937 33.7917C11.6062 31.2917 9.23125 29.1105 6.50833 27.4459C4.46667 26.198 1.99167 25 0 25M0 25C1.99167 25 4.46875 23.8021 6.50833 22.5542C9.23125 20.8875 11.6062 18.7063 13.5937 16.2105C15.1396 14.2709 16.6667 11.9584 16.6667 10.4167M0 25H50" stroke="#FF9696" stroke-opacity="0.5" stroke-width="4"/>
+          </svg>
+        </button>
+        <button class="testimonials__nav-btn" aria-label="Next review" data-testimonials-next="{{ section.id }}">
+          <svg width="75" height="50" viewBox="0 0 75 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <g clip-path="url(#t-clip-{{ section.id }})">
+              <path d="M50 10.4166C50 11.9625 52.2906 14.2708 54.6094 16.2083C57.5906 18.7083 61.1531 20.8895 65.2375 22.5541C68.3 23.802 72.0125 25 75 25M75 25C72.0125 25 68.2969 26.1979 65.2375 27.4458C61.1531 29.1125 57.5906 31.2937 54.6094 33.7895C52.2906 35.7291 50 38.0416 50 39.5833M75 25H0" stroke="#FF9696" stroke-width="4"/>
+            </g>
+            <defs>
+              <clipPath id="t-clip-{{ section.id }}">
+                <rect width="50" height="75" fill="white" transform="matrix(0 1 -1 0 75 0)"/>
+              </clipPath>
+            </defs>
+          </svg>
+        </button>
+      </div>
+    {%- endif -%}
   {%- endif -%}
 
 </div>
@@ -195,7 +196,10 @@
     display: flex;
     align-items: center;
     gap: 24px;
+    width: 100%;
+    max-width: 996px;
     padding-left: 81px;
+    box-sizing: border-box;
   }
 
   .testimonials__nav-btn {
