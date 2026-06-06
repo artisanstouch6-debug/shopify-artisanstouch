@@ -260,34 +260,40 @@
   }
 {% endstylesheet %}
 
-{% javascript %}
+<script>
   (function() {
-    document.querySelectorAll('[data-testimonials-next]').forEach(function(btn) {
-      btn.addEventListener('click', function() {
-        var id = btn.getAttribute('data-testimonials-next');
-        var slider = document.getElementById('testimonials-' + id);
-        if (!slider) return;
-        var slides = slider.querySelectorAll('.testimonials__slide');
-        var active = slider.querySelector('.testimonials__slide--active');
-        var idx = Array.from(slides).indexOf(active);
-        slides[idx].classList.remove('testimonials__slide--active');
-        slides[(idx + 1) % slides.length].classList.add('testimonials__slide--active');
+    var slider = document.getElementById('testimonials-{{ section.id }}');
+    if (!slider) return;
+
+    function getSlides() { return slider.querySelectorAll('.testimonials__slide'); }
+    function getActiveIdx() {
+      var slides = getSlides();
+      var active = slider.querySelector('.testimonials__slide--active');
+      return Array.from(slides).indexOf(active);
+    }
+    function goTo(idx) {
+      var slides = getSlides();
+      slides.forEach(function(s) { s.classList.remove('testimonials__slide--active'); });
+      slides[idx].classList.add('testimonials__slide--active');
+    }
+
+    var nextBtn = document.querySelector('[data-testimonials-next="{{ section.id }}"]');
+    var prevBtn = document.querySelector('[data-testimonials-prev="{{ section.id }}"]');
+
+    if (nextBtn) {
+      nextBtn.addEventListener('click', function() {
+        var slides = getSlides();
+        goTo((getActiveIdx() + 1) % slides.length);
       });
-    });
-    document.querySelectorAll('[data-testimonials-prev]').forEach(function(btn) {
-      btn.addEventListener('click', function() {
-        var id = btn.getAttribute('data-testimonials-prev');
-        var slider = document.getElementById('testimonials-' + id);
-        if (!slider) return;
-        var slides = slider.querySelectorAll('.testimonials__slide');
-        var active = slider.querySelector('.testimonials__slide--active');
-        var idx = Array.from(slides).indexOf(active);
-        slides[idx].classList.remove('testimonials__slide--active');
-        slides[(idx - 1 + slides.length) % slides.length].classList.add('testimonials__slide--active');
+    }
+    if (prevBtn) {
+      prevBtn.addEventListener('click', function() {
+        var slides = getSlides();
+        goTo((getActiveIdx() - 1 + slides.length) % slides.length);
       });
-    });
+    }
   })();
-{% endjavascript %}
+</script>
 
 {% schema %}
 {
