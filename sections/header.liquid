@@ -392,6 +392,15 @@
         cartChange(removeBtn.dataset.key, 0);
       }
     });
+
+    document.addEventListener('cart:refresh', function() {
+      fetch('/cart.js')
+        .then(function(r) { return r.json(); })
+        .then(function(cart) {
+          refreshBadges(cart.item_count);
+          renderCartContent(cart);
+        });
+    });
   })();
 </script>
 
