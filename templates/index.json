@@ -113,24 +113,27 @@
           "type": "review",
           "settings": {
             "quote": "Amazing service. My ring was a bit too big and they offered to resize it for free very swiftly.",
-            "author_name": "Customer Name",
-            "author_location": "Sri Lanka"
+            "author_name": "Binguni Sanjana",
+            "author_location": "Sri Lanka",
+            "author_image": "shopify://shop_images/eff572f23a963b5915590c8fc9428d5235fec581.jpg"
           }
         },
         "review_BXX8jx": {
           "type": "review",
           "settings": {
             "quote": "Amazing service. My ring was a bit too big and they offered to resize it for free very swiftly.",
-            "author_name": "Customer Name",
-            "author_location": "Sri Lanka"
+            "author_name": "Binguni Sanjana",
+            "author_location": "Pannipitiya",
+            "author_image": "shopify://shop_images/eff572f23a963b5915590c8fc9428d5235fec581.jpg"
           }
         },
         "review_xdwWdd": {
           "type": "review",
           "settings": {
             "quote": "Amazing service. My ring was a bit too big and they offered to resize it for free very swiftly.",
-            "author_name": "Customer Name",
-            "author_location": "Sri Lanka"
+            "author_name": "Binguni Sanjana",
+            "author_location": "Sri Lanka",
+            "author_image": "shopify://shop_images/eff572f23a963b5915590c8fc9428d5235fec581.jpg"
           }
         }
       },
