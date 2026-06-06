@@ -54,7 +54,6 @@
     "category_cards": {
       "type": "category-cards",
       "settings": {
-        "heading": "Discover Jewellery Collection",
         "card_1_title": "Bridal Jewellery",
         "card_1_description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam condimentum, enim et scelerisque rutrum, purus ligula iaculis diam,",
         "card_1_bg": "#ffe4e4",
@@ -70,9 +69,8 @@
     "new_arrivals": {
       "type": "new-arrivals",
       "settings": {
-        "heading": "New Arrival",
         "subheading": "Anyone can get dresses up and glamorous, but it is how people dress in their days off.",
-        "collection": "",
+        "collection": "new",
         "products_count": 4
       }
     },
