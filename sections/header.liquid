@@ -203,10 +203,12 @@
                   </div>
                 </div>
               </div>
-              <p class="at-cart-item__price">{{ item.line_price | money }}</p>
-              <button class="at-cart-item__remove js-cart-remove" data-key="{{ item.key }}" aria-label="Remove {{ item.title }}">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" stroke="#FF9696" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              </button>
+              <div class="at-cart-item__right">
+                <p class="at-cart-item__price">{{ item.line_price | money }}</p>
+                <button class="at-cart-item__remove js-cart-remove" data-key="{{ item.key }}" aria-label="Remove {{ item.title }}">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" stroke="#FF9696" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+              </div>
             </div>
           {% endfor %}
         </div>
@@ -218,6 +220,10 @@
           </div>
           <div class="at-cart-totals__row">
             <span>Shipping Fee</span>
+            <span>Calculated at checkout</span>
+          </div>
+          <div class="at-cart-totals__row">
+            <span>Estimated Taxes</span>
             <span>Calculated at checkout</span>
           </div>
           <div class="at-cart-totals__row at-cart-totals__row--bold">
@@ -351,14 +357,17 @@
                 '<button class="js-cart-qty" data-key="' + item.key + '" data-qty="' + (item.quantity + 1) + '" aria-label="Increase"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="#FF9696" stroke-width="1.5" stroke-linecap="round"/></svg></button>' +
               '</div></div>' +
           '</div>' +
-          '<p class="at-cart-item__price">' + formatMoney(item.line_price) + '</p>' +
-          '<button class="at-cart-item__remove js-cart-remove" data-key="' + item.key + '" aria-label="Remove"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" stroke="#FF9696" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>' +
+          '<div class="at-cart-item__right">' +
+            '<p class="at-cart-item__price">' + formatMoney(item.line_price) + '</p>' +
+            '<button class="at-cart-item__remove js-cart-remove" data-key="' + item.key + '" aria-label="Remove"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" stroke="#FF9696" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>' +
+          '</div>' +
         '</div>';
       }).join('');
 
       var totals = '<div class="at-cart-totals">' +
         '<div class="at-cart-totals__row"><span>Total Amount</span><span class="js-cart-total">' + formatMoney(cart.total_price) + '</span></div>' +
         '<div class="at-cart-totals__row"><span>Shipping Fee</span><span>Calculated at checkout</span></div>' +
+        '<div class="at-cart-totals__row"><span>Estimated Taxes</span><span>Calculated at checkout</span></div>' +
         '<div class="at-cart-totals__row at-cart-totals__row--bold"><span>Sub Total Amount</span><span class="js-cart-subtotal">' + formatMoney(cart.total_price) + '</span></div>' +
         '</div>' +
         '<div class="at-cart-footer"><a href="/checkout" class="at-btn at-cart-checkout">Proceed to Checkout</a></div>';
@@ -462,9 +471,9 @@
     position: fixed;
     inset: 0;
     z-index: 150;
-    background: rgba(0, 0, 0, 0.55);
-    backdrop-filter: blur(25px);
-    -webkit-backdrop-filter: blur(25px);
+    background: rgba(18, 14, 10, 0.93);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     display: flex;
     flex-direction: column;
     transform: translateY(-100%);
@@ -584,20 +593,24 @@
     width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;
   }
   .at-cart-item__qty-num { font-family: var(--font-body); font-size: 16px; font-weight: 600; color: white; min-width: 20px; text-align: center; }
-  .at-cart-item__price { font-family: var(--font-body); font-size: 24px; color: white; margin: 0; white-space: nowrap; flex-shrink: 0; align-self: center; }
+  .at-cart-item__right {
+    display: flex; flex-direction: column; align-items: flex-end;
+    justify-content: space-between; flex-shrink: 0; min-height: 80px;
+  }
+  .at-cart-item__price { font-family: var(--font-body); font-size: 20px; color: white; margin: 0; white-space: nowrap; }
   .at-cart-item__remove {
     background: none; border: none; cursor: pointer; padding: 0;
     width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0; align-self: flex-start; margin-top: 4px; opacity: 0.7; transition: opacity 0.2s;
+    opacity: 0.7; transition: opacity 0.2s;
   }
   .at-cart-item__remove:hover { opacity: 1; }
   .at-cart-empty { font-family: var(--font-body); color: #828282; font-size: 18px; text-align: center; padding: 60px 0; }
-  .at-cart-totals { display: flex; flex-direction: column; gap: 9px; padding-top: 24px; max-width: 794px; }
+  .at-cart-totals { display: flex; flex-direction: column; gap: 9px; padding-top: 24px; }
   .at-cart-totals__row { display: flex; align-items: center; justify-content: space-between; }
   .at-cart-totals__row span:first-child { font-family: var(--font-body); font-size: 16px; color: #828282; }
-  .at-cart-totals__row span:last-child { font-family: var(--font-body); font-size: 24px; color: #828282; }
+  .at-cart-totals__row span:last-child { font-family: var(--font-body); font-size: 24px; color: #828282; text-align: right; }
   .at-cart-totals__row--bold span { color: white !important; font-weight: 600; }
-  .at-cart-footer { padding-top: 20px; }
+  .at-cart-footer { padding-top: 40px; display: flex; justify-content: center; }
   .at-cart-checkout {
     display: inline-flex; align-items: center; gap: 10px;
     border: 1px solid var(--coral-pink, #ff9696); color: var(--coral-pink, #ff9696);

@@ -11,6 +11,7 @@
   </div>
 
   <div class="feature-story__visual">
+    <div class="feature-story__arch-glow"></div>
     <div class="feature-story__arch">
       {% if section.settings.image %}
         {{ section.settings.image | image_url: width: 452, height: 622, crop: 'center' | image_tag: class: 'feature-story__arch-img', loading: 'lazy', alt: section.settings.heading }}
@@ -46,8 +47,9 @@
     display: flex;
     flex-direction: column;
     gap: 48px;
-    max-width: 509px;
-    flex-shrink: 0;
+    flex: 1;
+    min-width: 0;
+    max-width: 480px;
   }
 
   .feature-story__heading {
@@ -69,19 +71,35 @@
 
   .feature-story__visual {
     position: relative;
-    width: 588px;
-    height: 656px;
+    width: min(588px, 46vw);
+    aspect-ratio: 588 / 656;
     flex-shrink: 0;
+  }
+
+  .feature-story__arch-glow {
+    position: absolute;
+    right: -10px;
+    top: -10px;
+    width: calc(76.9% + 20px);
+    height: calc(94.8% + 20px);
+    border-radius: 50% 50% 16px 16px;
+    background:
+      radial-gradient(ellipse at 85% 25%, rgba(255, 182, 193, 0.8) 0%, transparent 50%),
+      radial-gradient(ellipse at 15% 65%, rgba(255, 220, 100, 0.7) 0%, transparent 50%);
+    filter: blur(28px);
+    z-index: 0;
+    pointer-events: none;
   }
 
   .feature-story__arch {
     position: absolute;
     right: 0;
     top: 0;
-    width: 452px;
-    height: 622px;
-    border-radius: 243px 243px 12px 12px;
+    width: 76.9%;
+    height: 94.8%;
+    border-radius: 50% 50% 12px 12px;
     overflow: hidden;
+    z-index: 1;
   }
 
   .feature-story__arch-img {
@@ -91,18 +109,16 @@
     display: block;
   }
 
-  .feature-story__arch-placeholder {
-    background: linear-gradient(135deg, #f5e6da, #e8c9a0);
-  }
-
   .feature-story__circle {
     position: absolute;
     left: 0;
     bottom: 0;
-    width: 316px;
-    height: 316px;
+    width: 53.7%;
+    height: 48.2%;
     border-radius: 50%;
     overflow: hidden;
+    z-index: 2;
+    box-shadow: 0 0 0 6px #fff;
   }
 
   .feature-story__circle-img {
@@ -112,45 +128,53 @@
     display: block;
   }
 
-  .feature-story__circle-placeholder {
-    background: linear-gradient(135deg, #ffc4c4, #ff9696);
+  /* 2-column: reduce padding at 1380px */
+  @media (max-width: 1380px) {
+    .feature-story { padding: 60px 60px; gap: 40px; }
   }
 
+  /* 2-column: tighter padding at 1100px, still side-by-side */
   @media (max-width: 1100px) {
+    .feature-story { padding: 52px 40px; gap: 32px; }
+    .feature-story__heading { font-size: 38px; }
+    .feature-story__text { gap: 32px; }
+  }
+
+  /* 2-column: minimum padding at 900px, still side-by-side */
+  @media (max-width: 900px) {
+    .feature-story { padding: 48px 28px; gap: 24px; }
+    .feature-story__heading { font-size: 30px; }
+    .feature-story__text { gap: 24px; }
+    .feature-story__desc { font-size: 15px; }
+  }
+
+  /* Stack to column only below 768px */
+  @media (max-width: 768px) {
     .feature-story {
-      padding: 48px 48px;
+      padding: 48px 24px;
       flex-direction: column;
+      align-items: flex-start;
+      gap: 40px;
     }
+    .feature-story__heading { font-size: 32px; }
+    .feature-story__text { max-width: 100%; gap: 28px; }
     .feature-story__visual {
       width: 100%;
       max-width: 480px;
-      height: 480px;
+      align-self: center;
     }
-    .feature-story__arch {
-      width: 320px;
-      height: 440px;
-      border-radius: 160px 160px 12px 12px;
-    }
-    .feature-story__circle {
-      width: 200px;
-      height: 200px;
-    }
-  }
-
-  @media (max-width: 768px) {
-    .feature-story { padding: 40px 24px; }
-    .feature-story__heading { font-size: 32px; }
-    .feature-story__text { max-width: 100%; gap: 32px; }
-    .feature-story__visual { height: 360px; max-width: 100%; }
-    .feature-story__arch { width: 240px; height: 320px; border-radius: 120px 120px 12px 12px; }
-    .feature-story__circle { width: 150px; height: 150px; }
   }
 
   @media (max-width: 480px) {
-    .feature-story__heading { font-size: 28px; }
-    .feature-story__visual { height: 280px; }
-    .feature-story__arch { width: 185px; height: 248px; border-radius: 92px 92px 12px 12px; }
-    .feature-story__circle { width: 120px; height: 120px; }
+    .feature-story { padding: 40px 20px; gap: 32px; }
+    .feature-story__heading { font-size: 26px; }
+    .feature-story__text { gap: 20px; }
+    .feature-story__visual { max-width: 100%; }
+  }
+
+  @media (max-width: 375px) {
+    .feature-story { padding: 36px 16px; }
+    .feature-story__heading { font-size: 24px; }
   }
 {% endstylesheet %}
 

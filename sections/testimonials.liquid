@@ -1,23 +1,54 @@
 <div class="testimonials full-width">
-  <h2 class="testimonials__heading reveal">{{ section.settings.heading }}</h2>
+
+  <div class="testimonials__heading-wrap">
+    <h2 class="testimonials__heading">
+      {{ section.settings.heading_prefix }}
+      <span class="testimonials__heading-hl">
+        {{ section.settings.heading_highlight }}
+        <img src="{{ 'testimonial-heading-ellipse.svg' | asset_url }}" alt="" class="testimonials__heading-ellipse" aria-hidden="true">
+      </span>
+    </h2>
+  </div>
 
   {%- if section.blocks.size > 0 -%}
     <div class="testimonials__slider" id="testimonials-{{ section.id }}">
       {%- for block in section.blocks -%}
         <div class="testimonials__slide {% if forloop.first %}testimonials__slide--active{% endif %}" {{ block.shopify_attributes }}>
+
           <div class="testimonials__quote-wrap">
             <div class="testimonials__quote-mark" aria-hidden="true">
-              <svg width="75" height="48" viewBox="0 0 75 48" fill="none">
-                <path d="M48 24C48 10.7 58.7 0 72 0V0C72 13.3 61.3 24 48 24Z" fill="var(--coral-pink, #ff9696)"/>
-                <path d="M21 24C21 10.7 31.7 0 45 0V0C45 13.3 34.3 24 21 24Z" fill="var(--coral-pink, #ff9696)"/>
-              </svg>
+              <div class="testimonials__quote-icons">
+                <img src="{{ 'testimonial-quote.svg' | asset_url }}" alt="" class="testimonials__quote-icon">
+                <img src="{{ 'testimonial-quote.svg' | asset_url }}" alt="" class="testimonials__quote-icon">
+              </div>
             </div>
+
             <div class="testimonials__content">
               <p class="testimonials__text">{{ block.settings.quote }}</p>
               <div class="testimonials__author">
                 <p class="testimonials__author-name">{{ block.settings.author_name }}</p>
                 <p class="testimonials__author-location">{{ block.settings.author_location }}</p>
               </div>
+            </div>
+
+            <div class="testimonials__controls">
+              <button class="testimonials__nav-btn" aria-label="Previous review" data-testimonials-prev="{{ section.id }}">
+                <svg width="50" height="50" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M16.6667 39.5834C16.6667 38.0375 15.1396 35.7292 13.5937 33.7917C11.6062 31.2917 9.23125 29.1105 6.50833 27.4459C4.46667 26.198 1.99167 25 0 25M0 25C1.99167 25 4.46875 23.8021 6.50833 22.5542C9.23125 20.8875 11.6062 18.7063 13.5937 16.2105C15.1396 14.2709 16.6667 11.9584 16.6667 10.4167M0 25H50" stroke="#FF9696" stroke-opacity="0.5" stroke-width="4"/>
+                </svg>
+              </button>
+              <button class="testimonials__nav-btn" aria-label="Next review" data-testimonials-next="{{ section.id }}">
+                <svg width="75" height="50" viewBox="0 0 75 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <g clip-path="url(#t-clip-{{ section.id }})">
+                    <path d="M50 10.4166C50 11.9625 52.2906 14.2708 54.6094 16.2083C57.5906 18.7083 61.1531 20.8895 65.2375 22.5541C68.3 23.802 72.0125 25 75 25M75 25C72.0125 25 68.2969 26.1979 65.2375 27.4458C61.1531 29.1125 57.5906 31.2937 54.6094 33.7895C52.2906 35.7291 50 38.0416 50 39.5833M75 25H0" stroke="#FF9696" stroke-width="4"/>
+                  </g>
+                  <defs>
+                    <clipPath id="t-clip-{{ section.id }}">
+                      <rect width="50" height="75" fill="white" transform="matrix(0 1 -1 0 75 0)"/>
+                    </clipPath>
+                  </defs>
+                </svg>
+              </button>
             </div>
           </div>
 
@@ -28,25 +59,12 @@
               <img src="{{ 'testimonial-portrait.jpg' | asset_url }}" alt="{{ block.settings.author_name }}" class="testimonials__portrait-img" loading="lazy">
             {% endif %}
           </div>
+
         </div>
       {%- endfor -%}
     </div>
-
-    <div class="testimonials__controls" data-slider-id="{{ section.id }}">
-      <button class="pgrid__nav-btn" aria-label="Previous review" data-testimonials-prev="{{ section.id }}">
-        <svg width="50" height="50" viewBox="0 0 50 50" fill="none">
-          <circle cx="25" cy="25" r="24" stroke="#828282" stroke-width="1.5"/>
-          <path d="M28 17L20 25L28 33" stroke="#828282" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </button>
-      <button class="pgrid__nav-btn" aria-label="Next review" data-testimonials-next="{{ section.id }}">
-        <svg width="50" height="50" viewBox="0 0 50 50" fill="none">
-          <circle cx="25" cy="25" r="24" stroke="#333" stroke-width="1.5"/>
-          <path d="M22 17L30 25L22 33" stroke="#333" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </button>
-    </div>
   {%- endif -%}
+
 </div>
 
 {% stylesheet %}
@@ -63,13 +81,33 @@
     gap: 64px;
   }
 
+  .testimonials__heading-wrap {
+    text-align: center;
+  }
+
   .testimonials__heading {
     font-family: var(--font-heading);
     font-size: 48px;
     font-weight: 700;
     color: #000;
     margin: 0;
-    text-align: center;
+    display: inline;
+  }
+
+  .testimonials__heading-hl {
+    display: inline-block;
+    position: relative;
+  }
+
+  .testimonials__heading-ellipse {
+    position: absolute;
+    left: 65%;
+    transform: translateX(-50%);
+    bottom: -10px;
+    width: 80%;
+    height: 100%;
+    z-index: -1;
+    pointer-events: none;
   }
 
   .testimonials__slider {
@@ -91,12 +129,24 @@
   .testimonials__quote-wrap {
     display: flex;
     flex-direction: column;
-    gap: 68px;
+    gap: 40px;
     flex: 1;
   }
 
   .testimonials__quote-mark {
     align-self: flex-start;
+  }
+
+  .testimonials__quote-icons {
+    display: flex;
+    gap: 4px;
+    transform: scaleX(-1);
+  }
+
+  .testimonials__quote-icon {
+    width: 48px;
+    height: 48px;
+    display: block;
   }
 
   .testimonials__content {
@@ -137,6 +187,26 @@
     font-weight: 400;
   }
 
+  .testimonials__controls {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    padding-left: 81px;
+  }
+
+  .testimonials__nav-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.2s;
+  }
+
+  .testimonials__nav-btn:hover { opacity: 0.7; }
+
   .testimonials__portrait {
     width: 245px;
     height: 321px;
@@ -152,26 +222,33 @@
     display: block;
   }
 
-  .testimonials__controls {
-    display: flex;
-    align-items: center;
-    gap: 24px;
-    align-self: flex-start;
-    padding-left: calc(120px + 0px);
+  @media (max-width: 1100px) {
+    .testimonials { padding: 60px 48px; gap: 48px; }
+    .testimonials__slide { gap: 48px; }
+    .testimonials__portrait { width: 200px; height: 262px; border-radius: 100px 100px 12px 12px; }
   }
 
-  @media (max-width: 1100px) {
-    .testimonials { padding: 60px 40px; }
-    .testimonials__slide { flex-direction: column; gap: 40px; }
-    .testimonials__controls { padding-left: 0; align-self: center; }
+  @media (max-width: 900px) {
+    .testimonials { padding: 56px 32px; }
+    .testimonials__slide { flex-direction: column-reverse; gap: 32px; align-items: flex-start; }
+    .testimonials__portrait { width: 180px; height: 236px; border-radius: 90px 90px 12px 12px; }
+    .testimonials__content { padding-left: 0; }
+    .testimonials__controls { padding-left: 0; }
+    .testimonials__heading { font-size: 40px; }
   }
 
   @media (max-width: 768px) {
     .testimonials { padding: 48px 24px; gap: 40px; }
-    .testimonials__heading { font-size: 36px; }
+    .testimonials__heading { font-size: 34px; }
     .testimonials__text { font-size: 18px; }
-    .testimonials__content { padding-left: 0; }
-    .testimonials__portrait { width: 180px; height: 240px; }
+    .testimonials__portrait { width: 150px; height: 197px; border-radius: 75px 75px 12px 12px; align-self: center; }
+  }
+
+  @media (max-width: 480px) {
+    .testimonials { padding: 40px 20px; gap: 32px; }
+    .testimonials__heading { font-size: 28px; }
+    .testimonials__text { font-size: 16px; }
+    .testimonials__quote-icon { width: 36px; height: 36px; }
   }
 {% endstylesheet %}
 
@@ -241,9 +318,15 @@
   "settings": [
     {
       "type": "text",
-      "id": "heading",
-      "label": "Section heading",
-      "default": "What People Say"
+      "id": "heading_prefix",
+      "label": "Heading – before highlight",
+      "default": "What"
+    },
+    {
+      "type": "text",
+      "id": "heading_highlight",
+      "label": "Heading – highlighted word(s) (gets ellipse)",
+      "default": "People Say"
     }
   ],
   "presets": [
