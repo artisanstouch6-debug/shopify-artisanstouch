@@ -136,17 +136,15 @@
   .testimonials__quote-mark {
     align-self: flex-start;
   }
-
+  
   .testimonials__quote-icons {
     display: flex;
-    gap: 4px;
+    gap: 0;
     transform: scaleX(-1);
   }
 
-  .testimonials__quote-icon {
-    width: 48px;
-    height: 48px;
-    display: block;
+  .testimonials__quote-icon + .testimonials__quote-icon {
+    margin-left: -20px;
   }
 
   .testimonials__content {
