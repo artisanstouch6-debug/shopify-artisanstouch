@@ -2,21 +2,25 @@
   <div class="pgrid__inner">
     <div class="pgrid__header">
       <div class="pgrid__title-wrap">
-        <h2 class="pgrid__title">{{ section.settings.heading }}</h2>
+        <h2 class="pgrid__title">
+          {{ section.settings.heading_prefix }}
+          <span class="pgrid__title-highlight">
+            {{ section.settings.heading_highlight }}
+            <img src="{{ 'heading-swirl.svg' | asset_url }}" alt="" class="pgrid__title-swirl" aria-hidden="true">
+          </span>
+        </h2>
       </div>
       <div class="pgrid__subtitle-row">
         <p class="pgrid__subtitle">{{ section.settings.subheading }}</p>
         <div class="pgrid__nav">
           <button class="pgrid__nav-btn pgrid__nav-btn--prev" aria-label="Previous" data-carousel-prev="{{ section.id }}">
-            <svg width="50" height="50" viewBox="0 0 50 50" fill="none">
-              <circle cx="25" cy="25" r="24" stroke="#828282" stroke-width="1.5"/>
-              <path d="M28 17L20 25L28 33" stroke="#828282" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <svg width="40" height="16" viewBox="0 0 40 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M39 8H1M9 1L1 8L9 15" stroke="#ff9696" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </button>
           <button class="pgrid__nav-btn pgrid__nav-btn--next" aria-label="Next" data-carousel-next="{{ section.id }}">
-            <svg width="50" height="50" viewBox="0 0 50 50" fill="none">
-              <circle cx="25" cy="25" r="24" stroke="#333" stroke-width="1.5"/>
-              <path d="M22 17L30 25L22 33" stroke="#333" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <svg width="40" height="16" viewBox="0 0 40 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M1 8H39M31 1L39 8L31 15" stroke="#ff9696" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
           </button>
         </div>
@@ -117,6 +121,23 @@
     font-weight: 600;
     color: #000;
     margin: 0;
+  }
+
+  .pgrid__title-highlight {
+    display: inline-block;
+    position: relative;
+    z-index: 0;
+  }
+
+  .pgrid__title-swirl {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: -35px;
+    width: 310px;
+    height: 110px;
+    z-index: -1;
+    pointer-events: none;
   }
 
   .pgrid__subtitle-row {
@@ -296,9 +317,15 @@
   "settings": [
     {
       "type": "text",
-      "id": "heading",
-      "label": "Section heading",
-      "default": "New Arrival"
+      "id": "heading_prefix",
+      "label": "Heading – first word(s)",
+      "default": "New"
+    },
+    {
+      "type": "text",
+      "id": "heading_highlight",
+      "label": "Heading – decorated word (gets swirl)",
+      "default": "Arrival"
     },
     {
       "type": "textarea",
