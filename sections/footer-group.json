@@ -14,7 +14,22 @@
     "footer": {
       "type": "footer",
       "settings": {
+        "logo": "shopify://shop_images/at-logo_2.png",
+        "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam consectetur sed enim ac venenatis.",
+        "links_heading": "Quick Links",
         "menu": "",
+        "contact_heading": "Contact Details",
+        "phone": "+94 11 234 5678",
+        "email": "artisanstouch@gmail.com",
+        "address": "No.02, Main Road, Malabe",
+        "facebook_url": "https://www.instagram.com/",
+        "instagram_url": "https://www.instagram.com/",
+        "tiktok_url": "https://www.instagram.com/",
+        "youtube_url": "https://www.instagram.com/",
+        "newsletter_heading": "Subscribe Newsletter",
+        "newsletter_subheading": "New Customer Get 50% off...",
+        "newsletter_placeholder": "Enter Email Address",
+        "copyright_text": "Copyright © [year] ARTISANS TOUCH. All rights reserved.",
         "show_payment_icons": true
       }
     }
