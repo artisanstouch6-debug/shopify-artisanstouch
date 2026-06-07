@@ -86,16 +86,11 @@
 
   <div class="site-footer__divider">
     <div class="site-footer__divider-center">
-      <div class="site-footer__divider-icon-wrap">
-        <div class="site-footer__divider-icon-bg"></div>
-        <div class="site-footer__divider-icon-overflow">
-          {% if section.settings.logo %}
-            {{ section.settings.logo | image_url: width: 300 | image_tag: class: 'site-footer__divider-icon', alt: '', loading: 'lazy' }}
-          {% else %}
-            <img src="{{ 'at-logo.png' | asset_url }}" alt="" class="site-footer__divider-icon" loading="lazy">
-          {% endif %}
-        </div>
-      </div>
+      {% if section.settings.logo %}
+        {{ section.settings.logo | image_url: width: 160 | image_tag: class: 'site-footer__divider-icon', alt: '', loading: 'lazy' }}
+      {% else %}
+        <img src="{{ 'at-logo.png' | asset_url }}" alt="" class="site-footer__divider-icon" loading="lazy">
+      {% endif %}
     </div>
   </div>
 
@@ -142,21 +137,13 @@
     text-decoration: none;
   }
 
-  /* Figma: aspect-ratio 257/127, image positioned at w=141.05%, h=189.78%, top=-44.89%, left=-20.6% */
   .site-footer__logo-crop {
-    position: relative;
     width: 100%;
-    aspect-ratio: 257 / 127;
-    overflow: hidden;
   }
 
   .site-footer__logo-img {
-    position: absolute;
-    width: 141.05%;
-    height: 189.78%;
-    top: -44.89%;
-    left: -20.6%;
-    max-width: none;
+    width: 100%;
+    height: auto;
     display: block;
   }
 
@@ -306,33 +293,11 @@
     padding: 0 20px;
   }
 
-  /* Figma: 65×23px container, image at w=194.21%, h=366.56%, top=-104.51%, left=-47.21% */
-  .site-footer__divider-icon-wrap {
-    position: relative;
-    width: 65px;
-    height: 23px;
-  }
-
-  .site-footer__divider-icon-bg {
-    position: absolute;
-    inset: 0;
-    background: var(--footer-bg, #1b1400);
-  }
-
-  .site-footer__divider-icon-overflow {
-    position: absolute;
-    inset: 0;
-    overflow: hidden;
-  }
-
   .site-footer__divider-icon {
-    position: absolute;
-    width: 194.21%;
-    height: 366.56%;
-    left: -47.21%;
-    top: -104.51%;
-    max-width: none;
+    width: 80px;
+    height: auto;
     display: block;
+    opacity: 0.8;
   }
 
   .site-footer__bottom {
