@@ -86,11 +86,13 @@
 
   <div class="site-footer__divider">
     <div class="site-footer__divider-center">
-      {% if section.settings.logo %}
-        {{ section.settings.logo | image_url: width: 160 | image_tag: class: 'site-footer__divider-icon', alt: '', loading: 'lazy' }}
-      {% else %}
-        <img src="{{ 'at-logo.png' | asset_url }}" alt="" class="site-footer__divider-icon" loading="lazy">
-      {% endif %}
+      <div class="site-footer__divider-icon-clip">
+        {% if section.settings.logo %}
+          {{ section.settings.logo | image_url: width: 160 | image_tag: class: 'site-footer__divider-icon', alt: '', loading: 'lazy' }}
+        {% else %}
+          <img src="{{ 'at-logo.png' | asset_url }}" alt="" class="site-footer__divider-icon" loading="lazy">
+        {% endif %}
+      </div>
     </div>
   </div>
 
@@ -293,11 +295,16 @@
     padding: 0 20px;
   }
 
+  .site-footer__divider-icon-clip {
+    overflow: hidden;
+    height: 32px;
+    display: block;
+  }
+
   .site-footer__divider-icon {
     width: 80px;
     height: auto;
     display: block;
-    opacity: 0.8;
   }
 
   .site-footer__bottom {
