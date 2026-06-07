@@ -82,6 +82,16 @@
     </div>
   </div>
 
+  <div class="site-footer__divider">
+    <div class="site-footer__divider-center">
+      {% if section.settings.logo %}
+        {{ section.settings.logo | image_url: width: 80 | image_tag: class: 'site-footer__divider-icon', alt: '', loading: 'lazy' }}
+      {% else %}
+        <img src="{{ 'at-logo.png' | asset_url }}" alt="" class="site-footer__divider-icon" loading="lazy">
+      {% endif %}
+    </div>
+  </div>
+
   <div class="site-footer__bottom">
     <div class="site-footer__bottom-inner">
       <p class="site-footer__copyright">{{ section.settings.copyright_text | replace: '[year]', 'now' | date: '%Y' }}</p>
@@ -120,7 +130,8 @@
   }
 
   .site-footer__logo {
-    max-width: 200px;
+    max-width: 260px;
+    width: 100%;
     height: auto;
     display: block;
     object-fit: contain;
@@ -240,20 +251,52 @@
 
   .site-footer__payment {
     display: flex;
-    gap: 8px;
+    gap: 6px;
     flex-wrap: wrap;
     align-items: center;
-    margin-top: 8px;
+    margin-top: 4px;
   }
 
   .site-footer__payment-icon {
-    height: 32px;
+    height: 28px;
     width: auto;
-    opacity: 0.8;
+  }
+
+  /* ── Decorative divider ── */
+  .site-footer__divider {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 8px 120px 0;
+  }
+
+  .site-footer__divider::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: rgba(168, 135, 84, 0.3);
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .site-footer__divider-center {
+    position: relative;
+    z-index: 1;
+    background: var(--footer-bg, #1b1400);
+    padding: 0 20px;
+  }
+
+  .site-footer__divider-icon {
+    width: 65px;
+    height: auto;
+    display: block;
+    opacity: 0.6;
   }
 
   .site-footer__bottom {
-    border-top: 1px solid rgba(168, 135, 84, 0.3);
     padding: 0 120px 28px;
   }
 
@@ -290,11 +333,13 @@
 
   @media (max-width: 1100px) {
     .site-footer__inner { grid-template-columns: 1fr 1fr; padding: 48px 40px 32px; }
-    .site-footer__bottom { padding: 0 48px 24px; }
+    .site-footer__divider { margin: 8px 40px 0; }
+    .site-footer__bottom { padding: 0 40px 24px; }
   }
 
   @media (max-width: 768px) {
     .site-footer__inner { grid-template-columns: 1fr; padding: 40px 24px 28px; }
+    .site-footer__divider { margin: 8px 24px 0; }
     .site-footer__bottom { padding: 0 24px 20px; }
     .site-footer__bottom-inner { flex-direction: column; gap: 12px; text-align: center; }
   }

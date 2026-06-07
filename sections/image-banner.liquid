@@ -32,14 +32,25 @@
           <div class="img-banner__popup" role="tooltip">
             {%- if hp != blank -%}
               <a href="{{ hp.url }}" class="img-banner__popup-link">
-                <p class="img-banner__popup-name">{{ hp.title }}</p>
-                <p class="img-banner__popup-price">{{ hp.price | money }}</p>
+                <div class="img-banner__popup-inner">
+                  {%- if hp.featured_image -%}
+                    <div class="img-banner__popup-img-wrap">
+                      {{ hp.featured_image | image_url: width: 80, height: 80, crop: 'center' | image_tag: class: 'img-banner__popup-img', loading: 'lazy', alt: hp.title }}
+                    </div>
+                  {%- endif -%}
+                  <div class="img-banner__popup-text">
+                    <p class="img-banner__popup-name">{{ hp.title }}</p>
+                    <p class="img-banner__popup-price">{{ hp.price | money }}</p>
+                  </div>
+                </div>
               </a>
             {%- elsif block.settings.fallback_title != blank -%}
-              <p class="img-banner__popup-name">{{ block.settings.fallback_title }}</p>
-              {%- if block.settings.fallback_price != blank -%}
-                <p class="img-banner__popup-price">{{ block.settings.fallback_price }}</p>
-              {%- endif -%}
+              <div class="img-banner__popup-text">
+                <p class="img-banner__popup-name">{{ block.settings.fallback_title }}</p>
+                {%- if block.settings.fallback_price != blank -%}
+                  <p class="img-banner__popup-price">{{ block.settings.fallback_price }}</p>
+                {%- endif -%}
+              </div>
             {%- endif -%}
           </div>
         </div>
@@ -116,12 +127,11 @@
     -webkit-backdrop-filter: blur(10px);
     border-radius: 14px;
     padding: 14px 20px;
-    min-width: 200px;
-    max-width: 280px;
+    min-width: 220px;
+    max-width: 300px;
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.2s ease, transform 0.2s ease;
-    white-space: nowrap;
     box-shadow: 0 4px 24px rgba(0,0,0,0.12);
   }
 
@@ -173,20 +183,50 @@
     color: inherit;
   }
 
+  .img-banner__popup-inner {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .img-banner__popup-img-wrap {
+    width: 64px;
+    height: 64px;
+    border-radius: 8px;
+    overflow: hidden;
+    flex-shrink: 0;
+    background: #eee;
+  }
+
+  .img-banner__popup-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .img-banner__popup-text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+  }
+
   .img-banner__popup-name {
     font-family: var(--font-body);
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 600;
     color: #111;
-    margin: 0 0 4px;
+    margin: 0;
     line-height: 1.3;
     white-space: normal;
+    word-break: break-word;
   }
 
   .img-banner__popup-price {
     font-family: var(--font-body);
-    font-size: 14px;
-    color: #555;
+    font-size: 13px;
+    color: #666;
     margin: 0;
     font-weight: 400;
   }
@@ -198,45 +238,110 @@
   @media (max-width: 768px) {
     .img-banner__wrap { height: 420px; }
     .img-banner__hotspot-btn { width: 28px; height: 28px; border-radius: 6px; }
-    .img-banner__popup { min-width: 160px; padding: 10px 14px; font-size: 13px; }
+
+    /* On mobile reset all flip variants — always center below hotspot */
+    .img-banner__popup,
+    .img-banner__hotspot--flip-x .img-banner__popup,
+    .img-banner__hotspot--flip-y .img-banner__popup,
+    .img-banner__hotspot--flip-x.img-banner__hotspot--flip-y .img-banner__popup {
+      left: 50%;
+      right: auto;
+      top: calc(100% + 8px);
+      bottom: auto;
+      transform: translateX(-50%) translateY(6px);
+      min-width: min(240px, calc(100vw - 48px));
+      max-width: min(280px, calc(100vw - 32px));
+      padding: 12px 14px;
+      border-radius: 12px;
+    }
+
+    .img-banner__hotspot:hover .img-banner__popup,
+    .img-banner__hotspot--open .img-banner__popup,
+    .img-banner__hotspot--flip-x:hover .img-banner__popup,
+    .img-banner__hotspot--flip-x.img-banner__hotspot--open .img-banner__popup,
+    .img-banner__hotspot--flip-y:hover .img-banner__popup,
+    .img-banner__hotspot--flip-y.img-banner__hotspot--open .img-banner__popup,
+    .img-banner__hotspot--flip-x.img-banner__hotspot--flip-y:hover .img-banner__popup,
+    .img-banner__hotspot--flip-x.img-banner__hotspot--flip-y.img-banner__hotspot--open .img-banner__popup {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .img-banner__popup-inner { gap: 10px; }
+    .img-banner__popup-img-wrap { width: 56px; height: 56px; flex-shrink: 0; }
     .img-banner__popup-name { font-size: 13px; }
     .img-banner__popup-price { font-size: 12px; }
   }
 
   @media (max-width: 480px) {
     .img-banner__wrap { height: 320px; }
+    .img-banner__popup,
+    .img-banner__hotspot--flip-x .img-banner__popup,
+    .img-banner__hotspot--flip-y .img-banner__popup,
+    .img-banner__hotspot--flip-x.img-banner__hotspot--flip-y .img-banner__popup {
+      min-width: min(220px, calc(100vw - 32px));
+      max-width: min(260px, calc(100vw - 24px));
+    }
+    .img-banner__popup-img-wrap { width: 48px; height: 48px; }
+    .img-banner__popup-name { font-size: 12px; }
+    .img-banner__popup-price { font-size: 11px; }
   }
 {% endstylesheet %}
 
 <script>
   (function() {
     var hotspots = document.querySelectorAll('[data-hotspot]');
-    hotspots.forEach(function(hotspot) {
-      var btn = hotspot.querySelector('.img-banner__hotspot-btn');
-      if (!btn) return;
 
-      btn.addEventListener('click', function(e) {
-        e.stopPropagation();
-        var isOpen = hotspot.classList.contains('img-banner__hotspot--open');
-        hotspots.forEach(function(h) {
-          h.classList.remove('img-banner__hotspot--open');
-          var b = h.querySelector('.img-banner__hotspot-btn');
-          if (b) b.setAttribute('aria-expanded', 'false');
-        });
-        if (!isOpen) {
-          hotspot.classList.add('img-banner__hotspot--open');
-          btn.setAttribute('aria-expanded', 'true');
-        }
-      });
-    });
-
-    document.addEventListener('click', function() {
+    function closeAll() {
       hotspots.forEach(function(h) {
         h.classList.remove('img-banner__hotspot--open');
         var b = h.querySelector('.img-banner__hotspot-btn');
         if (b) b.setAttribute('aria-expanded', 'false');
       });
+    }
+
+    hotspots.forEach(function(hotspot) {
+      var btn = hotspot.querySelector('.img-banner__hotspot-btn');
+      var popup = hotspot.querySelector('.img-banner__popup');
+      var closeTimer = null;
+
+      function open() {
+        clearTimeout(closeTimer);
+        hotspot.classList.add('img-banner__hotspot--open');
+        if (btn) btn.setAttribute('aria-expanded', 'true');
+      }
+
+      function scheduleClose() {
+        closeTimer = setTimeout(function() {
+          hotspot.classList.remove('img-banner__hotspot--open');
+          if (btn) btn.setAttribute('aria-expanded', 'false');
+        }, 120);
+      }
+
+      /* Desktop hover — button triggers open, delayed close bridges gap to popup */
+      hotspot.addEventListener('mouseenter', open);
+      hotspot.addEventListener('mouseleave', scheduleClose);
+
+      /* Popup keeps itself alive while hovered, and is fully clickable */
+      if (popup) {
+        popup.addEventListener('mouseenter', open);
+        popup.addEventListener('mouseleave', scheduleClose);
+        popup.addEventListener('click', function(e) {
+          e.stopPropagation();
+        });
+      }
+
+      /* Mobile: tap "+" to toggle */
+      if (btn) {
+        btn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          var isOpen = hotspot.classList.contains('img-banner__hotspot--open');
+          closeAll();
+          if (!isOpen) open();
+        });
+      }
     });
+
+    document.addEventListener('click', closeAll);
   })();
 </script>
 
