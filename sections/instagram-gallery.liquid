@@ -35,6 +35,9 @@
     padding: 60px 120px;
     max-width: 1440px;
     margin: 0 auto;
+    position: relative;
+    z-index: 2;
+    margin-bottom: -220px;
   }
 
   .insta-gallery__grid {
@@ -104,14 +107,14 @@
   }
 
   @media (max-width: 1200px) {
-    .insta-gallery { padding: 48px 48px; }
+    .insta-gallery { padding: 48px 48px; margin-bottom: -180px; }
     .insta-gallery__grid { flex-wrap: wrap; }
     .insta-gallery__item,
     .insta-gallery__cta { flex: 0 0 calc(50% - 10px); aspect-ratio: 1; }
   }
 
   @media (max-width: 768px) {
-    .insta-gallery { padding: 40px 24px; }
+    .insta-gallery { padding: 40px 24px; margin-bottom: -140px; }
     .insta-gallery__item,
     .insta-gallery__cta { flex: 0 0 calc(50% - 10px); aspect-ratio: 1; }
   }
