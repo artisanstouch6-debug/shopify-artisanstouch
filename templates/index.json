@@ -101,9 +101,57 @@
     },
     "image_banner": {
       "type": "image-banner",
+      "blocks": {
+        "hotspot_Fqaare": {
+          "type": "hotspot",
+          "settings": {
+            "product": "rose-gold-bracelet-1",
+            "fallback_title": "",
+            "fallback_price": "",
+            "hotspot_x": 90,
+            "hotspot_y": 73
+          }
+        },
+        "hotspot_Lxi3VY": {
+          "type": "hotspot",
+          "settings": {
+            "product": "gold-bracelet",
+            "fallback_title": "",
+            "fallback_price": "",
+            "hotspot_x": 81,
+            "hotspot_y": 80
+          }
+        },
+        "hotspot_6daqUn": {
+          "type": "hotspot",
+          "settings": {
+            "product": "",
+            "fallback_title": "",
+            "fallback_price": "",
+            "hotspot_x": 40,
+            "hotspot_y": 34
+          }
+        },
+        "hotspot_XECGa4": {
+          "type": "hotspot",
+          "settings": {
+            "product": "diamon-ring",
+            "fallback_title": "",
+            "fallback_price": "",
+            "hotspot_x": 29,
+            "hotspot_y": 28
+          }
+        }
+      },
+      "block_order": [
+        "hotspot_Fqaare",
+        "hotspot_Lxi3VY",
+        "hotspot_6daqUn",
+        "hotspot_XECGa4"
+      ],
       "settings": {
-        "overlay_opacity": 0,
-        "heading": ""
+        "image": "shopify://shop_images/40315e98c83752592806b146cd4289a382f53a3d.png",
+        "overlay_opacity": 0
       }
     },
     "testimonials": {
