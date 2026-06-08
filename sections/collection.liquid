@@ -1,47 +1,800 @@
-{% comment %}
-  This section is used in the collection template to render collection page
-  listing all products within a collection.
+{%- comment -%}
+  Collection page — banner (collection image/title/desc) + filterable product grid.
+  Tags are filtered server-side via URL (/collections/handle/tag).
+  Price range filters client-side by hiding cards outside the selected range.
+{%- endcomment -%}
 
-  https://shopify.dev/docs/storefronts/themes/architecture/templates/collection
-{% endcomment %}
+{%- assign per_page = section.settings.products_per_page | default: 12 -%}
+{%- assign price_max_cents = section.settings.price_max | times: 100 -%}
 
-<h1>{{ collection.title }}</h1>
+{%- comment -%} Build base URL preserving any active tag for sort links {%- endcomment -%}
+{%- assign base_url = collection.url -%}
+{%- if current_tags.size > 0 -%}
+  {%- assign joined_tags = current_tags | join: '+' -%}
+  {%- assign base_url = collection.url | append: '/' | append: joined_tags -%}
+{%- endif -%}
 
-<div class="collection-products">
-  {% paginate collection.products by 20 %}
-    {% for product in collection.products %}
-      <div class="collection-product">
-        {% if product.featured_image %}
-          {% render 'image',
-            class: 'collection-product__image',
-            image: product.featured_image,
-            url: product.url,
-            width: 400,
-            height: 400,
-            crop: 'center'
-          %}
-        {% endif %}
-        <div class="collection-product__content">
-          <p>{{ product.title | escape | link_to: product.url }}</p>
-          <p>{{ product.price | money }}</p>
+<!-- ── Collection Banner ─────────────────────────────── -->
+<section class="coll-banner full-width">
+  {%- if collection.image -%}
+    {{ collection.image | image_url: width: 2000 | image_tag: class: 'coll-banner__bg', loading: 'eager', fetchpriority: 'high', alt: '' }}
+  {%- else -%}
+    <div class="coll-banner__bg coll-banner__bg--empty"></div>
+  {%- endif -%}
+  <div class="coll-banner__overlay"></div>
+  <div class="coll-banner__text">
+    <h1 class="coll-banner__title">{{ collection.title }}</h1>
+    {%- if collection.description != blank -%}
+      <p class="coll-banner__desc">{{ collection.description | strip_html }}</p>
+    {%- endif -%}
+  </div>
+</section>
+
+<!-- ── Products Section ──────────────────────────────── -->
+{% paginate collection.products by per_page %}
+<section class="coll-main full-width">
+  <div class="coll-main__inner">
+
+    <!-- Section heading — swirl only under the last word -->
+    {%- assign coll_words = collection.title | split: ' ' -%}
+    {%- assign last_word  = coll_words | last -%}
+    {%- assign pre_words  = collection.title | split: last_word | first | strip -%}
+    <div class="coll-section-head">
+      <h2 class="coll-section-title">
+        {{ section.settings.heading_prefix }}
+        {%- if pre_words != blank %}&nbsp;{{ pre_words }}{%- endif -%}
+        &nbsp;<span class="coll-section-title__hl">{{ last_word }}<img src="{{ 'heading-swirl.svg' | asset_url }}" class="coll-section-title__swirl" alt="" aria-hidden="true"></span>
+      </h2>
+    </div>
+
+    <!-- Filter bar: tags (left) + price range (right) -->
+    {%- if collection.all_tags.size > 0 or section.settings.show_price_filter -%}
+    <div class="coll-filterbar">
+
+      {%- if collection.all_tags.size > 0 -%}
+      <div class="coll-filterbar__tags">
+        <a href="{{ collection.url }}{% if collection.sort_by != blank %}?sort_by={{ collection.sort_by }}{% endif %}"
+           class="coll-pill{% unless current_tags.size > 0 %} coll-pill--active{% endunless %}">All</a>
+        {%- for tag in collection.all_tags -%}
+          <a href="{{ collection.url }}/{{ tag | handleize }}{% if collection.sort_by != blank %}?sort_by={{ collection.sort_by }}{% endif %}"
+             class="coll-pill{% if current_tags contains tag %} coll-pill--active{% endif %}">{{ tag }}</a>
+        {%- endfor -%}
+      </div>
+      {%- endif -%}
+
+      {%- if section.settings.show_price_filter -%}
+      <div class="coll-filterbar__price"
+           id="coll-price-{{ section.id }}"
+           data-max="{{ price_max_cents }}"
+           data-target="coll-grid-{{ section.id }}"
+           data-count="coll-count-{{ section.id }}">
+        <p class="coll-price-label">Filter by Price</p>
+        <p class="coll-price-display">
+          Price:&nbsp;<span class="js-pmin">{{ 0 | money_without_trailing_zeros }}</span>&nbsp;–&nbsp;<span class="js-pmax">{{ price_max_cents | money_without_trailing_zeros }}</span>
+        </p>
+        <div class="coll-slider-wrap">
+          <div class="coll-slider-track"></div>
+          <div class="coll-slider-fill" id="coll-fill-{{ section.id }}"></div>
+          <input type="range" class="coll-range js-range-min"
+                 min="0" max="{{ price_max_cents }}" value="0" step="500"
+                 aria-label="Minimum price">
+          <input type="range" class="coll-range js-range-max"
+                 min="0" max="{{ price_max_cents }}" value="{{ price_max_cents }}" step="500"
+                 aria-label="Maximum price">
         </div>
       </div>
-    {% endfor %}
+      {%- endif -%}
 
-    {{ paginate | default_pagination }}
-  {% endpaginate %}
-</div>
+    </div>
+    {%- endif -%}
+
+    <!-- Controls: product count (left) + sort (right) -->
+    <div class="coll-controls">
+      <span class="coll-controls__count" id="coll-count-{{ section.id }}">{{ paginate.items }} Products</span>
+      <div class="coll-controls__sort-wrap">
+        <select class="coll-controls__sort" aria-label="Sort products" onchange="location.href=this.value">
+          <option value="{{ base_url }}?sort_by=best-selling"{% if collection.sort_by == 'best-selling' or collection.sort_by == blank %} selected{% endif %}>Most Popular</option>
+          <option value="{{ base_url }}?sort_by=created-descending"{% if collection.sort_by == 'created-descending' %} selected{% endif %}>Newest</option>
+          <option value="{{ base_url }}?sort_by=price-ascending"{% if collection.sort_by == 'price-ascending' %} selected{% endif %}>Price Low – High</option>
+          <option value="{{ base_url }}?sort_by=price-descending"{% if collection.sort_by == 'price-descending' %} selected{% endif %}>Price High – Low</option>
+          <option value="{{ base_url }}?sort_by=title-ascending"{% if collection.sort_by == 'title-ascending' %} selected{% endif %}>A – Z</option>
+          <option value="{{ base_url }}?sort_by=title-descending"{% if collection.sort_by == 'title-descending' %} selected{% endif %}>Z – A</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- 4-column product grid -->
+    <div class="coll-grid" id="coll-grid-{{ section.id }}">
+      {%- for product in collection.products -%}
+        <div class="coll-pcard" data-price="{{ product.price }}">
+          <a href="{{ product.url }}" class="coll-pcard__img-wrap">
+            {%- if product.featured_image -%}
+              {{ product.featured_image
+                | image_url: width: 400, height: 400, crop: 'center'
+                | image_tag: class: 'coll-pcard__img', loading: 'lazy', alt: product.featured_image.alt | default: product.title }}
+            {%- else -%}
+              <div class="coll-pcard__img coll-pcard__img--ph">{{ 'image' | placeholder_svg_tag }}</div>
+            {%- endif -%}
+          </a>
+          <div class="coll-pcard__info">
+            <div class="coll-pcard__row">
+              <a href="{{ product.url }}" class="coll-pcard__name">{{ product.title }}</a>
+              <div class="coll-pcard__acts">
+                <button class="coll-pcard__act-btn coll-pcard__wish" aria-label="Add to wishlist">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12.62 20.8101C12.28 20.9301 11.72 20.9301 11.38 20.8101C8.48 19.8201 2 15.6901 2 8.6901C2 5.6001 4.49 3.1001 7.56 3.1001C9.38 3.1001 10.99 3.9801 12 5.3401C13.01 3.9801 14.63 3.1001 16.44 3.1001C19.51 3.1001 22 5.6001 22 8.6901C22 15.6901 15.52 19.8201 12.62 20.8101Z" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </button>
+                <button class="coll-pcard__act-btn coll-pcard__atc" aria-label="Add to cart" data-variant="{{ product.first_available_variant.id }}">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M7.5 7.67001V6.70001C7.5 4.45001 9.31 2.24001 11.56 2.03001C14.24 1.77001 16.5 3.88001 16.5 6.51001V7.89001" stroke="black" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M8.99999 22H15C19.02 22 19.74 20.39 19.95 18.43L20.7 12.43C20.97 9.99 20.27 8 16 8H7.99999C3.72999 8 3.02999 9.99 3.29999 12.43L4.04999 18.43C4.25999 20.39 4.97999 22 8.99999 22Z" stroke="black" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M15.4955 12H15.5045" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M8.49451 12H8.50349" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+            <p class="coll-pcard__price">{{ product.price | money }}</p>
+          </div>
+        </div>
+      {%- else -%}
+        <p class="coll-empty">No products found in this collection.</p>
+      {%- endfor -%}
+    </div>
+
+    <!-- Pagination -->
+    {%- if paginate.pages > 1 -%}
+    <nav class="coll-pagination" aria-label="Collection pagination">
+      {%- if paginate.previous -%}
+        <a href="{{ paginate.previous.url }}" class="coll-page-btn" aria-label="Previous page">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+      {%- else -%}
+        <span class="coll-page-btn coll-page-btn--disabled" aria-disabled="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+      {%- endif -%}
+
+      {%- for part in paginate.parts -%}
+        {%- if part.is_link -%}
+          <a href="{{ part.url }}" class="coll-page-num">{{ part.title }}</a>
+        {%- elsif part.title == paginate.current_page -%}
+          <span class="coll-page-num coll-page-num--active" aria-current="page">{{ part.title }}</span>
+        {%- else -%}
+          <span class="coll-page-num coll-page-num--gap">{{ part.title }}</span>
+        {%- endif -%}
+      {%- endfor -%}
+
+      {%- if paginate.next -%}
+        <a href="{{ paginate.next.url }}" class="coll-page-btn" aria-label="Next page">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+      {%- else -%}
+        <span class="coll-page-btn coll-page-btn--disabled" aria-disabled="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+      {%- endif -%}
+    </nav>
+    {%- endif -%}
+
+  </div>
+</section>
+{% endpaginate %}
+
+<!-- ── Price range slider JS ────────────────────────── -->
+<script>
+(function () {
+  var wrap = document.getElementById('coll-price-{{ section.id }}');
+  if (!wrap) return;
+
+  var fill       = document.getElementById('coll-fill-{{ section.id }}');
+  var rangeMin   = wrap.querySelector('.js-range-min');
+  var rangeMax   = wrap.querySelector('.js-range-max');
+  var dispMin    = wrap.querySelector('.js-pmin');
+  var dispMax    = wrap.querySelector('.js-pmax');
+  var grid       = document.getElementById(wrap.dataset.target);
+  var countEl    = document.getElementById(wrap.dataset.count);
+  var priceMax   = parseInt(wrap.dataset.max, 10);
+
+  function fmt(cents) {
+    var amount = Math.round(cents / 100);
+    return 'LKR ' + amount.toLocaleString();
+  }
+
+  function pct(val) { return (val / priceMax) * 100; }
+
+  function updateFill() {
+    var lo = parseInt(rangeMin.value, 10);
+    var hi = parseInt(rangeMax.value, 10);
+    fill.style.left  = pct(lo) + '%';
+    fill.style.width = (pct(hi) - pct(lo)) + '%';
+    dispMin.textContent = fmt(lo);
+    dispMax.textContent = fmt(hi);
+  }
+
+  function filterCards() {
+    if (!grid) return;
+    var lo = parseInt(rangeMin.value, 10);
+    var hi = parseInt(rangeMax.value, 10);
+    var visible = 0;
+    grid.querySelectorAll('.coll-pcard').forEach(function (card) {
+      var p = parseInt(card.dataset.price, 10);
+      var show = p >= lo && p <= hi;
+      card.style.display = show ? '' : 'none';
+      if (show) visible++;
+    });
+    if (countEl) countEl.textContent = visible + ' Products';
+  }
+
+  rangeMin.addEventListener('input', function () {
+    var lo = parseInt(rangeMin.value, 10);
+    var hi = parseInt(rangeMax.value, 10);
+    if (lo >= hi - 500) { rangeMin.value = Math.max(0, hi - 500); }
+    updateFill();
+    filterCards();
+  });
+
+  rangeMax.addEventListener('input', function () {
+    var lo = parseInt(rangeMin.value, 10);
+    var hi = parseInt(rangeMax.value, 10);
+    if (hi <= lo + 500) { rangeMax.value = Math.min(priceMax, lo + 500); }
+    updateFill();
+    filterCards();
+  });
+
+  updateFill();
+})();
+</script>
+
+<!-- ── Add-to-cart JS ────────────────────────────────── -->
+<script>
+(function () {
+  var grid = document.getElementById('coll-grid-{{ section.id }}');
+  if (!grid) return;
+  grid.querySelectorAll('.coll-pcard__atc').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var id = btn.dataset.variant;
+      if (!id) return;
+      btn.disabled = true;
+      fetch('/cart/add.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: id, quantity: 1 })
+      })
+      .then(function (r) { return r.json(); })
+      .then(function () {
+        document.dispatchEvent(new CustomEvent('cart:refresh'));
+        btn.disabled = false;
+      })
+      .catch(function () { btn.disabled = false; });
+    });
+  });
+})();
+</script>
 
 {% stylesheet %}
-  .collection-products {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
-  }
+/* ── Banner ──────────────────────────────────────── */
+.coll-banner {
+  position: relative;
+  height: 500px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.coll-banner__bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+.coll-banner__bg--empty {
+  background: #2a1a1a;
+}
+
+.coll-banner__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.50) 100%);
+}
+
+.coll-banner__text {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  color: #fff;
+  padding: 0 24px;
+  max-width: 700px;
+}
+
+.coll-banner__title {
+  font-family: var(--font-heading);
+  font-size: 52px;
+  font-weight: 400;
+  line-height: 1.15;
+  margin: 0 0 16px;
+  color: #fff;
+}
+
+.coll-banner__desc {
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.7;
+  color: rgba(255,255,255,0.85);
+  margin: 0;
+}
+
+/* ── Main products section ───────────────────────── */
+.coll-main {
+  background: #fff;
+}
+
+.coll-main__inner {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 52px 120px 72px;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+/* ── Section heading ─────────────────────────────── */
+.coll-section-head {
+  text-align: center;
+}
+
+.coll-section-title {
+  font-family: var(--font-heading);
+  font-size: 36px;
+  font-weight: 600;
+  color: #000;
+  margin: 0;
+  display: inline-block;
+}
+
+.coll-section-title__hl {
+  display: inline-block;
+  position: relative;
+  z-index: 0;
+}
+
+.coll-section-title__swirl {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: -28px;
+  width: 100%;
+  min-width: 180px;
+  max-width: 280px;
+  height: 80px;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* ── Filter bar ──────────────────────────────────── */
+.coll-filterbar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.coll-filterbar__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  flex: 1;
+}
+
+.coll-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 18px;
+  border-radius: 20px;
+  border: 1px solid #ddd;
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: #333;
+  text-decoration: none;
+  background: #fff;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+  white-space: nowrap;
+}
+
+.coll-pill:hover {
+  border-color: var(--coral-pink, #ff9696);
+  color: var(--coral-pink, #ff9696);
+}
+
+.coll-pill--active {
+  background: var(--coral-pink, #ff9696);
+  border-color: var(--coral-pink, #ff9696);
+  color: #fff;
+}
+
+.coll-pill--active:hover {
+  color: #fff;
+}
+
+/* ── Price range filter ──────────────────────────── */
+.coll-filterbar__price {
+  flex-shrink: 0;
+  min-width: 200px;
+  max-width: 260px;
+}
+
+.coll-price-label {
+  font-family: var(--font-body);
+  font-size: 12px;
+  color: #666;
+  margin: 0 0 2px;
+}
+
+.coll-price-display {
+  font-family: var(--font-body);
+  font-size: 12px;
+  color: #333;
+  margin: 0 0 10px;
+}
+
+.coll-slider-wrap {
+  position: relative;
+  height: 20px;
+  width: 100%;
+}
+
+.coll-slider-track {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: #e0e0e0;
+  border-radius: 2px;
+  transform: translateY(-50%);
+}
+
+.coll-slider-fill {
+  position: absolute;
+  top: 50%;
+  height: 3px;
+  background: var(--coral-pink, #ff9696);
+  border-radius: 2px;
+  transform: translateY(-50%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.coll-range {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.coll-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--coral-pink, #ff9696);
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 1.5px var(--coral-pink, #ff9696);
+  cursor: pointer;
+  pointer-events: all;
+}
+
+.coll-range::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--coral-pink, #ff9696);
+  border: 2px solid #fff;
+  box-shadow: 0 0 0 1.5px var(--coral-pink, #ff9696);
+  cursor: pointer;
+  pointer-events: all;
+}
+
+/* ── Controls row ────────────────────────────────── */
+.coll-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.coll-controls__count {
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: #666;
+}
+
+.coll-controls__sort-wrap {
+  position: relative;
+}
+
+.coll-controls__sort {
+  -webkit-appearance: none;
+  appearance: none;
+  padding: 8px 36px 8px 14px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: #333;
+  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1L6 6L11 1' stroke='%23333' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E") no-repeat right 12px center;
+  cursor: pointer;
+}
+
+.coll-controls__sort:focus {
+  outline: none;
+  border-color: var(--coral-pink, #ff9696);
+}
+
+/* ── Product grid ────────────────────────────────── */
+.coll-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px 20px;
+}
+
+.coll-empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  font-family: var(--font-body);
+  font-size: 16px;
+  color: #666;
+  padding: 40px 0;
+}
+
+/* ── Product card ────────────────────────────────── */
+.coll-pcard {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.coll-pcard__img-wrap {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 12px;
+  overflow: hidden;
+  text-decoration: none;
+  background: #f5f0ef;
+  flex-shrink: 0;
+}
+
+.coll-pcard__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+.coll-pcard__img-wrap:hover .coll-pcard__img { transform: scale(1.04); }
+
+.coll-pcard__img--ph {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f0e8e8;
+}
+
+.coll-pcard__img--ph svg {
+  width: 60px;
+  height: 60px;
+  opacity: 0.25;
+}
+
+.coll-pcard__info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.coll-pcard__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.coll-pcard__name {
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 600;
+  color: #000;
+  text-decoration: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+}
+
+.coll-pcard__name:hover { color: var(--coral-pink, #ff9696); }
+
+.coll-pcard__acts {
+  display: flex;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.coll-pcard__act-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.2s;
+}
+
+.coll-pcard__act-btn:hover { opacity: 0.55; }
+.coll-pcard__act-btn:disabled { opacity: 0.35; cursor: default; }
+
+.coll-pcard__price {
+  font-family: var(--font-body);
+  font-size: 15px;
+  color: #000;
+  margin: 0;
+}
+
+/* ── Pagination ──────────────────────────────────── */
+.coll-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding-top: 8px;
+}
+
+.coll-page-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  color: #333;
+  text-decoration: none;
+  background: #fff;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.coll-page-btn:hover { border-color: var(--coral-pink, #ff9696); color: var(--coral-pink, #ff9696); }
+
+.coll-page-btn--disabled {
+  opacity: 0.35;
+  cursor: default;
+  pointer-events: none;
+}
+
+.coll-page-num {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: #333;
+  text-decoration: none;
+  background: #fff;
+  transition: border-color 0.2s, background 0.2s, color 0.2s;
+}
+
+.coll-page-num:hover { border-color: var(--coral-pink, #ff9696); color: var(--coral-pink, #ff9696); }
+
+.coll-page-num--active {
+  background: #1a1a1a;
+  border-color: #1a1a1a;
+  color: #fff;
+}
+
+.coll-page-num--gap {
+  border: none;
+  background: none;
+  color: #999;
+  cursor: default;
+}
+
+/* ── Responsive ──────────────────────────────────── */
+@media (max-width: 1100px) {
+  .coll-main__inner { padding: 40px 48px 60px; }
+  .coll-banner__title { font-size: 42px; }
+  .coll-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 768px) {
+  .coll-main__inner { padding: 36px 24px 52px; gap: 28px; }
+  .coll-banner { height: 380px; }
+  .coll-banner__title { font-size: 32px; }
+  .coll-section-title { font-size: 28px; }
+  .coll-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
+  .coll-filterbar { flex-direction: column; gap: 16px; }
+  .coll-filterbar__price { max-width: 100%; width: 100%; }
+}
+
+@media (max-width: 480px) {
+  .coll-banner { height: 300px; }
+  .coll-banner__title { font-size: 26px; }
+  .coll-main__inner { padding: 28px 16px 44px; }
+  .coll-controls { flex-direction: column; align-items: flex-start; gap: 10px; }
+}
 {% endstylesheet %}
 
 {% schema %}
 {
-  "name": "t:general.collection",
-  "settings": []
+  "name": "Collection",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section heading"
+    },
+    {
+      "type": "text",
+      "id": "heading_prefix",
+      "label": "Heading prefix",
+      "default": "Our"
+    },
+    {
+      "type": "header",
+      "content": "Products"
+    },
+    {
+      "type": "range",
+      "id": "products_per_page",
+      "label": "Products per page",
+      "min": 4,
+      "max": 24,
+      "step": 4,
+      "default": 12
+    },
+    {
+      "type": "header",
+      "content": "Price filter"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_price_filter",
+      "label": "Show price range filter",
+      "default": true
+    },
+    {
+      "type": "number",
+      "id": "price_max",
+      "label": "Maximum price (in your store currency, e.g. 150000 for LKR 150,000)",
+      "default": 150000
+    }
+  ],
+  "presets": [
+    {
+      "name": "Collection"
+    }
+  ]
 }
 {% endschema %}
