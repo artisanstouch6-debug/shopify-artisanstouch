@@ -14,6 +14,13 @@
   {%- assign base_url = collection.url | append: '/' | append: joined_tags -%}
 {%- endif -%}
 
+<!-- ── Remove body padding so banner starts at the very top ── -->
+<style>
+  body.template-collection {
+    padding-top: 0 !important;
+  }
+</style>
+
 <!-- ── Collection Banner ─────────────────────────────── -->
 <section class="coll-banner full-width">
   {%- if collection.image -%}
@@ -91,15 +98,27 @@
     <!-- Controls: product count (left) + sort (right) -->
     <div class="coll-controls">
       <span class="coll-controls__count" id="coll-count-{{ section.id }}">{{ paginate.items }} Products</span>
-      <div class="coll-controls__sort-wrap">
-        <select class="coll-controls__sort" aria-label="Sort products" onchange="location.href=this.value">
-          <option value="{{ base_url }}?sort_by=best-selling"{% if collection.sort_by == 'best-selling' or collection.sort_by == blank %} selected{% endif %}>Most Popular</option>
-          <option value="{{ base_url }}?sort_by=created-descending"{% if collection.sort_by == 'created-descending' %} selected{% endif %}>Newest</option>
-          <option value="{{ base_url }}?sort_by=price-ascending"{% if collection.sort_by == 'price-ascending' %} selected{% endif %}>Price Low – High</option>
-          <option value="{{ base_url }}?sort_by=price-descending"{% if collection.sort_by == 'price-descending' %} selected{% endif %}>Price High – Low</option>
-          <option value="{{ base_url }}?sort_by=title-ascending"{% if collection.sort_by == 'title-ascending' %} selected{% endif %}>A – Z</option>
-          <option value="{{ base_url }}?sort_by=title-descending"{% if collection.sort_by == 'title-descending' %} selected{% endif %}>Z – A</option>
-        </select>
+      <div class="coll-sort-drop" id="coll-sort-{{ section.id }}">
+        {%- assign sort_options = '' -%}
+        {%- if collection.sort_by == 'created-descending' -%}{%- assign sort_label = 'Newest' -%}
+        {%- elsif collection.sort_by == 'price-ascending' -%}{%- assign sort_label = 'Price: Low to High' -%}
+        {%- elsif collection.sort_by == 'price-descending' -%}{%- assign sort_label = 'Price: High to Low' -%}
+        {%- elsif collection.sort_by == 'title-ascending' -%}{%- assign sort_label = 'A – Z' -%}
+        {%- elsif collection.sort_by == 'title-descending' -%}{%- assign sort_label = 'Z – A' -%}
+        {%- else -%}{%- assign sort_label = 'Most Popular' -%}
+        {%- endif -%}
+        <button class="coll-sort-btn" aria-haspopup="listbox" aria-expanded="false">
+          <span class="coll-sort-btn__label">{{ sort_label }}</span>
+          <svg class="coll-sort-btn__chevron" width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <ul class="coll-sort-list" role="listbox">
+          <li class="coll-sort-option{% if collection.sort_by == 'best-selling' or collection.sort_by == blank %} coll-sort-option--active{% endif %}" role="option" data-url="{{ base_url }}?sort_by=best-selling">Most Popular</li>
+          <li class="coll-sort-option{% if collection.sort_by == 'created-descending' %} coll-sort-option--active{% endif %}" role="option" data-url="{{ base_url }}?sort_by=created-descending">Newest</li>
+          <li class="coll-sort-option{% if collection.sort_by == 'price-ascending' %} coll-sort-option--active{% endif %}" role="option" data-url="{{ base_url }}?sort_by=price-ascending">Price: Low to High</li>
+          <li class="coll-sort-option{% if collection.sort_by == 'price-descending' %} coll-sort-option--active{% endif %}" role="option" data-url="{{ base_url }}?sort_by=price-descending">Price: High to Low</li>
+          <li class="coll-sort-option{% if collection.sort_by == 'title-ascending' %} coll-sort-option--active{% endif %}" role="option" data-url="{{ base_url }}?sort_by=title-ascending">A – Z</li>
+          <li class="coll-sort-option{% if collection.sort_by == 'title-descending' %} coll-sort-option--active{% endif %}" role="option" data-url="{{ base_url }}?sort_by=title-descending">Z – A</li>
+        </ul>
       </div>
     </div>
 
@@ -247,6 +266,42 @@
 })();
 </script>
 
+<!-- ── Custom sort dropdown JS ──────────────────────── -->
+<script>
+(function () {
+  var drop = document.getElementById('coll-sort-{{ section.id }}');
+  if (!drop) return;
+
+  var btn  = drop.querySelector('.coll-sort-btn');
+  var list = drop.querySelector('.coll-sort-list');
+  var label = drop.querySelector('.coll-sort-btn__label');
+
+  function open()  { drop.classList.add('coll-sort-drop--open'); btn.setAttribute('aria-expanded', 'true'); }
+  function close() { drop.classList.remove('coll-sort-drop--open'); btn.setAttribute('aria-expanded', 'false'); }
+  function toggle() { drop.classList.contains('coll-sort-drop--open') ? close() : open(); }
+
+  btn.addEventListener('click', function (e) { e.stopPropagation(); toggle(); });
+
+  list.querySelectorAll('.coll-sort-option').forEach(function (opt) {
+    opt.addEventListener('click', function () {
+      label.textContent = opt.textContent;
+      list.querySelectorAll('.coll-sort-option').forEach(function (o) { o.classList.remove('coll-sort-option--active'); });
+      opt.classList.add('coll-sort-option--active');
+      close();
+      location.href = opt.dataset.url;
+    });
+  });
+
+  document.addEventListener('click', function (e) {
+    if (!drop.contains(e.target)) close();
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') close();
+  });
+})();
+</script>
+
 <!-- ── Add-to-cart JS ────────────────────────────────── -->
 <script>
 (function () {
@@ -277,7 +332,8 @@
 /* ── Banner ──────────────────────────────────────── */
 .coll-banner {
   position: relative;
-  height: 500px;
+  height: 100vh;
+  min-height: 560px;
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -301,7 +357,7 @@
 .coll-banner__overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to bottom, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.50) 100%);
+  background: rgba(0, 0, 0, 0.52);
 }
 
 .coll-banner__text {
@@ -309,25 +365,27 @@
   z-index: 1;
   text-align: center;
   color: #fff;
-  padding: 0 24px;
-  max-width: 700px;
+  padding: 0 40px;
+  max-width: 860px;
 }
 
 .coll-banner__title {
   font-family: var(--font-heading);
-  font-size: 52px;
+  font-size: 84px;
   font-weight: 400;
-  line-height: 1.15;
-  margin: 0 0 16px;
+  line-height: 1.1;
+  margin: 0 0 24px;
   color: #fff;
 }
 
 .coll-banner__desc {
   font-family: var(--font-body);
-  font-size: 15px;
-  line-height: 1.7;
-  color: rgba(255,255,255,0.85);
+  font-size: 16px;
+  line-height: 1.75;
+  color: var(--light-c-pink, #ffc4c4);
   margin: 0;
+  max-width: 560px;
+  margin-inline: auto;
 }
 
 /* ── Main products section ───────────────────────── */
@@ -338,20 +396,21 @@
 .coll-main__inner {
   max-width: 1440px;
   margin: 0 auto;
-  padding: 52px 120px 72px;
+  padding: 56px 120px 80px;
   display: flex;
   flex-direction: column;
-  gap: 40px;
+  gap: 24px;
 }
 
 /* ── Section heading ─────────────────────────────── */
 .coll-section-head {
   text-align: center;
+  padding-bottom: 12px;
 }
 
 .coll-section-title {
   font-family: var(--font-heading);
-  font-size: 36px;
+  font-size: 40px;
   font-weight: 600;
   color: #000;
   margin: 0;
@@ -368,11 +427,11 @@
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  bottom: -28px;
-  width: 100%;
-  min-width: 180px;
-  max-width: 280px;
-  height: 80px;
+  bottom: -24px;
+  width: 115%;
+  min-width: 160px;
+  max-width: 260px;
+  height: 70px;
   z-index: -1;
   pointer-events: none;
 }
@@ -380,7 +439,7 @@
 /* ── Filter bar ──────────────────────────────────── */
 .coll-filterbar {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   gap: 24px;
   flex-wrap: wrap;
@@ -389,7 +448,7 @@
 .coll-filterbar__tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 12px;
   align-items: center;
   flex: 1;
 }
@@ -397,21 +456,23 @@
 .coll-pill {
   display: inline-flex;
   align-items: center;
-  padding: 7px 18px;
-  border-radius: 20px;
-  border: 1px solid #ddd;
+  padding: 9px 22px;
+  border-radius: 24px;
+  border: 1.5px solid #ccc;
   font-family: var(--font-body);
   font-size: 14px;
-  color: #333;
+  font-weight: 500;
+  color: var(--coral-pink, #ff9696);
   text-decoration: none;
   background: #fff;
+  border-color: var(--coral-pink, #ff9696);
   transition: background 0.2s, color 0.2s, border-color 0.2s;
   white-space: nowrap;
 }
 
 .coll-pill:hover {
-  border-color: var(--coral-pink, #ff9696);
-  color: var(--coral-pink, #ff9696);
+  background: var(--coral-pink, #ff9696);
+  color: #fff;
 }
 
 .coll-pill--active {
@@ -525,26 +586,90 @@
   color: #666;
 }
 
-.coll-controls__sort-wrap {
+.coll-sort-drop {
   position: relative;
 }
 
-.coll-controls__sort {
-  -webkit-appearance: none;
-  appearance: none;
-  padding: 8px 36px 8px 14px;
-  border: 1px solid #ddd;
+.coll-sort-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 18px;
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  min-width: 160px;
+  justify-content: space-between;
+}
+
+.coll-sort-btn:hover,
+.coll-sort-drop--open .coll-sort-btn {
+  border-color: var(--coral-pink, #ff9696);
+  box-shadow: 0 0 0 3px rgba(255,150,150,0.12);
+}
+
+.coll-sort-btn__chevron {
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+  color: #999;
+}
+
+.coll-sort-drop--open .coll-sort-btn__chevron {
+  transform: rotate(180deg);
+}
+
+.coll-sort-list {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  min-width: 100%;
+  background: #fff;
+  border: 1px solid #e8e8e8;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.10);
+  list-style: none;
+  margin: 0;
+  padding: 6px;
+  z-index: 100;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-6px);
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.coll-sort-drop--open .coll-sort-list {
+  opacity: 1;
+  pointer-events: all;
+  transform: translateY(0);
+}
+
+.coll-sort-option {
+  padding: 9px 14px;
   border-radius: 6px;
   font-family: var(--font-body);
   font-size: 14px;
-  color: #333;
-  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1L6 6L11 1' stroke='%23333' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E") no-repeat right 12px center;
+  color: #444;
   cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  white-space: nowrap;
 }
 
-.coll-controls__sort:focus {
-  outline: none;
-  border-color: var(--coral-pink, #ff9696);
+.coll-sort-option:hover {
+  background: #fff5f5;
+  color: var(--coral-pink, #ff9696);
+}
+
+.coll-sort-option--active {
+  color: var(--coral-pink, #ff9696);
+  font-weight: 600;
+  background: #fff5f5;
 }
 
 /* ── Product grid ────────────────────────────────── */
@@ -725,14 +850,14 @@
 /* ── Responsive ──────────────────────────────────── */
 @media (max-width: 1100px) {
   .coll-main__inner { padding: 40px 48px 60px; }
-  .coll-banner__title { font-size: 42px; }
+  .coll-banner__title { font-size: 64px; }
   .coll-grid { grid-template-columns: repeat(3, 1fr); }
 }
 
 @media (max-width: 768px) {
   .coll-main__inner { padding: 36px 24px 52px; gap: 28px; }
-  .coll-banner { height: 380px; }
-  .coll-banner__title { font-size: 32px; }
+  .coll-banner { height: 100vh; min-height: 480px; }
+  .coll-banner__title { font-size: 48px; }
   .coll-section-title { font-size: 28px; }
   .coll-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
   .coll-filterbar { flex-direction: column; gap: 16px; }
@@ -740,8 +865,9 @@
 }
 
 @media (max-width: 480px) {
-  .coll-banner { height: 300px; }
-  .coll-banner__title { font-size: 26px; }
+  .coll-banner { height: 100svh; min-height: 420px; }
+  .coll-banner__title { font-size: 36px; }
+  .coll-banner__desc { font-size: 14px; }
   .coll-main__inner { padding: 28px 16px 44px; }
   .coll-controls { flex-direction: column; align-items: flex-start; gap: 10px; }
 }
