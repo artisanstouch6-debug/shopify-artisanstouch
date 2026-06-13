@@ -190,7 +190,7 @@
     <div class="prod-reviews" id="prod-reviews">
       <div class="prod-tabs">
         <button class="prod-tab prod-tab--active" data-tab="reviews">Reviews</button>
-        <button class="prod-tab" data-tab="compare">Compare</button>
+        <button class="prod-tab" data-tab="compare">Related Products</button>
       </div>
 
       <div class="prod-tab-panel" id="tab-reviews">
@@ -221,7 +221,37 @@
       </div>
 
       <div class="prod-tab-panel prod-tab-panel--hidden" id="tab-compare">
-        <p class="prod-compare-msg">Compare feature coming soon.</p>
+        {%- assign rel_collection = product.collections.first -%}
+        {%- if rel_collection -%}
+          {%- assign rel_products = rel_collection.products -%}
+          <div class="prod-related-grid">
+            {%- for rel in rel_products limit: 8 -%}
+              {%- unless rel.id == product.id -%}
+                <a href="{{ rel.url }}" class="prod-rel-card">
+                  <div class="prod-rel-card__img-wrap">
+                    {%- if rel.featured_image -%}
+                      {{ rel.featured_image | image_url: width: 400, height: 400, crop: 'center' | image_tag: loading: 'lazy', alt: rel.title, class: 'prod-rel-card__img' }}
+                    {%- else -%}
+                      <div class="prod-rel-card__img-placeholder"></div>
+                    {%- endif -%}
+                    <div class="prod-rel-card__actions">
+                      <button type="button" class="prod-rel-card__action-btn" aria-label="Add to wishlist" onclick="event.preventDefault()">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12.62 20.81C12.28 20.93 11.72 20.93 11.38 20.81C8.48 19.82 2 15.69 2 8.69C2 5.6 4.49 3.1 7.56 3.1C9.38 3.1 10.99 3.98 12 5.34C13.01 3.98 14.63 3.1 16.44 3.1C19.51 3.1 22 5.6 22 8.69C22 15.69 15.52 19.82 12.62 20.81Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                      </button>
+                      <button type="button" class="prod-rel-card__action-btn" aria-label="Add to cart" onclick="event.preventDefault(); fetch('/cart/add.js',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:{{ rel.first_available_variant.id }},quantity:1})}).then(function(){window.location.href='/cart'})">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><line x1="3" y1="6" x2="21" y2="6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M16 10a4 4 0 01-8 0" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                      </button>
+                    </div>
+                  </div>
+                  <p class="prod-rel-card__title">{{ rel.title }}</p>
+                  <p class="prod-rel-card__price">{{ rel.price | money }}</p>
+                </a>
+              {%- endunless -%}
+            {%- endfor -%}
+          </div>
+        {%- else -%}
+          <p class="prod-compare-msg">No related products found.</p>
+        {%- endif -%}
       </div>
     </div>
 
@@ -852,6 +882,95 @@ body.template-product {
   padding: 8px 0 24px;
 }
 
+/* ── Related products grid ───────────────────────── */
+.prod-related-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  padding: 8px 0 24px;
+}
+
+.prod-rel-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.prod-rel-card__img-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #f0ebe8;
+}
+
+.prod-rel-card__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.35s ease;
+}
+
+.prod-rel-card:hover .prod-rel-card__img { transform: scale(1.04); }
+
+.prod-rel-card__img-placeholder {
+  width: 100%;
+  height: 100%;
+  background: #f0ebe8;
+}
+
+.prod-rel-card__actions {
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  display: flex;
+  gap: 8px;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.prod-rel-card:hover .prod-rel-card__actions { opacity: 1; }
+
+.prod-rel-card__action-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: none;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #333;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  transition: color 0.2s, background 0.2s;
+}
+
+.prod-rel-card__action-btn:hover {
+  background: var(--coral-pink, #ff9696);
+  color: #fff;
+}
+
+.prod-rel-card__title {
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  color: #111;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.prod-rel-card__price {
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: #555;
+  margin: 0;
+}
+
 /* ── Responsive ──────────────────────────────────── */
 @media (max-width: 1200px) {
   .prod-detail__inner { padding: 28px 60px 80px; }
@@ -862,6 +981,7 @@ body.template-product {
   .prod-layout { grid-template-columns: 1fr; gap: 32px; }
   .prod-hero__title { font-size: 44px; white-space: normal; }
   .prod-hero { min-height: 300px; }
+  .prod-related-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
 }
 
 @media (max-width: 600px) {
@@ -874,6 +994,7 @@ body.template-product {
   .prod-buy-now { font-size: 14px; height: 48px; }
   .prod-qty { height: 48px; }
   .prod-acc__head { padding: 14px 0; font-size: 14px; }
+  .prod-related-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
 }
 {% endstylesheet %}
 
