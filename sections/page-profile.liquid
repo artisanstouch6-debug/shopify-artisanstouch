@@ -1,10 +1,5 @@
 {% comment %} Profile page — works with New Customer Accounts. Accessible at /pages/profile {% endcomment %}
 
-{%- unless customer -%}
-  <style>.pr-hero,.pr-body{visibility:hidden}</style>
-  <script>window.location.replace('{{ routes.account_login_url }}?return_to=/pages/profile');</script>
-{%- endunless -%}
-
 <!-- ── Hero ───────────────────────────────────────── -->
 <section class="pr-hero full-width">
   {%- if section.settings.hero_image != blank -%}
@@ -25,6 +20,21 @@
 <!-- ── Account body ───────────────────────────────── -->
 <section class="pr-body full-width">
   <div class="pr-inner">
+
+    {%- unless customer -%}
+    <!-- Not signed in — show prompt -->
+    <div class="pr-gate">
+      <div class="pr-gate__icon">
+        <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#ff9696" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+      </div>
+      <h2 class="pr-gate__title">Sign in to view your profile</h2>
+      <p class="pr-gate__sub">Access your orders, wishlist, and personal details.</p>
+      <a href="{{ routes.account_login_url }}" class="pr-btn pr-btn--coral pr-gate__btn">Sign In</a>
+    </div>
+    {%- else -%}
 
     <!-- Tab nav -->
     <nav class="pr-tabs" role="tablist">
@@ -228,6 +238,8 @@
       </button>
 
     </div><!-- /panel payment -->
+
+    {%- endif -%}
 
   </div><!-- /pr-inner -->
 </section>
@@ -785,9 +797,43 @@
 .pr-add-card:hover { background: rgba(255,150,150,0.13); }
 
 /* ── Login prompt ──────────────────────────────────────── */
-.pr-login-prompt { text-align: center; padding: 80px 0; }
-.pr-login-prompt p { font-family: var(--font-body); font-size: 16px; color: #555; }
-.pr-login-prompt a { color: #ff9696; }
+/* ── Sign-in gate ──────────────────────────────────────── */
+.pr-gate {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 24px;
+  text-align: center;
+}
+.pr-gate__icon {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: rgba(255,150,150,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+.pr-gate__title {
+  font-family: var(--font-heading);
+  font-size: 28px;
+  font-weight: 500;
+  color: #111;
+  margin: 0 0 10px;
+}
+.pr-gate__sub {
+  font-family: var(--font-body);
+  font-size: 15px;
+  color: #888;
+  margin: 0 0 32px;
+}
+.pr-gate__btn {
+  height: 50px;
+  padding: 0 48px;
+  font-size: 15px;
+}
 
 /* ── Order tracking popup ──────────────────────────────── */
 .pr-popup-overlay {
