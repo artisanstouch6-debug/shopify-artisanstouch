@@ -1,0 +1,931 @@
+{% comment %} Customer account section — Profile / Order History / Wishlist / Payment {% endcomment %}
+
+<!-- ── Hero ───────────────────────────────────────── -->
+<section class="acct-hero full-width">
+  {%- if section.settings.hero_image != blank -%}
+    {{ section.settings.hero_image | image_url: width: 1800 | image_tag:
+        class: 'acct-hero__bg',
+        loading: 'eager',
+        fetchpriority: 'high',
+        alt: '' }}
+  {%- else -%}
+    <div class="acct-hero__bg acct-hero__bg--empty"></div>
+  {%- endif -%}
+  <div class="acct-hero__overlay"></div>
+  <div class="acct-hero__text">
+    <h1 class="acct-hero__title">My Profile</h1>
+  </div>
+</section>
+
+<!-- ── Account body ───────────────────────────────── -->
+<section class="acct-body full-width">
+  <div class="acct-inner">
+
+    <!-- Tab nav -->
+    <nav class="acct-tabs" role="tablist">
+      <button class="acct-tab acct-tab--active" role="tab" data-tab="info" aria-selected="true">Personal Information</button>
+      <button class="acct-tab" role="tab" data-tab="orders" aria-selected="false">Order History</button>
+      <button class="acct-tab" role="tab" data-tab="wishlist" aria-selected="false">Wishlist</button>
+      <button class="acct-tab" role="tab" data-tab="payment" aria-selected="false">Payment</button>
+    </nav>
+
+    <!-- ── Tab 1 · Personal Information ───────────── -->
+    <div class="acct-panel acct-panel--active" id="acct-panel-info" role="tabpanel">
+
+      <!-- Personal Information -->
+      <div class="acct-card">
+        <h2 class="acct-section-title">Personal Information</h2>
+        <div class="acct-info-row">
+          <div class="acct-fields">
+            <label class="acct-label">Full Name
+              <input class="acct-input" type="text" name="full_name" value="{{ customer.first_name }} {{ customer.last_name }}" placeholder="Full Name">
+            </label>
+            <label class="acct-label">Phone Number
+              <input class="acct-input" type="tel" name="phone" value="{{ customer.phone }}" placeholder="Phone Number">
+            </label>
+            <label class="acct-label">Email Address
+              <input class="acct-input" type="email" name="email" value="{{ customer.email }}" placeholder="Email Address">
+            </label>
+          </div>
+          <div class="acct-avatar-col">
+            <div class="acct-avatar">
+              <img class="acct-avatar__img" id="acct-avatar-preview"
+                   src="https://ui-avatars.com/api/?name={{ customer.first_name | url_encode }}+{{ customer.last_name | url_encode }}&size=160&background=f5c6c6&color=ffffff&bold=true"
+                   alt="Profile photo">
+            </div>
+            <label class="acct-btn acct-btn--coral acct-upload-btn">
+              Upload New Photo
+              <input type="file" accept="image/*" id="acct-avatar-input" style="display:none">
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Billing Address -->
+      <div class="acct-card">
+        <h2 class="acct-section-title">Billing Address</h2>
+        {%- assign default_address = customer.default_address -%}
+        <label class="acct-label">Home Address
+          <input class="acct-input" type="text" name="address1" value="{{ default_address.address1 }}" placeholder="Home Address">
+        </label>
+        <div class="acct-two-col">
+          <label class="acct-label">City
+            <input class="acct-input" type="text" name="city" value="{{ default_address.city }}" placeholder="City">
+          </label>
+          <label class="acct-label">Province
+            <input class="acct-input" type="text" name="province" value="{{ default_address.province }}" placeholder="Province">
+          </label>
+        </div>
+        <label class="acct-label" style="max-width:260px">Postal Code
+          <input class="acct-input" type="text" name="zip" value="{{ default_address.zip }}" placeholder="Postal Code">
+        </label>
+      </div>
+
+      <!-- Password Settings -->
+      <div class="acct-card">
+        <h2 class="acct-section-title">Password Settings</h2>
+        <label class="acct-label">Current Password
+          <input class="acct-input" type="password" name="current_password" placeholder="Current Password">
+        </label>
+        <label class="acct-label">New Password
+          <input class="acct-input" type="password" name="password" placeholder="New Password">
+        </label>
+        <label class="acct-label">Confirm New Password
+          <input class="acct-input" type="password" name="password_confirmation" placeholder="Confirm New Password">
+        </label>
+      </div>
+
+      <!-- Footer actions -->
+      <div class="acct-footer-actions">
+        <button class="acct-btn acct-btn--outline" type="button">Cancel</button>
+        <button class="acct-btn acct-btn--coral" type="button">Edit Details</button>
+      </div>
+
+    </div><!-- /panel info -->
+
+    <!-- ── Tab 2 · Order History ───────────────────── -->
+    <div class="acct-panel" id="acct-panel-orders" role="tabpanel" hidden>
+
+      <!-- Search -->
+      <div class="acct-search-wrap">
+        <svg class="acct-search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input class="acct-search" type="search" placeholder="Search orders…" id="acct-order-search">
+      </div>
+
+      <!-- Order list -->
+      <div class="acct-order-list" id="acct-order-list">
+        {%- if customer.orders.size > 0 -%}
+          {%- for order in customer.orders -%}
+            {%- assign first_item = order.line_items.first -%}
+            <div class="acct-order-row" data-search="{{ order.name | downcase }} {{ first_item.title | downcase }}">
+              <div class="acct-order-thumb">
+                {%- if first_item.image -%}
+                  {{ first_item.image | image_url: width: 101, height: 101, crop: 'center' | image_tag: class: 'acct-order-thumb__img', alt: first_item.title }}
+                {%- else -%}
+                  <div class="acct-order-thumb__empty"></div>
+                {%- endif -%}
+              </div>
+              <div class="acct-order-meta">
+                <p class="acct-order-id">{{ order.name }}</p>
+                <p class="acct-order-product">{{ first_item.title }}</p>
+              </div>
+              <div class="acct-order-qty">
+                <span class="acct-order-label">Qty</span>
+                <span>{{ first_item.quantity }}</span>
+              </div>
+              <div class="acct-order-price">{{ order.total_price | money }}</div>
+              <div class="acct-order-status">
+                {%- case order.fulfillment_status -%}
+                  {%- when 'fulfilled' -%}
+                    <span class="acct-badge acct-badge--green">Delivered</span>
+                  {%- when 'partial' -%}
+                    <span class="acct-badge acct-badge--blue">Shipping</span>
+                  {%- when 'unfulfilled' -%}
+                    <span class="acct-badge acct-badge--blue">Processing</span>
+                  {%- else -%}
+                    {%- if order.cancelled_at -%}
+                      <span class="acct-badge acct-badge--red">Cancelled</span>
+                    {%- else -%}
+                      <span class="acct-badge acct-badge--blue">Shipping</span>
+                    {%- endif -%}
+                {%- endcase -%}
+              </div>
+            </div>
+            {%- unless forloop.last -%}<div class="acct-divider"></div>{%- endunless -%}
+          {%- endfor -%}
+        {%- else -%}
+          <p class="acct-empty">No orders yet.</p>
+        {%- endif -%}
+      </div>
+
+    </div><!-- /panel orders -->
+
+    <!-- ── Tab 3 · Wishlist ────────────────────────── -->
+    <div class="acct-panel" id="acct-panel-wishlist" role="tabpanel" hidden>
+      <div class="acct-wishlist-list" id="acct-wishlist-list">
+        <p class="acct-empty" id="acct-wishlist-empty" style="display:none">Your wishlist is empty.</p>
+      </div>
+    </div><!-- /panel wishlist -->
+
+    <!-- ── Tab 4 · Payment ────────────────────────── -->
+    <div class="acct-panel" id="acct-panel-payment" role="tabpanel" hidden>
+
+      <!-- Cards -->
+      <div class="acct-cards-list" id="acct-cards-list">
+
+        <!-- Demo card 1 — Default -->
+        <div class="acct-card-wrap">
+          <div class="acct-cc">
+            <div class="acct-cc__top">
+              <svg class="acct-cc__chip" width="34" height="26" viewBox="0 0 34 26" fill="none">
+                <rect width="34" height="26" rx="4" fill="#d4a843" opacity="0.9"/>
+                <rect x="2" y="9" width="30" height="8" rx="1" fill="#c19020" opacity="0.6"/>
+                <rect x="13" y="2" width="8" height="22" rx="1" fill="#c19020" opacity="0.6"/>
+                <rect x="2" y="2" width="30" height="22" rx="4" stroke="#c19020" stroke-width="0.5" fill="none"/>
+              </svg>
+              <span class="acct-badge acct-badge--blue">Default Card</span>
+            </div>
+            <p class="acct-cc__number">XXXX XXXX XXXX 1234</p>
+            <div class="acct-cc__bottom">
+              <span class="acct-cc__label">Expiry</span>
+              <span class="acct-cc__expiry">XX / XX</span>
+            </div>
+          </div>
+          <div class="acct-card-actions">
+            <button class="acct-btn acct-btn--outline acct-btn--sm">Remove Card</button>
+            <button class="acct-btn acct-btn--coral acct-btn--sm">Edit Card</button>
+          </div>
+        </div>
+
+        <!-- Demo card 2 -->
+        <div class="acct-card-wrap">
+          <div class="acct-cc">
+            <div class="acct-cc__top">
+              <svg class="acct-cc__chip" width="34" height="26" viewBox="0 0 34 26" fill="none">
+                <rect width="34" height="26" rx="4" fill="#d4a843" opacity="0.9"/>
+                <rect x="2" y="9" width="30" height="8" rx="1" fill="#c19020" opacity="0.6"/>
+                <rect x="13" y="2" width="8" height="22" rx="1" fill="#c19020" opacity="0.6"/>
+                <rect x="2" y="2" width="30" height="22" rx="4" stroke="#c19020" stroke-width="0.5" fill="none"/>
+              </svg>
+              <button class="acct-badge acct-badge--gray acct-badge--btn">Set as Default</button>
+            </div>
+            <p class="acct-cc__number">XXXX XXXX XXXX 5678</p>
+            <div class="acct-cc__bottom">
+              <span class="acct-cc__label">Expiry</span>
+              <span class="acct-cc__expiry">XX / XX</span>
+            </div>
+          </div>
+          <div class="acct-card-actions">
+            <button class="acct-btn acct-btn--outline acct-btn--sm">Remove Card</button>
+            <button class="acct-btn acct-btn--coral acct-btn--sm">Edit Card</button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Add card -->
+      <button class="acct-add-card" type="button">
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+          <line x1="14" y1="4" x2="14" y2="24" stroke="#ff9696" stroke-width="2.5" stroke-linecap="round"/>
+          <line x1="4" y1="14" x2="24" y2="14" stroke="#ff9696" stroke-width="2.5" stroke-linecap="round"/>
+        </svg>
+        <span>Add Card</span>
+      </button>
+
+    </div><!-- /panel payment -->
+
+  </div><!-- /acct-inner -->
+</section>
+
+{% javascript %}
+(function () {
+
+  /* ── Tab switching ───────────────────────────── */
+  var tabs   = document.querySelectorAll('.acct-tab');
+  var panels = document.querySelectorAll('.acct-panel');
+
+  function activateTab(tabEl) {
+    tabs.forEach(function (t) {
+      t.classList.remove('acct-tab--active');
+      t.setAttribute('aria-selected', 'false');
+    });
+    panels.forEach(function (p) {
+      p.classList.remove('acct-panel--active');
+      p.hidden = true;
+    });
+    tabEl.classList.add('acct-tab--active');
+    tabEl.setAttribute('aria-selected', 'true');
+    var panel = document.getElementById('acct-panel-' + tabEl.dataset.tab);
+    if (panel) {
+      panel.classList.add('acct-panel--active');
+      panel.hidden = false;
+    }
+  }
+
+  tabs.forEach(function (tab) {
+    tab.addEventListener('click', function () {
+      activateTab(tab);
+      if (tab.dataset.tab === 'wishlist') renderWishlist();
+    });
+  });
+
+  /* ── Avatar preview ──────────────────────────── */
+  var avatarInput   = document.getElementById('acct-avatar-input');
+  var avatarPreview = document.getElementById('acct-avatar-preview');
+  if (avatarInput) {
+    avatarInput.addEventListener('change', function () {
+      var file = this.files[0];
+      if (!file) return;
+      var reader = new FileReader();
+      reader.onload = function (e) { avatarPreview.src = e.target.result; };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  /* ── Order search ────────────────────────────── */
+  var orderSearch = document.getElementById('acct-order-search');
+  if (orderSearch) {
+    orderSearch.addEventListener('input', function () {
+      var q = this.value.toLowerCase();
+      document.querySelectorAll('.acct-order-row').forEach(function (row) {
+        var match = !q || (row.dataset.search || '').indexOf(q) !== -1;
+        row.style.display = match ? '' : 'none';
+      });
+    });
+  }
+
+  /* ── Wishlist (localStorage) ─────────────────── */
+  function renderWishlist() {
+    var list  = document.getElementById('acct-wishlist-list');
+    var empty = document.getElementById('acct-wishlist-empty');
+    if (!list) return;
+
+    var items = [];
+    try { items = JSON.parse(localStorage.getItem('artisans_wishlist') || '[]'); } catch(e) {}
+
+    /* remove old rows */
+    list.querySelectorAll('.acct-wish-row, .acct-divider').forEach(function (el) { el.remove(); });
+
+    if (items.length === 0) {
+      if (empty) empty.style.display = '';
+      return;
+    }
+    if (empty) empty.style.display = 'none';
+
+    items.forEach(function (item, idx) {
+      var row = document.createElement('div');
+      row.className = 'acct-wish-row';
+      row.innerHTML =
+        '<a href="' + (item.url || '#') + '" class="acct-wish-thumb">' +
+          (item.image
+            ? '<img src="' + item.image + '" alt="' + (item.title || '') + '" class="acct-wish-thumb__img">'
+            : '<div class="acct-wish-thumb__empty"></div>') +
+        '</a>' +
+        '<div class="acct-wish-meta">' +
+          '<p class="acct-wish-title">' + (item.title || 'Product') + '</p>' +
+          '<p class="acct-wish-price">' + (item.price || '') + '</p>' +
+        '</div>' +
+        '<button class="acct-wish-heart acct-wish-heart--active" data-id="' + item.id + '" aria-label="Remove from wishlist">' +
+          '<svg width="24" height="24" viewBox="0 0 24 24" fill="#ff4d4d" stroke="#ff4d4d" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>' +
+        '</button>';
+      list.appendChild(row);
+
+      if (idx < items.length - 1) {
+        var div = document.createElement('div');
+        div.className = 'acct-divider';
+        list.appendChild(div);
+      }
+    });
+
+    /* remove from wishlist on heart click */
+    list.querySelectorAll('.acct-wish-heart').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var id    = this.dataset.id;
+        var saved = [];
+        try { saved = JSON.parse(localStorage.getItem('artisans_wishlist') || '[]'); } catch(e) {}
+        saved = saved.filter(function (i) { return String(i.id) !== String(id); });
+        localStorage.setItem('artisans_wishlist', JSON.stringify(saved));
+        renderWishlist();
+      });
+    });
+  }
+
+  /* ── Set-as-default card badge toggle ────────── */
+  document.querySelectorAll('.acct-badge--gray.acct-badge--btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      document.querySelectorAll('.acct-cc__top .acct-badge').forEach(function (b) {
+        b.textContent = 'Set as Default';
+        b.className = 'acct-badge acct-badge--gray acct-badge--btn';
+      });
+      this.textContent = 'Default Card';
+      this.className = 'acct-badge acct-badge--blue';
+    });
+  });
+
+})();
+{% endjavascript %}
+
+{% stylesheet %}
+/* ── Body ──────────────────────────────────────── */
+body.template-customers-account {
+  background: #fff8f8;
+  padding-top: 0 !important;
+}
+
+/* ── Hero ──────────────────────────────────────── */
+.acct-hero {
+  position: relative;
+  height: 65vh;
+  min-height: 440px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.acct-hero__bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+  display: block;
+}
+.acct-hero__bg--empty { background: #1a1a1a; }
+.acct-hero__overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.52);
+}
+.acct-hero__text {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  padding: 0 24px;
+}
+.acct-hero__title {
+  font-family: var(--font-heading);
+  font-size: 72px;
+  font-weight: 400;
+  color: #fff;
+  margin: 0;
+  line-height: 1.1;
+  letter-spacing: 0.02em;
+}
+
+/* ── Body section ──────────────────────────────── */
+.acct-body { background: #fff8f8; }
+.acct-inner {
+  max-width: 1200px;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0 auto;
+  padding: 56px 80px 100px;
+}
+
+/* ── Tab nav ───────────────────────────────────── */
+.acct-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1.5px solid #e8e8e8;
+  margin-bottom: 40px;
+}
+.acct-tab {
+  background: none;
+  border: none;
+  border-bottom: 2.5px solid transparent;
+  margin-bottom: -1.5px;
+  padding: 14px 28px;
+  font-family: var(--font-body);
+  font-size: 15px;
+  color: #888;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+  white-space: nowrap;
+}
+.acct-tab:hover { color: #333; }
+.acct-tab--active {
+  color: #ff9696;
+  border-bottom-color: #ff9696;
+  font-weight: 500;
+}
+
+/* ── Panels ────────────────────────────────────── */
+.acct-panel { display: none; }
+.acct-panel--active { display: block; }
+
+/* ── Cards (white blocks) ──────────────────────── */
+.acct-card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 32px 36px;
+  margin-bottom: 24px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.acct-section-title {
+  font-family: var(--font-heading);
+  font-size: 20px;
+  font-weight: 500;
+  color: #222;
+  margin: 0;
+}
+
+/* ── Personal info layout ──────────────────────── */
+.acct-info-row {
+  display: flex;
+  gap: 48px;
+  align-items: flex-start;
+}
+.acct-fields {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+.acct-avatar-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  flex-shrink: 0;
+}
+.acct-avatar {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #f5c6c6;
+  flex-shrink: 0;
+}
+.acct-avatar__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* ── Inputs ────────────────────────────────────── */
+.acct-label {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: #555;
+  font-weight: 500;
+}
+.acct-input {
+  height: 46px;
+  background: #f5f5f5;
+  border: 0.5px solid #434343;
+  border-radius: 8px;
+  padding: 0 16px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: #111;
+  outline: none;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+  width: 100%;
+}
+.acct-input:focus { border-color: #ff9696; }
+
+/* ── Two-col row ───────────────────────────────── */
+.acct-two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+/* ── Buttons ───────────────────────────────────── */
+.acct-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 44px;
+  padding: 0 28px;
+  border-radius: 22px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1.5px solid transparent;
+  transition: opacity 0.2s, background 0.2s;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.acct-btn--coral {
+  background: #ff9696;
+  border-color: #ff9696;
+  color: #fff;
+}
+.acct-btn--coral:hover { opacity: 0.85; }
+.acct-btn--outline {
+  background: transparent;
+  border-color: #ff9696;
+  color: #ff9696;
+}
+.acct-btn--outline:hover { background: rgba(255,150,150,0.08); }
+.acct-btn--sm { height: 38px; padding: 0 20px; font-size: 13px; }
+.acct-upload-btn { cursor: pointer; }
+
+/* ── Footer actions ────────────────────────────── */
+.acct-footer-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+/* ── Order search ──────────────────────────────── */
+.acct-search-wrap {
+  position: relative;
+  margin-bottom: 28px;
+}
+.acct-search-icon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+.acct-search {
+  width: 100%;
+  height: 48px;
+  background: #fff;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 24px;
+  padding: 0 20px 0 48px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: #111;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
+}
+.acct-search:focus { border-color: #ff9696; }
+
+/* ── Order rows ────────────────────────────────── */
+.acct-order-list {
+  background: #fff;
+  border-radius: 14px;
+  padding: 8px 36px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+}
+.acct-order-row {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 20px 0;
+}
+.acct-order-thumb {
+  width: 101px;
+  height: 101px;
+  border-radius: 10px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: #f0e8e8;
+}
+.acct-order-thumb__img, .acct-order-thumb__empty {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.acct-order-thumb__empty { background: #f0e8e8; }
+.acct-order-meta {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.acct-order-id {
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: #888;
+  margin: 0;
+  font-weight: 600;
+}
+.acct-order-product {
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 700;
+  color: #111;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.acct-order-qty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-width: 48px;
+}
+.acct-order-label {
+  font-family: var(--font-body);
+  font-size: 12px;
+  color: #aaa;
+}
+.acct-order-qty span:last-child {
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 600;
+  color: #111;
+}
+.acct-order-price {
+  font-family: var(--font-body);
+  font-size: 20px;
+  font-weight: 600;
+  color: #111;
+  min-width: 90px;
+  text-align: right;
+}
+.acct-order-status {
+  min-width: 110px;
+  text-align: right;
+}
+
+/* ── Badges ────────────────────────────────────── */
+.acct-badge {
+  display: inline-block;
+  padding: 5px 14px;
+  border-radius: 20px;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 600;
+}
+.acct-badge--blue  { background: rgba(59,128,255,0.16); color: #3b80ff; }
+.acct-badge--green { background: rgba(0,186,0,0.16);   color: #00ba00; }
+.acct-badge--red   { background: rgba(255,0,0,0.16);   color: #e00; }
+.acct-badge--gray  { background: rgba(0,0,0,0.10);     color: #666; }
+.acct-badge--btn   { border: none; cursor: pointer; font-family: inherit; }
+
+/* ── Divider ───────────────────────────────────── */
+.acct-divider { border-top: 1px solid #ececec; }
+
+/* ── Empty state ───────────────────────────────── */
+.acct-empty {
+  font-family: var(--font-body);
+  font-size: 15px;
+  color: #aaa;
+  text-align: center;
+  padding: 48px 0;
+  margin: 0;
+}
+
+/* ── Wishlist rows ─────────────────────────────── */
+.acct-wishlist-list {
+  background: #fff;
+  border-radius: 14px;
+  padding: 8px 36px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+}
+.acct-wish-row {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 20px 0;
+}
+.acct-wish-thumb {
+  width: 101px;
+  height: 101px;
+  border-radius: 10px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: #f0e8e8;
+  display: block;
+}
+.acct-wish-thumb__img, .acct-wish-thumb__empty {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.acct-wish-thumb__empty { background: #f0e8e8; }
+.acct-wish-meta {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.acct-wish-title {
+  font-family: var(--font-body);
+  font-size: 16px;
+  font-weight: 700;
+  color: #111;
+  margin: 0;
+}
+.acct-wish-price {
+  font-family: var(--font-body);
+  font-size: 20px;
+  font-weight: 600;
+  color: #111;
+  margin: 0;
+}
+.acct-wish-heart {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  flex-shrink: 0;
+  transition: transform 0.15s;
+}
+.acct-wish-heart:hover { transform: scale(1.15); }
+.acct-wish-heart--active svg { fill: #ff4d4d; stroke: #ff4d4d; }
+
+/* ── Credit cards ──────────────────────────────── */
+.acct-cards-list {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  margin-bottom: 32px;
+}
+.acct-card-wrap {
+  background: #fff;
+  border-radius: 16px;
+  padding: 28px 32px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+  display: flex;
+  align-items: center;
+  gap: 40px;
+}
+.acct-cc {
+  background: linear-gradient(135deg, #2d2d2d 0%, #111 60%, #000 100%);
+  border-radius: 18px;
+  width: 320px;
+  min-width: 320px;
+  height: 190px;
+  padding: 22px 26px 18px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+}
+.acct-cc::before {
+  content: '';
+  position: absolute;
+  right: -40px;
+  top: -40px;
+  width: 200px;
+  height: 200px;
+  background: rgba(255,255,255,0.04);
+  border-radius: 50%;
+}
+.acct-cc__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.acct-cc__chip { flex-shrink: 0; }
+.acct-cc__number {
+  font-family: 'Courier New', monospace;
+  font-size: 18px;
+  letter-spacing: 0.2em;
+  color: #fff;
+  margin: 0;
+  text-align: center;
+}
+.acct-cc__bottom {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+.acct-cc__label {
+  font-family: var(--font-body);
+  font-size: 11px;
+  color: rgba(255,255,255,0.55);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+.acct-cc__expiry {
+  font-family: 'Courier New', monospace;
+  font-size: 15px;
+  color: #fff;
+  letter-spacing: 0.12em;
+}
+.acct-card-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-left: auto;
+}
+
+/* ── Add card button ───────────────────────────── */
+.acct-add-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 320px;
+  height: 190px;
+  border: 2px dashed #ff9696;
+  border-radius: 18px;
+  background: rgba(255,150,150,0.07);
+  cursor: pointer;
+  color: #ff9696;
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 500;
+  transition: background 0.2s;
+  padding: 0;
+}
+.acct-add-card:hover { background: rgba(255,150,150,0.13); }
+
+/* ── Responsive ────────────────────────────────── */
+@media (max-width: 1200px) {
+  .acct-inner { padding: 48px 48px 80px; }
+  .acct-hero__title { font-size: 56px; }
+}
+@media (max-width: 960px) {
+  .acct-inner { padding: 40px 24px 64px; }
+  .acct-hero { min-height: 320px; }
+  .acct-hero__title { font-size: 44px; }
+  .acct-tab { padding: 12px 16px; font-size: 13px; }
+  .acct-info-row { flex-direction: column-reverse; align-items: center; }
+  .acct-avatar-col { flex-direction: row; gap: 20px; }
+  .acct-card-wrap { flex-direction: column; align-items: flex-start; }
+  .acct-card-actions { flex-direction: row; margin-left: 0; }
+  .acct-add-card { width: 100%; }
+  .acct-cc { width: 100%; min-width: 0; }
+}
+@media (max-width: 600px) {
+  .acct-inner { padding: 28px 14px 56px; }
+  .acct-hero { min-height: 240px; }
+  .acct-hero__title { font-size: 32px; }
+  .acct-tabs { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .acct-tab { padding: 10px 14px; font-size: 12px; }
+  .acct-card { padding: 20px 18px; }
+  .acct-order-list, .acct-wishlist-list { padding: 4px 16px; }
+  .acct-order-row, .acct-wish-row { gap: 14px; }
+  .acct-two-col { grid-template-columns: 1fr; }
+  .acct-order-price { font-size: 16px; }
+  .acct-cc { height: 160px; }
+}
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "My Account",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "hero_image",
+      "label": "Hero background image"
+    }
+  ]
+}
+{% endschema %}

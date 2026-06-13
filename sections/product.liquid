@@ -333,6 +333,50 @@
       if (panel) panel.classList.remove('prod-tab-panel--hidden');
     });
   });
+
+  /* ── Wishlist ─────────────────────────────────── */
+  var WISH_KEY = 'artisans_wishlist';
+  var PROD_ID  = {{ product.id }};
+  var PROD_DATA = {
+    id:    PROD_ID,
+    title: {{ product.title | json }},
+    price: {{ product.price | money | json }},
+    image: {{ product.featured_image | image_url: width: 300 | json }},
+    url:   '{{ product.url }}'
+  };
+
+  function getWishlist() {
+    try { return JSON.parse(localStorage.getItem(WISH_KEY) || '[]'); } catch(e) { return []; }
+  }
+  function saveWishlist(arr) {
+    localStorage.setItem(WISH_KEY, JSON.stringify(arr));
+  }
+  function isWishlisted(id) {
+    return getWishlist().some(function(i) { return String(i.id) === String(id); });
+  }
+
+  var wishBtn = document.querySelector('.prod-wish');
+  function syncWishBtn() {
+    if (!wishBtn) return;
+    var on = isWishlisted(PROD_ID);
+    wishBtn.classList.toggle('prod-wish--active', on);
+    wishBtn.querySelector('svg path').setAttribute('fill', on ? '#ff4d4d' : 'none');
+    wishBtn.querySelector('svg path').setAttribute('stroke', on ? '#ff4d4d' : '#333');
+  }
+  syncWishBtn();
+
+  if (wishBtn) {
+    wishBtn.addEventListener('click', function () {
+      var list = getWishlist();
+      if (isWishlisted(PROD_ID)) {
+        saveWishlist(list.filter(function(i) { return String(i.id) !== String(PROD_ID); }));
+      } else {
+        list.push(PROD_DATA);
+        saveWishlist(list);
+      }
+      syncWishBtn();
+    });
+  }
 })();
 </script>
 

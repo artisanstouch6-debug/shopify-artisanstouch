@@ -1,0 +1,917 @@
+{% comment %} Profile page — works with New Customer Accounts. Accessible at /pages/profile {% endcomment %}
+
+<!-- ── Hero ───────────────────────────────────────── -->
+<section class="pr-hero full-width">
+  {%- if section.settings.hero_image != blank -%}
+    {{ section.settings.hero_image | image_url: width: 1800 | image_tag:
+        class: 'pr-hero__bg',
+        loading: 'eager',
+        fetchpriority: 'high',
+        alt: '' }}
+  {%- else -%}
+    <div class="pr-hero__bg pr-hero__bg--empty"></div>
+  {%- endif -%}
+  <div class="pr-hero__overlay"></div>
+  <div class="pr-hero__text">
+    <h1 class="pr-hero__title">My Profile</h1>
+  </div>
+</section>
+
+<!-- ── Account body ───────────────────────────────── -->
+<section class="pr-body full-width">
+  <div class="pr-inner">
+
+    {%- if customer -%}
+
+    <!-- Tab nav -->
+    <nav class="pr-tabs" role="tablist">
+      <button class="pr-tab pr-tab--active" role="tab" data-tab="info" aria-selected="true">Personal Information</button>
+      <button class="pr-tab" role="tab" data-tab="orders" aria-selected="false">Order History</button>
+      <button class="pr-tab" role="tab" data-tab="wishlist" aria-selected="false">Wishlist</button>
+      <button class="pr-tab" role="tab" data-tab="payment" aria-selected="false">Payment</button>
+    </nav>
+
+    <!-- ── Tab 1 · Personal Information ───────────── -->
+    <div class="pr-panel pr-panel--active" id="pr-panel-info" role="tabpanel">
+
+      <div class="pr-card">
+        <h2 class="pr-section-title">Personal Information</h2>
+        <div class="pr-info-row">
+          <div class="pr-fields">
+            <label class="pr-label">Full Name
+              <input class="pr-input" type="text" value="{{ customer.first_name }} {{ customer.last_name }}" placeholder="Full Name">
+            </label>
+            <label class="pr-label">Phone Number
+              <input class="pr-input" type="tel" value="{{ customer.phone }}" placeholder="Phone Number">
+            </label>
+            <label class="pr-label">Email Address
+              <input class="pr-input" type="email" value="{{ customer.email }}" placeholder="Email Address">
+            </label>
+          </div>
+          <div class="pr-avatar-col">
+            <div class="pr-avatar">
+              <img class="pr-avatar__img" id="pr-avatar-preview"
+                   src="https://ui-avatars.com/api/?name={{ customer.first_name | url_encode }}+{{ customer.last_name | url_encode }}&size=160&background=f5c6c6&color=ffffff&bold=true"
+                   alt="Profile photo">
+            </div>
+            <label class="pr-btn pr-btn--coral pr-upload-btn">
+              Upload New Photo
+              <input type="file" accept="image/*" id="pr-avatar-input" style="display:none">
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="pr-card">
+        <h2 class="pr-section-title">Billing Address</h2>
+        {%- assign default_address = customer.default_address -%}
+        <label class="pr-label">Home Address
+          <input class="pr-input" type="text" value="{{ default_address.address1 }}" placeholder="Home Address">
+        </label>
+        <div class="pr-two-col">
+          <label class="pr-label">City
+            <input class="pr-input" type="text" value="{{ default_address.city }}" placeholder="City">
+          </label>
+          <label class="pr-label">Province
+            <input class="pr-input" type="text" value="{{ default_address.province }}" placeholder="Province">
+          </label>
+        </div>
+        <label class="pr-label" style="max-width:260px">Postal Code
+          <input class="pr-input" type="text" value="{{ default_address.zip }}" placeholder="Postal Code">
+        </label>
+      </div>
+
+      <div class="pr-card">
+        <h2 class="pr-section-title">Password Settings</h2>
+        <label class="pr-label">Current Password
+          <input class="pr-input" type="password" placeholder="Current Password">
+        </label>
+        <label class="pr-label">New Password
+          <input class="pr-input" type="password" placeholder="New Password">
+        </label>
+        <label class="pr-label">Confirm New Password
+          <input class="pr-input" type="password" placeholder="Confirm New Password">
+        </label>
+      </div>
+
+      <div class="pr-footer-actions">
+        <button class="pr-btn pr-btn--outline" type="button">Cancel</button>
+        <button class="pr-btn pr-btn--coral" type="button">Edit Details</button>
+      </div>
+
+    </div><!-- /panel info -->
+
+    <!-- ── Tab 2 · Order History ───────────────────── -->
+    <div class="pr-panel" id="pr-panel-orders" role="tabpanel" hidden>
+
+      <div class="pr-search-wrap">
+        <svg class="pr-search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input class="pr-search" type="search" placeholder="Search orders…" id="pr-order-search">
+      </div>
+
+      <div class="pr-order-list" id="pr-order-list">
+        {%- if customer.orders.size > 0 -%}
+          {%- for order in customer.orders -%}
+            {%- assign first_item = order.line_items.first -%}
+            <div class="pr-order-row" data-search="{{ order.name | downcase }} {{ first_item.title | downcase }}">
+              <div class="pr-order-thumb">
+                {%- if first_item.image -%}
+                  {{ first_item.image | image_url: width: 101, height: 101, crop: 'center' | image_tag: class: 'pr-order-thumb__img', alt: first_item.title }}
+                {%- else -%}
+                  <div class="pr-order-thumb__empty"></div>
+                {%- endif -%}
+              </div>
+              <div class="pr-order-meta">
+                <p class="pr-order-id">{{ order.name }}</p>
+                <p class="pr-order-product">{{ first_item.title }}</p>
+              </div>
+              <div class="pr-order-qty">
+                <span class="pr-order-label">Qty</span>
+                <span>{{ first_item.quantity }}</span>
+              </div>
+              <div class="pr-order-price">{{ order.total_price | money }}</div>
+              <div class="pr-order-status">
+                {%- if order.cancelled_at -%}
+                  <span class="pr-badge pr-badge--red">Cancelled</span>
+                {%- elsif order.fulfillment_status == 'fulfilled' -%}
+                  <span class="pr-badge pr-badge--green">Delivered</span>
+                {%- else -%}
+                  <span class="pr-badge pr-badge--blue">Shipping</span>
+                {%- endif -%}
+              </div>
+              <button class="pr-btn pr-btn--outline pr-btn--sm pr-track-btn"
+                      data-order="{{ order.name }}"
+                      data-product="{{ first_item.title }}"
+                      data-price="{{ order.total_price | money }}"
+                      data-status="{% if order.cancelled_at %}Cancelled{% elsif order.fulfillment_status == 'fulfilled' %}Delivered{% else %}Shipping{% endif %}">
+                Track
+              </button>
+            </div>
+            {%- unless forloop.last -%}<div class="pr-divider"></div>{%- endunless -%}
+          {%- endfor -%}
+        {%- else -%}
+          <p class="pr-empty">No orders yet.</p>
+        {%- endif -%}
+      </div>
+
+    </div><!-- /panel orders -->
+
+    <!-- ── Tab 3 · Wishlist ────────────────────────── -->
+    <div class="pr-panel" id="pr-panel-wishlist" role="tabpanel" hidden>
+      <div class="pr-wishlist-list" id="pr-wishlist-list">
+        <p class="pr-empty" id="pr-wishlist-empty">Your wishlist is empty.</p>
+      </div>
+    </div><!-- /panel wishlist -->
+
+    <!-- ── Tab 4 · Payment ────────────────────────── -->
+    <div class="pr-panel" id="pr-panel-payment" role="tabpanel" hidden>
+
+      <div class="pr-cards-list">
+
+        <div class="pr-card-wrap">
+          <div class="pr-cc">
+            <div class="pr-cc__top">
+              <svg class="pr-cc__chip" width="34" height="26" viewBox="0 0 34 26" fill="none">
+                <rect width="34" height="26" rx="4" fill="#d4a843" opacity="0.9"/>
+                <rect x="2" y="9" width="30" height="8" rx="1" fill="#c19020" opacity="0.6"/>
+                <rect x="13" y="2" width="8" height="22" rx="1" fill="#c19020" opacity="0.6"/>
+              </svg>
+              <span class="pr-badge pr-badge--blue">Default Card</span>
+            </div>
+            <p class="pr-cc__number">XXXX XXXX XXXX 1234</p>
+            <div class="pr-cc__bottom">
+              <span class="pr-cc__label">Expiry</span>
+              <span class="pr-cc__expiry">XX / XX</span>
+            </div>
+          </div>
+          <div class="pr-card-actions">
+            <button class="pr-btn pr-btn--outline pr-btn--sm">Remove Card</button>
+            <button class="pr-btn pr-btn--coral pr-btn--sm">Edit Card</button>
+          </div>
+        </div>
+
+        <div class="pr-card-wrap">
+          <div class="pr-cc">
+            <div class="pr-cc__top">
+              <svg class="pr-cc__chip" width="34" height="26" viewBox="0 0 34 26" fill="none">
+                <rect width="34" height="26" rx="4" fill="#d4a843" opacity="0.9"/>
+                <rect x="2" y="9" width="30" height="8" rx="1" fill="#c19020" opacity="0.6"/>
+                <rect x="13" y="2" width="8" height="22" rx="1" fill="#c19020" opacity="0.6"/>
+              </svg>
+              <button class="pr-badge pr-badge--gray pr-badge--btn pr-set-default-btn">Set as Default</button>
+            </div>
+            <p class="pr-cc__number">XXXX XXXX XXXX 5678</p>
+            <div class="pr-cc__bottom">
+              <span class="pr-cc__label">Expiry</span>
+              <span class="pr-cc__expiry">XX / XX</span>
+            </div>
+          </div>
+          <div class="pr-card-actions">
+            <button class="pr-btn pr-btn--outline pr-btn--sm">Remove Card</button>
+            <button class="pr-btn pr-btn--coral pr-btn--sm">Edit Card</button>
+          </div>
+        </div>
+
+      </div>
+
+      <button class="pr-add-card" type="button">
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+          <line x1="14" y1="4" x2="14" y2="24" stroke="#ff9696" stroke-width="2.5" stroke-linecap="round"/>
+          <line x1="4" y1="14" x2="24" y2="14" stroke="#ff9696" stroke-width="2.5" stroke-linecap="round"/>
+        </svg>
+        <span>Add Card</span>
+      </button>
+
+    </div><!-- /panel payment -->
+
+    {%- else -%}
+    <!-- Not logged in -->
+    <div class="pr-login-prompt">
+      <p>Please <a href="{{ routes.account_login_url }}">sign in</a> to view your profile.</p>
+    </div>
+    {%- endif -%}
+
+  </div><!-- /pr-inner -->
+</section>
+
+<!-- ── Order Tracking Popup ─────────────────────── -->
+<div class="pr-popup-overlay" id="pr-popup-overlay" aria-hidden="true">
+  <div class="pr-popup" role="dialog" aria-modal="true" aria-label="Order Tracking">
+    <button class="pr-popup__close" id="pr-popup-close" aria-label="Close">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#333" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <h3 class="pr-popup__title">Order Tracking</h3>
+    <p class="pr-popup__sub">Track your order status</p>
+
+    <div class="pr-popup__header-row">
+      <div>
+        <p class="pr-popup__order-id" id="pr-popup-order-id">—</p>
+        <span class="pr-badge pr-badge--blue" id="pr-popup-status-badge">Shipping</span>
+      </div>
+    </div>
+
+    <div class="pr-popup__product-row">
+      <div class="pr-popup__product-img" id="pr-popup-img"></div>
+      <div class="pr-popup__product-info">
+        <p class="pr-popup__product-name" id="pr-popup-product">—</p>
+        <p class="pr-popup__product-price" id="pr-popup-price">—</p>
+      </div>
+    </div>
+
+    <div class="pr-popup__breakdown">
+      <div class="pr-popup__row"><span>Subtotal</span><span id="pr-popup-subtotal">—</span></div>
+      <div class="pr-popup__row"><span>Shipping Fee</span><span>LKR 0.00</span></div>
+      <div class="pr-popup__row pr-popup__row--total"><span>Sub Total Amount</span><span id="pr-popup-total">—</span></div>
+    </div>
+
+    <div class="pr-popup__tracking">
+      <p class="pr-popup__tracking-title">Order Tracking</p>
+      <div class="pr-timeline">
+        <div class="pr-timeline__item pr-timeline__item--done">
+          <div class="pr-timeline__dot"></div>
+          <div class="pr-timeline__content">
+            <p class="pr-timeline__label">Order Confirmed</p>
+            <p class="pr-timeline__date">Friday, 3/12</p>
+          </div>
+        </div>
+        <div class="pr-timeline__item pr-timeline__item--done">
+          <div class="pr-timeline__dot"></div>
+          <div class="pr-timeline__content">
+            <p class="pr-timeline__label">Handed Over to Delivery</p>
+            <p class="pr-timeline__date">Friday, 3/12</p>
+          </div>
+        </div>
+        <div class="pr-timeline__item pr-timeline__item--active">
+          <div class="pr-timeline__dot"></div>
+          <div class="pr-timeline__content">
+            <p class="pr-timeline__label">On the Way to Customer</p>
+            <p class="pr-timeline__date">Friday, 3/12</p>
+          </div>
+        </div>
+        <div class="pr-timeline__item">
+          <div class="pr-timeline__dot"></div>
+          <div class="pr-timeline__content">
+            <p class="pr-timeline__label">Handed Over to the Customer</p>
+            <p class="pr-timeline__date">—</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+
+  /* ── Fix body: remove padding-top so hero underlaps nav ── */
+  document.body.style.paddingTop = '0';
+  document.body.style.background = '#fff8f8';
+
+  /* ── Tab switching ──────────────────────────────── */
+  var tabs   = document.querySelectorAll('.pr-tab');
+  var panels = document.querySelectorAll('.pr-panel');
+
+  function activateTab(tabEl) {
+    tabs.forEach(function (t) {
+      t.classList.remove('pr-tab--active');
+      t.setAttribute('aria-selected', 'false');
+    });
+    panels.forEach(function (p) {
+      p.classList.remove('pr-panel--active');
+      p.hidden = true;
+    });
+    tabEl.classList.add('pr-tab--active');
+    tabEl.setAttribute('aria-selected', 'true');
+    var panel = document.getElementById('pr-panel-' + tabEl.dataset.tab);
+    if (panel) {
+      panel.classList.add('pr-panel--active');
+      panel.hidden = false;
+    }
+  }
+
+  tabs.forEach(function (tab) {
+    tab.addEventListener('click', function () {
+      activateTab(tab);
+      if (tab.dataset.tab === 'wishlist') renderWishlist();
+      window.location.hash = tab.dataset.tab;
+    });
+  });
+
+  /* ── Open tab from URL hash ─────────────────────── */
+  var hash = window.location.hash.replace('#', '');
+  if (hash) {
+    var hashTab = document.querySelector('.pr-tab[data-tab="' + hash + '"]');
+    if (hashTab) {
+      activateTab(hashTab);
+      if (hash === 'wishlist') renderWishlist();
+    }
+  }
+
+  /* ── Avatar preview ─────────────────────────────── */
+  var avatarInput   = document.getElementById('pr-avatar-input');
+  var avatarPreview = document.getElementById('pr-avatar-preview');
+  if (avatarInput) {
+    avatarInput.addEventListener('change', function () {
+      var file = this.files[0];
+      if (!file) return;
+      var reader = new FileReader();
+      reader.onload = function (e) { avatarPreview.src = e.target.result; };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  /* ── Order search ───────────────────────────────── */
+  var orderSearch = document.getElementById('pr-order-search');
+  if (orderSearch) {
+    orderSearch.addEventListener('input', function () {
+      var q = this.value.toLowerCase();
+      document.querySelectorAll('.pr-order-row').forEach(function (row) {
+        row.style.display = (!q || (row.dataset.search || '').indexOf(q) !== -1) ? '' : 'none';
+      });
+    });
+  }
+
+  /* ── Order tracking popup ───────────────────────── */
+  var overlay   = document.getElementById('pr-popup-overlay');
+  var popupClose = document.getElementById('pr-popup-close');
+
+  document.querySelectorAll('.pr-track-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      document.getElementById('pr-popup-order-id').textContent  = btn.dataset.order  || '—';
+      document.getElementById('pr-popup-product').textContent   = btn.dataset.product || '—';
+      document.getElementById('pr-popup-price').textContent     = btn.dataset.price   || '—';
+      document.getElementById('pr-popup-subtotal').textContent  = btn.dataset.price   || '—';
+      document.getElementById('pr-popup-total').textContent     = btn.dataset.price   || '—';
+      var statusBadge = document.getElementById('pr-popup-status-badge');
+      var status = btn.dataset.status || 'Shipping';
+      statusBadge.textContent = status;
+      statusBadge.className = 'pr-badge pr-badge--' +
+        (status === 'Delivered' ? 'green' : status === 'Cancelled' ? 'red' : 'blue');
+      overlay.classList.add('pr-popup-overlay--open');
+      overlay.setAttribute('aria-hidden', 'false');
+    });
+  });
+
+  if (popupClose) popupClose.addEventListener('click', closePopup);
+  if (overlay) overlay.addEventListener('click', function (e) {
+    if (e.target === overlay) closePopup();
+  });
+  function closePopup() {
+    overlay.classList.remove('pr-popup-overlay--open');
+    overlay.setAttribute('aria-hidden', 'true');
+  }
+
+  /* ── Wishlist (localStorage) ──────────────────── */
+  function renderWishlist() {
+    var list  = document.getElementById('pr-wishlist-list');
+    var empty = document.getElementById('pr-wishlist-empty');
+    if (!list) return;
+
+    list.querySelectorAll('.pr-wish-row, .pr-divider--wish').forEach(function (el) { el.remove(); });
+
+    var items = [];
+    try { items = JSON.parse(localStorage.getItem('artisans_wishlist') || '[]'); } catch(e) {}
+
+    if (items.length === 0) {
+      if (empty) empty.style.display = '';
+      return;
+    }
+    if (empty) empty.style.display = 'none';
+
+    items.forEach(function (item, idx) {
+      var row = document.createElement('div');
+      row.className = 'pr-wish-row';
+      row.innerHTML =
+        '<a href="' + (item.url || '#') + '" class="pr-wish-thumb">' +
+          (item.image
+            ? '<img src="' + item.image + '" alt="' + (item.title || '') + '" class="pr-wish-thumb__img">'
+            : '<div class="pr-wish-thumb__empty"></div>') +
+        '</a>' +
+        '<div class="pr-wish-meta">' +
+          '<p class="pr-wish-title">' + (item.title || 'Product') + '</p>' +
+          '<p class="pr-wish-price">' + (item.price || '') + '</p>' +
+        '</div>' +
+        '<button class="pr-wish-heart" data-id="' + item.id + '" aria-label="Remove from wishlist">' +
+          '<svg width="24" height="24" viewBox="0 0 24 24" fill="#ff4d4d" stroke="#ff4d4d" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>' +
+        '</button>';
+      list.appendChild(row);
+      if (idx < items.length - 1) {
+        var d = document.createElement('div');
+        d.className = 'pr-divider pr-divider--wish';
+        list.appendChild(d);
+      }
+    });
+
+    list.querySelectorAll('.pr-wish-heart').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var id    = this.dataset.id;
+        var saved = [];
+        try { saved = JSON.parse(localStorage.getItem('artisans_wishlist') || '[]'); } catch(e) {}
+        localStorage.setItem('artisans_wishlist', JSON.stringify(
+          saved.filter(function (i) { return String(i.id) !== String(id); })
+        ));
+        renderWishlist();
+      });
+    });
+  }
+
+  /* ── Set-as-default card ────────────────────────── */
+  document.querySelectorAll('.pr-set-default-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      document.querySelectorAll('.pr-cc__top .pr-badge').forEach(function (b) {
+        if (!b.classList.contains('pr-set-default-btn')) {
+          b.textContent = 'Set as Default';
+          b.className = 'pr-badge pr-badge--gray pr-badge--btn pr-set-default-btn';
+        }
+      });
+      this.textContent = 'Default Card';
+      this.className = 'pr-badge pr-badge--blue';
+    });
+  });
+
+})();
+</script>
+
+{% stylesheet %}
+/* ── Hero ──────────────────────────────────────────────── */
+.pr-hero {
+  position: relative;
+  height: 65vh;
+  min-height: 440px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.pr-hero__bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+  display: block;
+}
+.pr-hero__bg--empty { background: #1a1a1a; }
+.pr-hero__overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.52);
+}
+.pr-hero__text {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  padding: 0 24px;
+}
+.pr-hero__title {
+  font-family: var(--font-heading);
+  font-size: 72px;
+  font-weight: 400;
+  color: #fff;
+  margin: 0;
+  line-height: 1.1;
+  letter-spacing: 0.02em;
+}
+
+/* ── Body ──────────────────────────────────────────────── */
+.pr-body { background: #fff8f8; }
+.pr-inner {
+  max-width: 1200px;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0 auto;
+  padding: 56px 80px 100px;
+}
+
+/* ── Tab nav ───────────────────────────────────────────── */
+.pr-tabs {
+  display: flex;
+  border-bottom: 1.5px solid #e8e8e8;
+  margin-bottom: 40px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.pr-tab {
+  background: none;
+  border: none;
+  border-bottom: 2.5px solid transparent;
+  margin-bottom: -1.5px;
+  padding: 14px 28px;
+  font-family: var(--font-body);
+  font-size: 15px;
+  color: #888;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.pr-tab:hover { color: #333; }
+.pr-tab--active { color: #ff9696; border-bottom-color: #ff9696; font-weight: 500; }
+
+/* ── Panels ────────────────────────────────────────────── */
+.pr-panel { display: none; }
+.pr-panel--active { display: block; }
+
+/* ── White cards ───────────────────────────────────────── */
+.pr-card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 32px 36px;
+  margin-bottom: 24px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.pr-section-title {
+  font-family: var(--font-heading);
+  font-size: 20px;
+  font-weight: 500;
+  color: #222;
+  margin: 0;
+}
+
+/* ── Info layout ───────────────────────────────────────── */
+.pr-info-row {
+  display: flex;
+  gap: 48px;
+  align-items: flex-start;
+}
+.pr-fields { flex: 1; display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+.pr-avatar-col { display: flex; flex-direction: column; align-items: center; gap: 16px; flex-shrink: 0; }
+.pr-avatar { width: 110px; height: 110px; border-radius: 50%; overflow: hidden; background: #f5c6c6; }
+.pr-avatar__img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* ── Inputs ────────────────────────────────────────────── */
+.pr-label {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: #555;
+  font-weight: 500;
+}
+.pr-input {
+  height: 46px;
+  background: #f5f5f5;
+  border: 0.5px solid #434343;
+  border-radius: 8px;
+  padding: 0 16px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: #111;
+  outline: none;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+  width: 100%;
+}
+.pr-input:focus { border-color: #ff9696; }
+.pr-two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+/* ── Buttons ───────────────────────────────────────────── */
+.pr-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 44px;
+  padding: 0 28px;
+  border-radius: 22px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1.5px solid transparent;
+  transition: opacity 0.2s, background 0.2s;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.pr-btn--coral { background: #ff9696; border-color: #ff9696; color: #fff; }
+.pr-btn--coral:hover { opacity: 0.85; }
+.pr-btn--outline { background: transparent; border-color: #ff9696; color: #ff9696; }
+.pr-btn--outline:hover { background: rgba(255,150,150,0.08); }
+.pr-btn--sm { height: 38px; padding: 0 20px; font-size: 13px; }
+.pr-upload-btn { cursor: pointer; }
+.pr-footer-actions { display: flex; gap: 12px; justify-content: flex-end; margin-top: 8px; }
+
+/* ── Order search ──────────────────────────────────────── */
+.pr-search-wrap { position: relative; margin-bottom: 28px; }
+.pr-search-icon { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); pointer-events: none; }
+.pr-search {
+  width: 100%;
+  height: 48px;
+  background: #fff;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 24px;
+  padding: 0 20px 0 48px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: #111;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
+}
+.pr-search:focus { border-color: #ff9696; }
+
+/* ── Order rows ────────────────────────────────────────── */
+.pr-order-list {
+  background: #fff;
+  border-radius: 14px;
+  padding: 8px 36px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+}
+.pr-order-row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 20px 0;
+}
+.pr-order-thumb {
+  width: 101px;
+  height: 101px;
+  border-radius: 10px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: #f0e8e8;
+}
+.pr-order-thumb__img, .pr-order-thumb__empty { width: 100%; height: 100%; object-fit: cover; display: block; }
+.pr-order-thumb__empty { background: #f0e8e8; }
+.pr-order-meta { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.pr-order-id { font-family: var(--font-body); font-size: 13px; color: #888; margin: 0; font-weight: 600; }
+.pr-order-product { font-family: var(--font-body); font-size: 15px; font-weight: 700; color: #111; margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pr-order-qty { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 44px; }
+.pr-order-label { font-family: var(--font-body); font-size: 12px; color: #aaa; }
+.pr-order-qty span:last-child { font-family: var(--font-body); font-size: 15px; font-weight: 600; color: #111; }
+.pr-order-price { font-family: var(--font-body); font-size: 20px; font-weight: 600; color: #111; min-width: 100px; text-align: right; }
+.pr-order-status { min-width: 100px; text-align: center; }
+
+/* ── Badges ────────────────────────────────────────────── */
+.pr-badge {
+  display: inline-block;
+  padding: 5px 14px;
+  border-radius: 20px;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 600;
+}
+.pr-badge--blue  { background: rgba(59,128,255,0.16); color: #3b80ff; }
+.pr-badge--green { background: rgba(0,186,0,0.16);   color: #00ba00; }
+.pr-badge--red   { background: rgba(255,0,0,0.16);   color: #e00; }
+.pr-badge--gray  { background: rgba(0,0,0,0.10);     color: #666; }
+.pr-badge--btn   { border: none; cursor: pointer; font-family: inherit; }
+
+/* ── Dividers ──────────────────────────────────────────── */
+.pr-divider { border-top: 1px solid #ececec; }
+.pr-empty { font-family: var(--font-body); font-size: 15px; color: #aaa; text-align: center; padding: 48px 0; margin: 0; }
+
+/* ── Wishlist ──────────────────────────────────────────── */
+.pr-wishlist-list {
+  background: #fff;
+  border-radius: 14px;
+  padding: 8px 36px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+}
+.pr-wish-row { display: flex; align-items: center; gap: 24px; padding: 20px 0; }
+.pr-wish-thumb { width: 101px; height: 101px; border-radius: 10px; overflow: hidden; flex-shrink: 0; background: #f0e8e8; display: block; }
+.pr-wish-thumb__img, .pr-wish-thumb__empty { width: 100%; height: 100%; object-fit: cover; display: block; }
+.pr-wish-thumb__empty { background: #f0e8e8; }
+.pr-wish-meta { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.pr-wish-title { font-family: var(--font-body); font-size: 16px; font-weight: 700; color: #111; margin: 0; }
+.pr-wish-price { font-family: var(--font-body); font-size: 20px; font-weight: 600; color: #111; margin: 0; }
+.pr-wish-heart { background: none; border: none; cursor: pointer; padding: 8px; flex-shrink: 0; transition: transform 0.15s; }
+.pr-wish-heart:hover { transform: scale(1.15); }
+
+/* ── Credit cards ──────────────────────────────────────── */
+.pr-cards-list { display: flex; flex-direction: column; gap: 28px; margin-bottom: 32px; }
+.pr-card-wrap {
+  background: #fff;
+  border-radius: 16px;
+  padding: 28px 32px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+  display: flex;
+  align-items: center;
+  gap: 40px;
+}
+.pr-cc {
+  background: linear-gradient(135deg, #2d2d2d 0%, #111 60%, #000 100%);
+  border-radius: 18px;
+  width: 320px;
+  min-width: 320px;
+  height: 190px;
+  padding: 22px 26px 18px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+}
+.pr-cc::before {
+  content: '';
+  position: absolute;
+  right: -40px;
+  top: -40px;
+  width: 200px;
+  height: 200px;
+  background: rgba(255,255,255,0.04);
+  border-radius: 50%;
+}
+.pr-cc__top { display: flex; align-items: center; justify-content: space-between; }
+.pr-cc__chip { flex-shrink: 0; }
+.pr-cc__number { font-family: 'Courier New', monospace; font-size: 18px; letter-spacing: 0.2em; color: #fff; margin: 0; text-align: center; }
+.pr-cc__bottom { display: flex; align-items: baseline; gap: 10px; }
+.pr-cc__label { font-family: var(--font-body); font-size: 11px; color: rgba(255,255,255,0.55); text-transform: uppercase; letter-spacing: 0.1em; }
+.pr-cc__expiry { font-family: 'Courier New', monospace; font-size: 15px; color: #fff; letter-spacing: 0.12em; }
+.pr-card-actions { display: flex; flex-direction: column; gap: 12px; margin-left: auto; }
+.pr-add-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 320px;
+  height: 190px;
+  border: 2px dashed #ff9696;
+  border-radius: 18px;
+  background: rgba(255,150,150,0.07);
+  cursor: pointer;
+  color: #ff9696;
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 500;
+  transition: background 0.2s;
+  padding: 0;
+}
+.pr-add-card:hover { background: rgba(255,150,150,0.13); }
+
+/* ── Login prompt ──────────────────────────────────────── */
+.pr-login-prompt { text-align: center; padding: 80px 0; }
+.pr-login-prompt p { font-family: var(--font-body); font-size: 16px; color: #555; }
+.pr-login-prompt a { color: #ff9696; }
+
+/* ── Order tracking popup ──────────────────────────────── */
+.pr-popup-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s;
+}
+.pr-popup-overlay--open { opacity: 1; pointer-events: auto; }
+.pr-popup {
+  background: #fff;
+  border-radius: 20px;
+  padding: 36px 40px;
+  width: 100%;
+  max-width: 560px;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+  box-sizing: border-box;
+}
+.pr-popup__close {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+}
+.pr-popup__close:hover { opacity: 1; }
+.pr-popup__title { font-family: var(--font-heading); font-size: 22px; font-weight: 500; color: #111; margin: 0 0 4px; }
+.pr-popup__sub { font-family: var(--font-body); font-size: 13px; color: #999; margin: 0 0 20px; }
+.pr-popup__header-row { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+.pr-popup__order-id { font-family: var(--font-body); font-size: 14px; font-weight: 700; color: #111; margin: 0 0 6px; }
+.pr-popup__product-row { display: flex; gap: 16px; align-items: center; margin-bottom: 24px; padding: 16px; background: #f9f9f9; border-radius: 12px; }
+.pr-popup__product-img { width: 64px; height: 64px; border-radius: 8px; background: #e8e0e0; flex-shrink: 0; }
+.pr-popup__product-name { font-family: var(--font-body); font-size: 14px; font-weight: 600; color: #111; margin: 0 0 4px; }
+.pr-popup__product-price { font-family: var(--font-body); font-size: 16px; font-weight: 700; color: #111; margin: 0; }
+.pr-popup__breakdown { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+.pr-popup__row { display: flex; justify-content: space-between; font-family: var(--font-body); font-size: 14px; color: #555; }
+.pr-popup__row--total { font-weight: 700; color: #111; padding-top: 10px; border-top: 1px solid #eee; }
+.pr-popup__tracking-title { font-family: var(--font-body); font-size: 14px; font-weight: 700; color: #111; margin: 0 0 16px; }
+.pr-timeline { display: flex; flex-direction: column; gap: 0; }
+.pr-timeline__item { display: flex; gap: 14px; position: relative; padding-bottom: 20px; }
+.pr-timeline__item:last-child { padding-bottom: 0; }
+.pr-timeline__item::before {
+  content: '';
+  position: absolute;
+  left: 9px;
+  top: 20px;
+  bottom: 0;
+  width: 2px;
+  background: #e0e0e0;
+}
+.pr-timeline__item:last-child::before { display: none; }
+.pr-timeline__dot {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid #e0e0e0;
+  background: #fff;
+  flex-shrink: 0;
+  margin-top: 2px;
+  position: relative;
+  z-index: 1;
+}
+.pr-timeline__item--done .pr-timeline__dot { background: #ff9696; border-color: #ff9696; }
+.pr-timeline__item--active .pr-timeline__dot { background: #fff; border-color: #ff9696; box-shadow: 0 0 0 4px rgba(255,150,150,0.2); }
+.pr-timeline__content { flex: 1; }
+.pr-timeline__label { font-family: var(--font-body); font-size: 13px; color: #111; font-weight: 500; margin: 0 0 2px; }
+.pr-timeline__date { font-family: var(--font-body); font-size: 12px; color: #aaa; margin: 0; }
+
+/* ── Responsive ────────────────────────────────────────── */
+@media (max-width: 1200px) {
+  .pr-inner { padding: 48px 48px 80px; }
+  .pr-hero__title { font-size: 56px; }
+}
+@media (max-width: 960px) {
+  .pr-inner { padding: 40px 24px 64px; }
+  .pr-hero { min-height: 320px; }
+  .pr-hero__title { font-size: 44px; }
+  .pr-tab { padding: 12px 16px; font-size: 13px; }
+  .pr-info-row { flex-direction: column-reverse; align-items: center; }
+  .pr-card-wrap { flex-direction: column; align-items: flex-start; }
+  .pr-card-actions { flex-direction: row; margin-left: 0; }
+  .pr-cc { width: 100%; min-width: 0; }
+  .pr-add-card { width: 100%; }
+  .pr-popup { padding: 28px 24px; }
+}
+@media (max-width: 600px) {
+  .pr-inner { padding: 28px 14px 56px; }
+  .pr-hero { min-height: 240px; }
+  .pr-hero__title { font-size: 32px; }
+  .pr-card { padding: 20px 18px; }
+  .pr-order-list, .pr-wishlist-list { padding: 4px 16px; }
+  .pr-order-row { flex-wrap: wrap; }
+  .pr-two-col { grid-template-columns: 1fr; }
+  .pr-order-price { font-size: 16px; }
+  .pr-cc { height: 160px; }
+}
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Profile Page",
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "hero_image",
+      "label": "Hero background image"
+    }
+  ]
+}
+{% endschema %}
