@@ -1,50 +1,896 @@
-{% comment %}
-  This section is used in the product template to render product page with
-  media, content, and add-to-cart form.
+{%- assign current_variant = product.selected_or_first_available_variant -%}
 
-  https://shopify.dev/docs/storefronts/themes/architecture/templates/product
-{% endcomment %}
+<!-- ── Product Hero Banner ────────────────────────── -->
+<section class="prod-hero full-width">
+  {%- if product.featured_image -%}
+    {{ product.featured_image | image_url: width: 1800 | image_tag: class: 'prod-hero__bg', loading: 'eager', fetchpriority: 'high', alt: '' }}
+  {%- else -%}
+    <div class="prod-hero__bg prod-hero__bg--empty"></div>
+  {%- endif -%}
+  <div class="prod-hero__overlay"></div>
+  <div class="prod-hero__text">
+    <h1 class="prod-hero__title">{{ product.title }}</h1>
+  </div>
+</section>
 
-<div class="product-images">
-  {% for image in product.images %}
-    {% render 'image', class: 'product-image', image: image %}
-  {% endfor %}
-</div>
+<!-- ── Product Detail ────────────────────────────── -->
+<section class="prod-detail full-width">
+  <div class="prod-detail__inner">
 
-<div class="product-info">
-  <h1>{{ product.title }}</h1>
-  <p>{{ product.price | money }}</p>
-  <p>{{ product.description }}</p>
-</div>
+    <!-- Back link -->
+    <a href="{{ collection.url | default: routes.all_products_collection_url }}" class="prod-back">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Continue Shopping
+    </a>
 
-<div class="product-form">
-  {% form 'product', product %}
-    {% assign current_variant = product.selected_or_first_available_variant %}
+    <!-- 2-column layout -->
+    <div class="prod-layout">
 
-    <select name="id">
-      {% for variant in product.variants %}
-        <option
-          value="{{ variant.id }}"
-          {% if variant == current_variant %}
-            selected="selected"
-          {% endif %}
-        >
-          {{ variant.title }} - {{ variant.price | money }}
-        </option>
-      {% endfor %}
-    </select>
+      <!-- Left: Gallery -->
+      <div class="prod-gallery">
+        <div class="prod-gallery__main">
+          {%- if product.featured_image -%}
+            {{ product.featured_image | image_url: width: 900 | image_tag: class: 'prod-gallery__main-img', id: 'prod-main-img', loading: 'eager', alt: product.featured_image.alt | default: product.title }}
+          {%- endif -%}
+        </div>
+        {%- if product.images.size > 1 -%}
+        <div class="prod-gallery__thumb-wrap">
+          <button class="prod-gallery__arrow prod-gallery__arrow--prev" id="thumb-prev" aria-label="Previous">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="prod-gallery__thumbs" id="prod-thumbs-track">
+            {%- for image in product.images -%}
+              <button class="prod-gallery__thumb{% if forloop.first %} prod-gallery__thumb--active{% endif %}"
+                      data-src="{{ image | image_url: width: 900 }}"
+                      aria-label="View image {{ forloop.index }}">
+                {{ image | image_url: width: 300, height: 300, crop: 'center' | image_tag: loading: 'lazy', alt: '' }}
+              </button>
+            {%- endfor -%}
+          </div>
+          <button class="prod-gallery__arrow prod-gallery__arrow--next" id="thumb-next" aria-label="Next">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+        {%- endif -%}
+      </div>
 
-    <input type="text" name="quantity" min="1" value="1">
+      <!-- Right: Info -->
+      <div class="prod-info">
 
-    <input type="submit" value="Add to cart">
-    {{ form | payment_button }}
-  {% endform %}
-</div>
+        <h2 class="prod-info__title">{{ product.title }}</h2>
+
+        <!-- Rating row -->
+        <div class="prod-info__rating">
+          <div class="prod-stars">
+            {%- for i in (1..5) -%}
+              <svg class="prod-star{% if i <= 4 %} prod-star--on{% endif %}" width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" stroke="#f5a623" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            {%- endfor -%}
+          </div>
+          <span class="prod-rating-count">4.0 (20 Reviews)</span>
+          <span class="prod-rating-sep"></span>
+          <a href="#prod-reviews" class="prod-write-review">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Write Review
+          </a>
+        </div>
+
+        <!-- Price -->
+        <p class="prod-info__price" id="prod-price">{{ current_variant.price | money }}</p>
+
+        <div class="prod-info__divider"></div>
+
+        <!-- Stock -->
+        <p class="prod-info__stock{% unless current_variant.available %} prod-info__stock--out{% endunless %}" id="prod-stock">
+          <span class="prod-stock-dot{% unless current_variant.available %} prod-stock-dot--out{% endunless %}"></span>
+          {%- if current_variant.available -%}In Stock{%- else -%}Out of Stock{%- endif -%}
+        </p>
+
+        {%- form 'product', product, id: 'prod-form' -%}
+          <input type="hidden" name="id" id="prod-variant-id" value="{{ current_variant.id }}">
+
+          {%- unless product.has_only_default_variant -%}
+          <div class="prod-variants">
+            {%- for option in product.options_with_values -%}
+              <div class="prod-option">
+                <p class="prod-option__label">{{ option.name }}: <strong>{{ option.selected_value }}</strong></p>
+                <div class="prod-option__values">
+                  {%- for value in option.values -%}
+                    <button type="button"
+                            class="prod-option__val{% if option.selected_value == value %} prod-option__val--active{% endif %}"
+                            data-option-index="{{ forloop.parentloop.index0 }}"
+                            data-value="{{ value }}">{{ value }}</button>
+                  {%- endfor -%}
+                </div>
+              </div>
+            {%- endfor -%}
+          </div>
+          {%- endunless -%}
+
+          <!-- Qty + ATC + Wishlist row -->
+          <div class="prod-actions">
+            <div class="prod-qty">
+              <button type="button" class="prod-qty__btn" id="prod-qty-minus" aria-label="Decrease">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M5 12H19" stroke="#333" stroke-width="2" stroke-linecap="round"/></svg>
+              </button>
+              <span class="prod-qty__num" id="prod-qty-display">1</span>
+              <input type="number" name="quantity" id="prod-qty-input" value="1" min="1" max="999" style="display:none;" aria-label="Quantity">
+              <button type="button" class="prod-qty__btn" id="prod-qty-plus" aria-label="Increase">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="#333" stroke-width="2" stroke-linecap="round"/></svg>
+              </button>
+            </div>
+
+            <button type="submit" name="add" class="prod-atc" id="prod-atc-btn"
+                    {% unless current_variant.available %}disabled{% endunless %}>
+              {%- if current_variant.available -%}Add to Cart{%- else -%}Sold Out{%- endif -%}
+            </button>
+
+            <button type="button" class="prod-wish" aria-label="Add to wishlist">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12.62 20.81C12.28 20.93 11.72 20.93 11.38 20.81C8.48 19.82 2 15.69 2 8.69C2 5.6 4.49 3.1 7.56 3.1C9.38 3.1 10.99 3.98 12 5.34C13.01 3.98 14.63 3.1 16.44 3.1C19.51 3.1 22 5.6 22 8.69C22 15.69 15.52 19.82 12.62 20.81Z" stroke="#333" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+          </div>
+
+          <!-- Buy Now -->
+          <button type="button" class="prod-buy-now" id="prod-buy-now"
+                  {% unless current_variant.available %}disabled{% endunless %}>
+            Buy Now
+          </button>
+
+        {%- endform -%}
+
+        <!-- Accordions -->
+        <div class="prod-accordions">
+
+          <div class="prod-acc-line"></div>
+          <details class="prod-acc" open>
+            <summary class="prod-acc__head">
+              Description
+              <svg class="prod-acc__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 9L12 15L18 9" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </summary>
+            <div class="prod-acc__body">{{ product.description }}</div>
+          </details>
+
+          <div class="prod-acc-line"></div>
+          <details class="prod-acc">
+            <summary class="prod-acc__head">
+              Materials &amp; Care
+              <svg class="prod-acc__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 9L12 15L18 9" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </summary>
+            <div class="prod-acc__body">
+              {%- if section.settings.materials_care != blank -%}
+                {{ section.settings.materials_care }}
+              {%- else -%}
+                Please handle with care. Clean with a soft dry cloth. Avoid contact with water and harsh chemicals.
+              {%- endif -%}
+            </div>
+          </details>
+
+          <div class="prod-acc-line"></div>
+          <details class="prod-acc">
+            <summary class="prod-acc__head">
+              Shipping Info
+              <svg class="prod-acc__chevron" width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 9L12 15L18 9" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </summary>
+            <div class="prod-acc__body">
+              {%- if section.settings.shipping_info != blank -%}
+                {{ section.settings.shipping_info }}
+              {%- else -%}
+                Free delivery on orders over LKR 5,000. Standard delivery 3–5 business days. Express delivery available at checkout.
+              {%- endif -%}
+            </div>
+          </details>
+          <div class="prod-acc-line"></div>
+
+        </div>
+      </div><!-- /prod-info -->
+    </div><!-- /prod-layout -->
+
+    <!-- Reviews -->
+    <div class="prod-reviews" id="prod-reviews">
+      <div class="prod-tabs">
+        <button class="prod-tab prod-tab--active" data-tab="reviews">Reviews</button>
+        <button class="prod-tab" data-tab="compare">Compare</button>
+      </div>
+
+      <div class="prod-tab-panel" id="tab-reviews">
+        <div class="prod-review-list">
+          <div class="prod-review">
+            <p class="prod-review__name">Kasun Abewardhana</p>
+            <div class="prod-stars prod-stars--sm">
+              {%- for i in (1..5) -%}
+                <svg class="prod-star prod-star--on" width="18" height="18" viewBox="0 0 24 24">
+                  <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="#f5a623" stroke="#f5a623" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              {%- endfor -%}
+            </div>
+            <p class="prod-review__text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent mi leo, rutrum ac dolor quis, porta dignissim lacus. Praesent posuere eu tortor mattis bibendum. Duis pulvinar feugiat libero aliquet congue.</p>
+          </div>
+          <div class="prod-review">
+            <p class="prod-review__name">Nipuni kaveesha</p>
+            <div class="prod-stars prod-stars--sm">
+              {%- for i in (1..5) -%}
+                <svg class="prod-star{% if i <= 4 %} prod-star--on{% endif %}" width="18" height="18" viewBox="0 0 24 24">
+                  <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" {% if i <= 4 %}fill="#f5a623" stroke="#f5a623"{% else %}fill="none" stroke="#f5a623"{% endif %} stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              {%- endfor -%}
+            </div>
+            <p class="prod-review__text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent mi leo, rutrum ac dolor quis, porta dignissim lacus. Praesent posuere eu tortor mattis bibendum. Duis pulvinar feugiat libero aliquet congue.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="prod-tab-panel prod-tab-panel--hidden" id="tab-compare">
+        <p class="prod-compare-msg">Compare feature coming soon.</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- Scripts -->
+<script>
+(function () {
+  var mainImg = document.getElementById('prod-main-img');
+  var thumbs  = document.querySelectorAll('.prod-gallery__thumb');
+  var track   = document.getElementById('prod-thumbs-track');
+  var prevBtn = document.getElementById('thumb-prev');
+  var nextBtn = document.getElementById('thumb-next');
+
+  thumbs.forEach(function (thumb) {
+    thumb.addEventListener('click', function () {
+      if (mainImg) mainImg.src = thumb.dataset.src;
+      thumbs.forEach(function (t) { t.classList.remove('prod-gallery__thumb--active'); });
+      thumb.classList.add('prod-gallery__thumb--active');
+    });
+  });
+
+  function scrollAmount() {
+    var thumb = track ? track.querySelector('.prod-gallery__thumb') : null;
+    return thumb ? thumb.offsetWidth + 12 : 120;
+  }
+
+  if (prevBtn && track) {
+    prevBtn.addEventListener('click', function () {
+      track.scrollBy({ left: -scrollAmount() * 4, behavior: 'smooth' });
+    });
+  }
+
+  if (nextBtn && track) {
+    nextBtn.addEventListener('click', function () {
+      track.scrollBy({ left: scrollAmount() * 4, behavior: 'smooth' });
+    });
+  }
+
+  var input   = document.getElementById('prod-qty-input');
+  var display = document.getElementById('prod-qty-display');
+  var minus   = document.getElementById('prod-qty-minus');
+  var plus    = document.getElementById('prod-qty-plus');
+
+  function updateQty(val) {
+    if (!input || !display) return;
+    input.value   = val;
+    display.textContent = val;
+  }
+
+  if (minus) minus.addEventListener('click', function () {
+    var v = parseInt(input.value, 10);
+    if (v > 1) updateQty(v - 1);
+  });
+  if (plus) plus.addEventListener('click', function () {
+    updateQty(parseInt(input.value, 10) + 1);
+  });
+
+  var buyNow = document.getElementById('prod-buy-now');
+  if (buyNow) buyNow.addEventListener('click', function () {
+    var id  = document.getElementById('prod-variant-id').value;
+    var qty = parseInt(input ? input.value : 1, 10);
+    fetch('/cart/add.js', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: id, quantity: qty })
+    }).then(function () { window.location.href = '/checkout'; });
+  });
+
+  var tabs   = document.querySelectorAll('.prod-tab');
+  var panels = document.querySelectorAll('.prod-tab-panel');
+  tabs.forEach(function (tab) {
+    tab.addEventListener('click', function () {
+      tabs.forEach(function (t) { t.classList.remove('prod-tab--active'); });
+      panels.forEach(function (p) { p.classList.add('prod-tab-panel--hidden'); });
+      tab.classList.add('prod-tab--active');
+      var panel = document.getElementById('tab-' + tab.dataset.tab);
+      if (panel) panel.classList.remove('prod-tab-panel--hidden');
+    });
+  });
+})();
+</script>
+
+{% stylesheet %}
+/* ── Page background ─────────────────────────────── */
+body.template-product {
+  background: #fff8f8;
+  padding-top: 0 !important;
+}
+
+/* ── Hero ────────────────────────────────────────── */
+.prod-hero {
+  position: relative;
+  height: 65vh;
+  min-height: 440px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.prod-hero__bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+}
+
+.prod-hero__bg--empty { background: #1a1a1a; }
+
+.prod-hero__overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.50);
+}
+
+.prod-hero__text {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  padding: 0 24px;
+}
+
+.prod-hero__title {
+  font-family: var(--font-heading);
+  font-size: 64px;
+  font-weight: 400;
+  color: #fff;
+  margin: 0;
+  line-height: 1.15;
+  white-space: nowrap;
+}
+
+/* ── Detail Section ──────────────────────────────── */
+.prod-detail {
+  background: #fff8f8;
+}
+
+.prod-detail__inner {
+  max-width: 1440px;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0 auto;
+  padding: 28px 120px 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+}
+
+/* ── Back link ───────────────────────────────────── */
+.prod-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-body);
+  font-size: 12px;
+  color: #333;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.prod-back:hover { color: var(--coral-pink, #ff9696); }
+
+/* ── 2-col layout ────────────────────────────────── */
+.prod-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: start;
+}
+
+/* ── Gallery ─────────────────────────────────────── */
+.prod-gallery {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.prod-gallery__main {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #f0ebe8;
+}
+
+.prod-gallery__main-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.prod-gallery__thumb-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.prod-gallery__thumbs {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  flex: 1;
+  min-width: 0;
+}
+
+.prod-gallery__thumbs::-webkit-scrollbar { display: none; }
+
+.prod-gallery__arrow {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1.5px solid #e0e0e0;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #333;
+  transition: border-color 0.2s, color 0.2s, opacity 0.2s;
+  z-index: 1;
+}
+
+.prod-gallery__arrow:hover {
+  border-color: var(--coral-pink, #ff9696);
+  color: var(--coral-pink, #ff9696);
+}
+
+.prod-gallery__arrow:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.prod-gallery__thumb {
+  flex: 0 0 calc(25% - 9px);
+  min-width: 90px;
+  aspect-ratio: 1 / 1;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 2px solid transparent;
+  padding: 0;
+  cursor: pointer;
+  background: #f0ebe8;
+  transition: border-color 0.2s;
+  scroll-snap-align: start;
+}
+
+.prod-gallery__thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.prod-gallery__thumb--active,
+.prod-gallery__thumb:hover {
+  border-color: var(--coral-pink, #ff9696);
+}
+
+/* ── Product Info ────────────────────────────────── */
+.prod-info {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+}
+
+.prod-info__title {
+  font-family: var(--font-heading);
+  font-size: 38px;
+  font-weight: 600;
+  color: #111;
+  margin: 0;
+  line-height: 1.2;
+}
+
+/* ── Rating ──────────────────────────────────────── */
+.prod-info__rating {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.prod-stars {
+  display: flex;
+  gap: 3px;
+  align-items: center;
+}
+
+.prod-star path { fill: none; }
+.prod-star--on path { fill: #f5a623; stroke: #f5a623 !important; }
+
+.prod-rating-count {
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: #000;
+}
+
+.prod-rating-sep {
+  width: 1px;
+  height: 18px;
+  background: #ccc;
+  flex-shrink: 0;
+}
+
+.prod-write-review {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--coral-pink, #ff9696);
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+
+.prod-write-review:hover { opacity: 0.7; }
+
+/* ── Price ───────────────────────────────────────── */
+.prod-info__price {
+  font-family: var(--font-body);
+  font-size: 28px;
+  font-weight: 700;
+  color: #111;
+  margin: 0;
+  letter-spacing: -0.3px;
+}
+
+.prod-info__divider {
+  height: 1px;
+  background: #ececec;
+  margin: 4px 0;
+}
+
+/* ── Stock ───────────────────────────────────────── */
+.prod-info__stock {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  color: #00ba00;
+  margin: 0;
+}
+
+.prod-info__stock--out { color: #f44336; }
+
+.prod-stock-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #00ba00;
+  flex-shrink: 0;
+}
+
+.prod-stock-dot--out { background: #f44336; }
+
+/* ── Variants ────────────────────────────────────── */
+.prod-variants {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.prod-option__label {
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: #555;
+  margin: 0 0 8px;
+}
+
+.prod-option__values {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.prod-option__val {
+  padding: 6px 16px;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 20px;
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: #333;
+  background: #fff;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.prod-option__val:hover,
+.prod-option__val--active {
+  border-color: var(--coral-pink, #ff9696);
+  color: var(--coral-pink, #ff9696);
+}
+
+/* ── Actions row ─────────────────────────────────── */
+.prod-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.prod-qty {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-shrink: 0;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 24px;
+  padding: 0 16px;
+  height: 52px;
+}
+
+.prod-qty__btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.2s;
+}
+
+.prod-qty__btn:hover { opacity: 0.55; }
+
+.prod-qty__num {
+  font-family: var(--font-body);
+  font-size: 17px;
+  font-weight: 700;
+  color: #111;
+  min-width: 22px;
+  text-align: center;
+}
+
+/* ── Add to Cart (pill, outlined) ────────────────── */
+.prod-atc {
+  flex: 1;
+  min-width: 0;
+  height: 52px;
+  background: transparent;
+  border: 1.5px solid var(--coral-pink, #ff9696);
+  border-radius: 26px;
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--coral-pink, #ff9696);
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  white-space: nowrap;
+  padding: 0 24px;
+  letter-spacing: 0.2px;
+}
+
+.prod-atc:hover:not(:disabled) {
+  background: var(--coral-pink, #ff9696);
+  color: #fff;
+}
+
+.prod-atc:disabled { opacity: 0.45; cursor: default; }
+
+/* ── Wishlist ────────────────────────────────────── */
+.prod-wish {
+  width: 40px;
+  height: 40px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: opacity 0.2s;
+}
+
+.prod-wish:hover { opacity: 0.55; }
+
+/* ── Buy Now (pill, filled coral) ────────────────── */
+.prod-buy-now {
+  width: 100%;
+  height: 52px;
+  background: var(--coral-pink, #ff9696);
+  border: none;
+  border-radius: 26px;
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.15s;
+  margin-top: 20px;
+  letter-spacing: 0.2px;
+}
+
+.prod-buy-now:hover:not(:disabled) { opacity: 0.88; transform: translateY(-1px); }
+.prod-buy-now:active:not(:disabled) { transform: translateY(0); }
+.prod-buy-now:disabled { opacity: 0.45; cursor: default; }
+
+/* ── Accordions ──────────────────────────────────── */
+.prod-accordions {
+  display: flex;
+  flex-direction: column;
+  margin-top: 8px;
+}
+
+.prod-acc-line {
+  height: 1px;
+  background: #ececec;
+}
+
+.prod-acc { border: none; }
+
+.prod-acc__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 0;
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 600;
+  color: #111;
+  cursor: pointer;
+  list-style: none;
+  gap: 8px;
+}
+
+.prod-acc__head::-webkit-details-marker { display: none; }
+
+.prod-acc__chevron {
+  flex-shrink: 0;
+  color: #555;
+  transition: transform 0.25s ease;
+}
+
+.prod-acc[open] .prod-acc__chevron {
+  transform: rotate(180deg);
+}
+
+.prod-acc__body {
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: #666;
+  line-height: 1.75;
+  padding-bottom: 18px;
+}
+
+/* ── Reviews / Tabs ──────────────────────────────── */
+.prod-reviews { padding-top: 4px; }
+
+.prod-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1.5px solid #e8e8e8;
+  margin-bottom: 28px;
+}
+
+.prod-tab {
+  padding: 10px 24px;
+  background: none;
+  border: none;
+  border-bottom: 2.5px solid transparent;
+  margin-bottom: -1.5px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--gray, #828282);
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.prod-tab--active {
+  color: #000;
+  border-bottom-color: var(--coral-pink, #ff9696);
+}
+
+.prod-tab-panel--hidden { display: none; }
+
+.prod-review-list {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.prod-review {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.prod-review__name {
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 700;
+  color: #000;
+  margin: 0;
+}
+
+.prod-stars--sm { gap: 2px; }
+
+.prod-review__text {
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: #333;
+  line-height: 1.65;
+  margin: 0;
+}
+
+.prod-compare-msg {
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: #888;
+}
+
+/* ── Responsive ──────────────────────────────────── */
+@media (max-width: 1200px) {
+  .prod-detail__inner { padding: 28px 60px 80px; }
+}
+
+@media (max-width: 960px) {
+  .prod-detail__inner { padding: 24px 24px 60px; gap: 28px; }
+  .prod-layout { grid-template-columns: 1fr; gap: 32px; }
+  .prod-hero__title { font-size: 44px; white-space: normal; }
+  .prod-hero { min-height: 300px; }
+}
+
+@media (max-width: 600px) {
+  .prod-detail__inner { padding: 16px 16px 48px; gap: 20px; }
+  .prod-hero__title { font-size: 28px; }
+  .prod-hero { min-height: 220px; }
+  .prod-info__title { font-size: 26px; }
+  .prod-info__price { font-size: 22px; }
+  .prod-atc { font-size: 14px; height: 48px; }
+  .prod-buy-now { font-size: 14px; height: 48px; }
+  .prod-qty { height: 48px; }
+  .prod-acc__head { padding: 14px 0; font-size: 14px; }
+}
+{% endstylesheet %}
 
 {% schema %}
 {
   "name": "t:general.product",
-  "settings": [],
+  "settings": [
+    {
+      "type": "textarea",
+      "id": "materials_care",
+      "label": "Materials & Care text",
+      "default": "Please handle with care. Clean with a soft, dry cloth. Avoid contact with water and harsh chemicals."
+    },
+    {
+      "type": "textarea",
+      "id": "shipping_info",
+      "label": "Shipping Info text",
+      "default": "Free delivery on orders over LKR 5,000. Standard delivery 3–5 business days. Express delivery available at checkout."
+    }
+  ],
   "disabled_on": {
     "groups": ["header", "footer"]
   }

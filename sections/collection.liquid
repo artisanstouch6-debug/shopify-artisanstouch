@@ -126,14 +126,16 @@
     <div class="coll-grid" id="coll-grid-{{ section.id }}">
       {%- for product in collection.products -%}
         <div class="coll-pcard" data-price="{{ product.price }}">
-          <a href="{{ product.url }}" class="coll-pcard__img-wrap">
-            {%- if product.featured_image -%}
-              {{ product.featured_image
-                | image_url: width: 400, height: 400, crop: 'center'
-                | image_tag: class: 'coll-pcard__img', loading: 'lazy', alt: product.featured_image.alt | default: product.title }}
-            {%- else -%}
-              <div class="coll-pcard__img coll-pcard__img--ph">{{ 'image' | placeholder_svg_tag }}</div>
-            {%- endif -%}
+          <a href="{{ product.url }}" class="coll-pcard__link">
+            <div class="coll-pcard__img-wrap">
+              {%- if product.featured_image -%}
+                {{ product.featured_image
+                  | image_url: width: 600, height: 600, crop: 'center'
+                  | image_tag: class: 'coll-pcard__img', loading: 'lazy', alt: product.featured_image.alt | default: product.title }}
+              {%- else -%}
+                <div class="coll-pcard__img--ph">{{ 'image' | placeholder_svg_tag }}</div>
+              {%- endif -%}
+            </div>
           </a>
           <div class="coll-pcard__info">
             <div class="coll-pcard__row">
@@ -391,12 +393,15 @@
 /* ── Main products section ───────────────────────── */
 .coll-main {
   background: #fff;
+  overflow: hidden;
 }
 
 .coll-main__inner {
   max-width: 1440px;
+  width: 100%;
+  box-sizing: border-box;
   margin: 0 auto;
-  padding: 56px 120px 80px;
+  padding: 56px 80px 80px;
   display: flex;
   flex-direction: column;
   gap: 24px;
@@ -677,6 +682,7 @@
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 24px 20px;
+  
 }
 
 .coll-empty {
@@ -695,31 +701,35 @@
   gap: 12px;
 }
 
+.coll-pcard__link {
+  display: block;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
 .coll-pcard__img-wrap {
   display: block;
   width: 100%;
-  aspect-ratio: 1 / 1;
   border-radius: 12px;
   overflow: hidden;
-  text-decoration: none;
   background: #f5f0ef;
-  flex-shrink: 0;
-  position: relative;
+  line-height: 0;
 }
 
-.coll-pcard__img {
-  position: absolute;
-  inset: 0;
-  width: 100% !important;
-  height: 100% !important;
-  object-fit: cover;
+.coll-pcard__img-wrap img {
   display: block;
+  width: 100%;
+  height: 18rem;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
   transition: transform 0.3s ease;
 }
 
-.coll-pcard__img-wrap:hover .coll-pcard__img { transform: scale(1.04); }
+.coll-pcard__link:hover .coll-pcard__img-wrap img { transform: scale(1.04); }
 
 .coll-pcard__img--ph {
+  position: absolute;
+  inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -793,29 +803,32 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding-top: 8px;
+  gap: 6px;
+  padding-top: 16px;
 }
 
 .coll-page-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  color: #333;
+  width: 38px;
+  height: 38px;
+  border: 1.5px solid var(--coral-pink, #ff9696);
+  border-radius: 8px;
+  color: var(--coral-pink, #ff9696);
   text-decoration: none;
   background: #fff;
-  transition: border-color 0.2s, background 0.2s;
+  transition: background 0.2s, color 0.2s;
 }
 
-.coll-page-btn:hover { border-color: var(--coral-pink, #ff9696); color: var(--coral-pink, #ff9696); }
+.coll-page-btn:hover {
+  background: var(--coral-pink, #ff9696);
+  color: #fff;
+}
 
 .coll-page-btn--disabled {
-  opacity: 0.35;
-  cursor: default;
+  border-color: #e0e0e0;
+  color: #ccc;
   pointer-events: none;
 }
 
@@ -823,56 +836,83 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
+  width: 38px;
+  height: 38px;
+  border: none;
+  border-radius: 8px;
   font-family: var(--font-body);
   font-size: 14px;
-  color: #333;
+  color: #666;
   text-decoration: none;
-  background: #fff;
-  transition: border-color 0.2s, background 0.2s, color 0.2s;
+  background: transparent;
+  transition: color 0.2s;
 }
 
-.coll-page-num:hover { border-color: var(--coral-pink, #ff9696); color: var(--coral-pink, #ff9696); }
+.coll-page-num:hover { color: var(--coral-pink, #ff9696); }
 
 .coll-page-num--active {
-  background: #1a1a1a;
-  border-color: #1a1a1a;
+  background: var(--coral-pink, #ff9696);
   color: #fff;
+  font-weight: 600;
 }
 
+.coll-page-num--active:hover { color: #fff; }
+
 .coll-page-num--gap {
-  border: none;
-  background: none;
-  color: #999;
+  color: #bbb;
   cursor: default;
 }
 
 /* ── Responsive ──────────────────────────────────── */
+
+/* ≤1280px: slightly tighter padding, still 4 columns */
+@media (max-width: 1280px) {
+  .coll-main__inner { padding: 48px 48px 72px; }
+  .coll-banner__title { font-size: 72px; }
+}
+
+/* ≤1100px: 3 columns */
 @media (max-width: 1100px) {
-  .coll-main__inner { padding: 40px 48px 60px; }
-  .coll-banner__title { font-size: 64px; }
-  .coll-grid { grid-template-columns: repeat(3, 1fr); }
+  .coll-main__inner { padding: 40px 32px 60px; }
+  .coll-banner__title { font-size: 60px; }
+  .coll-grid { grid-template-columns: repeat(3, 1fr); gap: 20px 16px; }
 }
 
-@media (max-width: 768px) {
-  .coll-main__inner { padding: 36px 24px 52px; gap: 28px; }
-  .coll-banner { height: 100vh; min-height: 480px; }
+/* ≤900px: 2 columns */
+@media (max-width: 900px) {
+  .coll-main__inner { padding: 36px 24px 52px; gap: 20px; }
   .coll-banner__title { font-size: 48px; }
-  .coll-section-title { font-size: 28px; }
-  .coll-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
-  .coll-filterbar { flex-direction: column; gap: 16px; }
-  .coll-filterbar__price { max-width: 100%; width: 100%; }
+  .coll-banner__text { padding: 0 24px; }
+  .coll-section-title { font-size: 30px; }
+  .coll-grid { grid-template-columns: repeat(2, 1fr); gap: 16px 12px; }
+  .coll-filterbar { flex-direction: column; align-items: flex-start; gap: 12px; }
+  .coll-filterbar__tags { gap: 8px; }
+  .coll-filterbar__price { max-width: 100%; width: 100%; min-width: unset; }
+  .coll-pill { padding: 7px 16px; font-size: 13px; }
+  .coll-sort-btn { min-width: unset; padding: 8px 14px; }
 }
 
-@media (max-width: 480px) {
-  .coll-banner { height: 100svh; min-height: 420px; }
+/* ≤600px: 1 column (mobile) */
+@media (max-width: 600px) {
+  .coll-main__inner { padding: 28px 16px 44px; gap: 16px; }
+  .coll-banner { min-height: 340px; }
   .coll-banner__title { font-size: 36px; }
+  .coll-banner__text { padding: 0 16px; }
   .coll-banner__desc { font-size: 14px; }
-  .coll-main__inner { padding: 28px 16px 44px; }
-  .coll-controls { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .coll-section-title { font-size: 26px; }
+  .coll-grid { grid-template-columns: 1fr; gap: 20px; }
+  .coll-pcard__name { font-size: 15px; white-space: normal; }
+  .coll-pcard__price { font-size: 15px; }
+  .coll-controls { gap: 10px; }
+  .coll-sort-btn { font-size: 13px; }
+  .coll-pill { padding: 6px 14px; font-size: 12px; }
+}
+
+/* ≤400px: extra small phones */
+@media (max-width: 400px) {
+  .coll-main__inner { padding: 20px 12px 36px; }
+  .coll-banner__title { font-size: 28px; }
+  .coll-section-title { font-size: 22px; }
 }
 {% endstylesheet %}
 
