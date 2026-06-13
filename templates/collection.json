@@ -13,7 +13,7 @@
       "type": "collection",
       "settings": {
         "heading_prefix": "Our",
-        "products_per_page": 4,
+        "products_per_page": 8,
         "show_price_filter": true,
         "price_max": 150000
       }
