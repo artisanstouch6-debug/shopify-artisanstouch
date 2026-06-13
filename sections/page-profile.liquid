@@ -1,5 +1,10 @@
 {% comment %} Profile page — works with New Customer Accounts. Accessible at /pages/profile {% endcomment %}
 
+{%- unless customer -%}
+  <style>.pr-hero,.pr-body{visibility:hidden}</style>
+  <script>window.location.replace('{{ routes.account_login_url }}?return_to=/pages/profile');</script>
+{%- endunless -%}
+
 <!-- ── Hero ───────────────────────────────────────── -->
 <section class="pr-hero full-width">
   {%- if section.settings.hero_image != blank -%}
