@@ -21,8 +21,6 @@
 <section class="pr-body full-width">
   <div class="pr-inner">
 
-    {%- if customer -%}
-
     <!-- Tab nav -->
     <nav class="pr-tabs" role="tablist">
       <button class="pr-tab pr-tab--active" role="tab" data-tab="info" aria-selected="true">Personal Information</button>
@@ -51,7 +49,7 @@
           <div class="pr-avatar-col">
             <div class="pr-avatar">
               <img class="pr-avatar__img" id="pr-avatar-preview"
-                   src="https://ui-avatars.com/api/?name={{ customer.first_name | url_encode }}+{{ customer.last_name | url_encode }}&size=160&background=f5c6c6&color=ffffff&bold=true"
+                   src="https://ui-avatars.com/api/?name={{ customer.first_name | default: 'A' | url_encode }}+{{ customer.last_name | default: 'T' | url_encode }}&size=160&background=f5c6c6&color=ffffff&bold=true"
                    alt="Profile photo">
             </div>
             <label class="pr-btn pr-btn--coral pr-upload-btn">
@@ -225,13 +223,6 @@
       </button>
 
     </div><!-- /panel payment -->
-
-    {%- else -%}
-    <!-- Not logged in -->
-    <div class="pr-login-prompt">
-      <p>Please <a href="{{ routes.account_login_url }}">sign in</a> to view your profile.</p>
-    </div>
-    {%- endif -%}
 
   </div><!-- /pr-inner -->
 </section>
