@@ -21,20 +21,7 @@
 <section class="pr-body full-width">
   <div class="pr-inner">
 
-    {%- unless customer -%}
-    <!-- Not signed in — show prompt -->
-    <div class="pr-gate">
-      <div class="pr-gate__icon">
-        <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#ff9696" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-          <circle cx="12" cy="7" r="4"/>
-        </svg>
-      </div>
-      <h2 class="pr-gate__title">Sign in to view your profile</h2>
-      <p class="pr-gate__sub">Access your orders, wishlist, and personal details.</p>
-      <a href="{{ routes.account_login_url }}" class="pr-btn pr-btn--coral pr-gate__btn">Sign In</a>
-    </div>
-    {%- else -%}
+    {%- if customer -%}
 
     <!-- Tab nav -->
     <nav class="pr-tabs" role="tablist">
@@ -239,6 +226,19 @@
 
     </div><!-- /panel payment -->
 
+    {%- else -%}
+    <!-- Not signed in — show prompt -->
+    <div class="pr-gate">
+      <div class="pr-gate__icon">
+        <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#ff9696" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+      </div>
+      <h2 class="pr-gate__title">Sign in to view your profile</h2>
+      <p class="pr-gate__sub">Access your orders, wishlist, and personal details.</p>
+      <a href="{{ routes.account_login_url }}" class="pr-btn pr-btn--coral pr-gate__btn">Sign In</a>
+    </div>
     {%- endif -%}
 
   </div><!-- /pr-inner -->
