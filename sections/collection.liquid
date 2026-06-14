@@ -347,32 +347,24 @@
   function saveWishlist(arr) {
     localStorage.setItem(WISH_KEY, JSON.stringify(arr));
   }
-  function isWishlisted(id) {
+  function isInWishlist(id) {
     return getWishlist().some(function(i) { return String(i.id) === String(id); });
   }
 
-  function syncBtn(btn) {
-    var on = isWishlisted(btn.dataset.id);
-    var path = btn.querySelector('path');
-    if (on) {
-      path.setAttribute('fill', '#ff4d4d');
-      path.setAttribute('stroke', '#ff4d4d');
-      btn.setAttribute('aria-label', 'Remove from wishlist');
-    } else {
-      path.setAttribute('fill', 'none');
-      path.setAttribute('stroke', 'black');
-      btn.setAttribute('aria-label', 'Add to wishlist');
-    }
-  }
-
   document.querySelectorAll('.coll-pcard__wish').forEach(function (btn) {
-    syncBtn(btn);
+    /* set initial filled state */
+    if (isInWishlist(btn.dataset.id)) {
+      btn.classList.add('coll-pcard__wish--on');
+    }
+
     btn.addEventListener('click', function (e) {
       e.preventDefault();
-      var id    = btn.dataset.id;
-      var list  = getWishlist();
-      if (isWishlisted(id)) {
+      e.stopPropagation();
+      var id   = btn.dataset.id;
+      var list = getWishlist();
+      if (isInWishlist(id)) {
         saveWishlist(list.filter(function(i) { return String(i.id) !== String(id); }));
+        btn.classList.remove('coll-pcard__wish--on');
       } else {
         list.push({
           id:    id,
@@ -382,8 +374,8 @@
           url:   btn.dataset.url
         });
         saveWishlist(list);
+        btn.classList.add('coll-pcard__wish--on');
       }
-      syncBtn(btn);
     });
   });
 })();
@@ -849,6 +841,12 @@
 
 .coll-pcard__act-btn:hover { opacity: 0.55; }
 .coll-pcard__act-btn:disabled { opacity: 0.35; cursor: default; }
+
+.coll-pcard__wish--on path {
+  fill: #ff4d4d;
+  stroke: #ff4d4d;
+}
+.coll-pcard__wish--on:hover { opacity: 1; }
 
 .coll-pcard__price {
   font-family: var(--font-body);

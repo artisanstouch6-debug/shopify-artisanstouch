@@ -50,7 +50,12 @@
               <div class="pcard__row">
                 <a href="{{ product.url }}" class="pcard__title">{{ product.title }}</a>
                 <div class="pcard__actions">
-                  <button class="pcard__action-btn" aria-label="Wishlist">
+                  <button class="pcard__action-btn pcard__wish" aria-label="Add to wishlist"
+                          data-id="{{ product.id }}"
+                          data-title="{{ product.title | escape }}"
+                          data-price="{{ product.price | money }}"
+                          data-image="{{ product.featured_image | image_url: width: 300 }}"
+                          data-url="{{ product.url }}">
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path d="M12.62 20.8101C12.28 20.9301 11.72 20.9301 11.38 20.8101C8.48 19.8201 2 15.6901 2 8.6901C2 5.6001 4.49 3.1001 7.56 3.1001C9.38 3.1001 10.99 3.9801 12 5.3401C13.01 3.9801 14.63 3.1001 16.44 3.1001C19.51 3.1001 22 5.6001 22 8.6901C22 15.6901 15.52 19.8201 12.62 20.8101Z" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
@@ -290,6 +295,8 @@
   }
 
   .pcard__action-btn:hover { opacity: 0.6; }
+  .pcard__wish--on path { fill: #ff4d4d; stroke: #ff4d4d; }
+  .pcard__wish--on { opacity: 1 !important; }
 
   .pcard__price {
     font-family: var(--font-body);
@@ -347,6 +354,39 @@
       });
     });
   })();
+</script>
+
+<script>
+/* ── Global wishlist handler (runs once across all sections) ── */
+if (!window._artisansWishInit) {
+  window._artisansWishInit = true;
+  var _WISH_KEY = 'artisans_wishlist';
+
+  function _getWL() { try { return JSON.parse(localStorage.getItem(_WISH_KEY) || '[]'); } catch(e) { return []; } }
+  function _saveWL(a) { localStorage.setItem(_WISH_KEY, JSON.stringify(a)); }
+  function _inWL(id) { return _getWL().some(function(i){ return String(i.id) === String(id); }); }
+
+  function _initWishBtn(btn) {
+    if (_inWL(btn.dataset.id)) btn.classList.add('pcard__wish--on');
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      var id = btn.dataset.id;
+      if (!id) return;
+      var list = _getWL();
+      if (_inWL(id)) {
+        _saveWL(list.filter(function(i){ return String(i.id) !== String(id); }));
+        btn.classList.remove('pcard__wish--on');
+      } else {
+        list.push({ id: id, title: btn.dataset.title, price: btn.dataset.price, image: btn.dataset.image, url: btn.dataset.url });
+        _saveWL(list);
+        btn.classList.add('pcard__wish--on');
+      }
+    });
+  }
+
+  document.querySelectorAll('.pcard__wish').forEach(_initWishBtn);
+}
 </script>
 
 {% schema %}
