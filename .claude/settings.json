@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -s -L \"https://www.figma.com/api/mcp/asset/f2b1b60e-9517-4807-9c4f-a3086d8c23cb\" -o /Users/bavaram/Repo/shopify-artisanstouch/assets/contact-hero.jpg)",
+      "Bash(curl -s -L \"https://www.figma.com/api/mcp/asset/72e94ac4-c68b-4a98-bf16-fb2a2cc09971\" -o /Users/bavaram/Repo/shopify-artisanstouch/assets/about-story.jpg)",
+      "Bash(curl -s -L \"https://www.figma.com/api/mcp/asset/0e9a334b-75dc-4382-b220-98ce97ba69a2\" -o /Users/bavaram/Repo/shopify-artisanstouch/assets/about-hero.jpg)"
+    ]
+  }
+}

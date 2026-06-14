@@ -1,0 +1,26 @@
+{
+  "sections": {
+    "main": {
+      "type": "contact",
+      "settings": {
+        "hero_heading": "Contact Us",
+        "info_heading": "Get in a touch",
+        "address": "No.02, Main Road, Malabe",
+        "email": "artisanstouch@gmail.com",
+        "phone": "+94 11 234 5678",
+        "hours_label": "Store Hours:",
+        "hours_weekday": "Monday - Friday: 10am - 6pm",
+        "hours_saturday": "Saturday: 11am - 5pm",
+        "hours_sunday": "Sunday: Closed",
+        "form_heading": "Send us a message",
+        "label_name": "Name",
+        "label_email": "Email",
+        "label_subject": "Subject",
+        "label_message": "Message",
+        "submit_label": "Send Message",
+        "show_map": true
+      }
+    }
+  },
+  "order": ["main"]
+}

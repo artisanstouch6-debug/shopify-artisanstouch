@@ -1,0 +1,602 @@
+<!-- ── Contact Us Page ────────────────────────────── -->
+
+<!-- Remove body padding so hero starts at top -->
+<style>
+  body.template-page { padding-top: 0 !important; }
+</style>
+
+<!-- ── Hero Banner ───────────────────────────────── -->
+<section class="cu-hero full-width">
+  {%- if section.settings.hero_image -%}
+    {{ section.settings.hero_image | image_url: width: 2000 | image_tag: class: 'cu-hero__bg', loading: 'eager', fetchpriority: 'high', alt: '' }}
+  {%- else -%}
+    <img src="{{ 'contact-hero.jpg' | asset_url }}" alt="" class="cu-hero__bg" loading="eager">
+  {%- endif -%}
+  <div class="cu-hero__overlay"></div>
+  <div class="cu-hero__text">
+    <h1 class="cu-hero__title">{{ section.settings.hero_heading | default: 'Contact Us' }}</h1>
+  </div>
+</section>
+
+<!-- ── Contact Content ───────────────────────────── -->
+<section class="cu-content full-width">
+  <div class="cu-content__inner">
+
+    <!-- Left: Get in touch info -->
+    <div class="cu-info">
+      <h2 class="cu-info__heading">{{ section.settings.info_heading | default: 'Get in a touch' }}</h2>
+
+      <div class="cu-info__details">
+        {%- if section.settings.address != blank -%}
+          <div class="cu-info__row">
+            <svg class="cu-info__icon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 13.4299C13.7231 13.4299 15.12 12.0331 15.12 10.3099C15.12 8.58681 13.7231 7.18994 12 7.18994C10.2769 7.18994 8.88 8.58681 8.88 10.3099C8.88 12.0331 10.2769 13.4299 12 13.4299Z" stroke="var(--coral-pink,#ff9696)" stroke-width="1.5"/>
+              <path d="M3.62 8.49C5.59 -0.169998 18.42 -0.159997 20.38 8.5C21.53 13.58 18.37 17.88 15.6 20.54C13.59 22.48 10.41 22.48 8.39 20.54C5.63 17.88 2.47 13.57 3.62 8.49Z" stroke="var(--coral-pink,#ff9696)" stroke-width="1.5"/>
+            </svg>
+            <span class="cu-info__text">{{ section.settings.address }}</span>
+          </div>
+        {%- endif -%}
+
+        {%- if section.settings.email != blank -%}
+          <div class="cu-info__row">
+            <svg class="cu-info__icon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M17 20.5H7C4 20.5 2 19 2 15.5V8.5C2 5 4 3.5 7 3.5H17C20 3.5 22 5 22 8.5V15.5C22 19 20 20.5 17 20.5Z" stroke="var(--coral-pink,#ff9696)" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M17 9L13.87 11.5C12.84 12.32 11.15 12.32 10.12 11.5L7 9" stroke="var(--coral-pink,#ff9696)" stroke-width="1.5" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <a href="mailto:{{ section.settings.email }}" class="cu-info__link">{{ section.settings.email }}</a>
+          </div>
+        {%- endif -%}
+
+        {%- if section.settings.phone != blank -%}
+          <div class="cu-info__row">
+            <svg class="cu-info__icon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M21.97 18.33C21.97 18.69 21.89 19.06 21.72 19.42C21.55 19.78 21.33 20.12 21.04 20.44C20.55 20.98 20.01 21.37 19.4 21.62C18.8 21.87 18.15 22 17.45 22C16.43 22 15.34 21.76 14.19 21.27C13.04 20.78 11.89 20.12 10.75 19.29C9.6 18.45 8.51 17.52 7.47 16.49C6.44 15.45 5.51 14.36 4.68 13.22C3.86 12.08 3.2 10.94 2.72 9.81C2.24 8.67 2 7.58 2 6.54C2 5.86 2.12 5.21 2.36 4.61C2.6 4 2.98 3.44 3.51 2.94C4.15 2.31 4.85 2 5.59 2C5.87 2 6.15 2.06 6.4 2.18C6.66 2.3 6.89 2.48 7.07 2.74L9.39 6.01C9.57 6.26 9.7 6.49 9.79 6.71C9.88 6.92 9.93 7.13 9.93 7.32C9.93 7.56 9.86 7.8 9.72 8.03C9.59 8.26 9.4 8.5 9.16 8.74L8.4 9.53C8.29 9.64 8.24 9.77 8.24 9.93C8.24 10.01 8.25 10.08 8.27 10.16C8.3 10.24 8.33 10.3 8.35 10.36C8.53 10.69 8.84 11.12 9.28 11.64C9.73 12.16 10.21 12.69 10.73 13.22C11.27 13.75 11.79 14.24 12.32 14.69C12.84 15.13 13.27 15.43 13.61 15.61C13.66 15.63 13.72 15.66 13.79 15.69C13.87 15.72 13.95 15.73 14.04 15.73C14.21 15.73 14.34 15.67 14.45 15.56L15.21 14.81C15.46 14.56 15.7 14.37 15.93 14.25C16.16 14.11 16.39 14.04 16.64 14.04C16.83 14.04 17.03 14.08 17.25 14.17C17.47 14.26 17.7 14.39 17.95 14.56L21.26 16.91C21.52 17.09 21.7 17.3 21.81 17.55C21.91 17.8 21.97 18.05 21.97 18.33Z" stroke="var(--coral-pink,#ff9696)" stroke-width="1.5" stroke-miterlimit="10"/>
+            </svg>
+            <a href="tel:{{ section.settings.phone | remove: ' ' }}" class="cu-info__link">{{ section.settings.phone }}</a>
+          </div>
+        {%- endif -%}
+      </div>
+
+      <div class="cu-info__hours">
+        <p class="cu-info__hours-label">{{ section.settings.hours_label | default: 'Store Hours:' }}</p>
+        <div class="cu-info__hours-list">
+          {%- if section.settings.hours_weekday != blank -%}
+            <p class="cu-info__hours-item">{{ section.settings.hours_weekday }}</p>
+          {%- endif -%}
+          {%- if section.settings.hours_saturday != blank -%}
+            <p class="cu-info__hours-item">{{ section.settings.hours_saturday }}</p>
+          {%- endif -%}
+          {%- if section.settings.hours_sunday != blank -%}
+            <p class="cu-info__hours-item">{{ section.settings.hours_sunday }}</p>
+          {%- endif -%}
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Send us a message form -->
+    <div class="cu-form-wrap">
+      <h2 class="cu-form__heading">{{ section.settings.form_heading | default: 'Send us a message' }}</h2>
+
+      {%- form 'contact', id: 'cu-contact-form' -%}
+        {%- if form.posted_successfully? -%}
+          <p class="cu-form__success">Thank you! Your message has been sent. We'll get back to you shortly.</p>
+        {%- endif -%}
+
+        <div class="cu-form__fields">
+          <div class="cu-form__field">
+            <label class="cu-form__label" for="cu-name">{{ section.settings.label_name | default: 'Name' }}</label>
+            <div class="cu-form__input-wrap">
+              <input class="cu-form__input" type="text" id="cu-name" name="contact[name]" value="{{ form.name }}" placeholder="Your full name" required>
+            </div>
+          </div>
+
+          <div class="cu-form__field">
+            <label class="cu-form__label" for="cu-email">{{ section.settings.label_email | default: 'Email' }}</label>
+            <div class="cu-form__input-wrap">
+              <input class="cu-form__input" type="email" id="cu-email" name="contact[email]" value="{{ form.email }}" placeholder="you@example.com" required>
+            </div>
+          </div>
+
+          <div class="cu-form__field">
+            <label class="cu-form__label" for="cu-subject">{{ section.settings.label_subject | default: 'Subject' }}</label>
+            <div class="cu-form__input-wrap">
+              <input class="cu-form__input" type="text" id="cu-subject" name="contact[body_subject]" placeholder="How can we help?" autocomplete="off">
+            </div>
+          </div>
+
+          <div class="cu-form__field">
+            <label class="cu-form__label" for="cu-message">{{ section.settings.label_message | default: 'Message' }}</label>
+            <div class="cu-form__input-wrap cu-form__input-wrap--textarea">
+              <textarea class="cu-form__textarea" id="cu-message" name="contact[body]" placeholder="Write your message here..." required>{{ form.body }}</textarea>
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" class="cu-form__submit">
+          {{ section.settings.submit_label | default: 'Send Message' }}
+        </button>
+      {%- endform -%}
+    </div>
+  </div>
+</section>
+
+<!-- ── Map Section ────────────────────────────────── -->
+{%- if section.settings.show_map -%}
+<section class="cu-map full-width">
+  <div class="cu-map__inner">
+    <div class="cu-map__frame">
+      {%- if section.settings.map_embed != blank -%}
+        {{ section.settings.map_embed }}
+      {%- else -%}
+        <iframe
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3960.9270428316626!2d79.9578!3d6.9022!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ae257b31b7e8bd3%3A0x7a8c2e67e9a26e9d!2sMalabe%2C%20Sri%20Lanka!5e0!3m2!1sen!2slk!4v1700000000000!5m2!1sen!2slk"
+          width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"
+          title="Store Location"></iframe>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+{%- endif -%}
+
+{% stylesheet %}
+/* ── Hero ────────────────────────────────────────── */
+.cu-hero {
+  position: relative;
+  height: 100vh;
+  min-height: 560px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.cu-hero__bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+.cu-hero__overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.60);
+}
+
+.cu-hero__text {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  padding: 0 40px;
+}
+
+.cu-hero__title {
+  font-family: var(--font-heading);
+  font-size: 64px;
+  font-weight: 400;
+  color: #fff;
+  margin: 0;
+  line-height: 1.1;
+}
+
+/* ── Content Section ─────────────────────────────── */
+.cu-content {
+  background: #fff8f8;
+}
+
+.cu-content__inner {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 80px 120px 96px;
+  display: grid;
+  grid-template-columns: 324px 1fr;
+  gap: 80px;
+  box-sizing: border-box;
+  align-items: start;
+}
+
+/* ── Info ─────────────────────────────────────────── */
+.cu-info {
+  display: flex;
+  flex-direction: column;
+  gap: 38px;
+}
+
+.cu-info__heading {
+  font-family: var(--font-heading);
+  font-size: 36px;
+  font-weight: 400;
+  color: #000;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.cu-info__details {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.cu-info__row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.cu-info__icon {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+}
+
+.cu-info__text,
+.cu-info__link {
+  font-family: var(--font-body);
+  font-size: 16px;
+  color: #333;
+  text-decoration: none;
+  line-height: 1.5;
+}
+
+.cu-info__link:hover { color: var(--coral-pink, #ff9696); }
+
+.cu-info__hours {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cu-info__hours-label {
+  font-family: var(--font-body);
+  font-size: 16px;
+  color: #000;
+  margin: 0;
+  font-weight: 500;
+}
+
+.cu-info__hours-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cu-info__hours-item {
+  font-family: var(--font-body);
+  font-size: 16px;
+  color: #000;
+  margin: 0;
+}
+
+/* ── Form ─────────────────────────────────────────── */
+.cu-form-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 33px;
+}
+
+.cu-form__heading {
+  font-family: var(--font-heading);
+  font-size: 36px;
+  font-weight: 400;
+  color: #000;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.cu-form__success {
+  background: #e8f5e9;
+  border: 1px solid #a5d6a7;
+  color: #2e7d32;
+  font-family: var(--font-body);
+  font-size: 15px;
+  padding: 14px 18px;
+  border-radius: 8px;
+  margin: 0;
+}
+
+.cu-form__fields {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cu-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cu-form__label {
+  font-family: var(--font-body);
+  font-size: 15px;
+  color: #555;
+  font-weight: 500;
+  margin-bottom: 2px;
+  display: block;
+  transition: color 0.2s;
+}
+
+.cu-form__field:focus-within .cu-form__label {
+  color: var(--coral-pink, #ff9696);
+}
+
+.cu-form__input-wrap {
+  position: relative;
+}
+
+.cu-form__input-wrap::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--coral-pink, #ff9696);
+  transition: width 0.3s ease;
+  border-radius: 2px;
+}
+
+.cu-form__input-wrap:focus-within::after {
+  width: 100%;
+}
+
+.cu-form__input-wrap--textarea::after {
+  bottom: 0;
+}
+
+.cu-form__input,
+.cu-form__textarea {
+  font-family: var(--font-body);
+  font-size: 16px;
+  color: #000;
+  background: transparent;
+  border: none;
+  border-bottom: 1.5px solid #d0d0d0;
+  outline: none;
+  padding: 12px 0;
+  width: 100%;
+  box-sizing: border-box;
+  resize: none;
+  transition: border-color 0.2s;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.cu-form__input::placeholder,
+.cu-form__textarea::placeholder {
+  color: #bbb;
+  font-size: 15px;
+}
+
+.cu-form__input { height: 56px; }
+.cu-form__textarea { height: 140px; padding-top: 12px; }
+
+.cu-form__input:focus,
+.cu-form__textarea:focus {
+  border-bottom-color: var(--coral-pink, #ff9696);
+  outline: none;
+}
+
+.cu-form__submit {
+  display: block;
+  width: 100%;
+  background: var(--coral-pink, #ff9696);
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  border-radius: 24px;
+  padding: 18px 20px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  line-height: 1;
+  margin-top: 32px;
+}
+
+.cu-form__submit:hover { opacity: 0.85; }
+
+/* ── Map ──────────────────────────────────────────── */
+.cu-map {
+  background: #fff8f8;
+  padding: 0 120px 80px;
+  box-sizing: border-box;
+}
+
+.cu-map__inner {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0;
+}
+
+.cu-map__frame {
+  width: 100%;
+  height: 406px;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.cu-map__frame iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+}
+
+/* ── Responsive ──────────────────────────────────── */
+@media (max-width: 1200px) {
+  .cu-content__inner { padding: 64px 80px; gap: 60px; }
+  .cu-map { padding: 0 80px 64px; }
+  .cu-hero__title { font-size: 52px; }
+}
+
+@media (max-width: 960px) {
+  .cu-content__inner {
+    grid-template-columns: 1fr;
+    padding: 48px 48px;
+    gap: 48px;
+  }
+  .cu-map { padding: 0 48px 56px; }
+  .cu-map__frame { height: 320px; }
+  .cu-hero__title { font-size: 42px; }
+  .cu-info__heading,
+  .cu-form__heading { font-size: 28px; }
+}
+
+@media (max-width: 600px) {
+  .cu-hero { min-height: 360px; }
+  .cu-hero__title { font-size: 32px; }
+  .cu-content__inner { padding: 36px 24px; gap: 40px; }
+  .cu-map { padding: 0 24px 48px; }
+  .cu-map__frame { height: 260px; }
+  .cu-info__heading,
+  .cu-form__heading { font-size: 24px; }
+  .cu-info__text,
+  .cu-info__link,
+  .cu-info__hours-label,
+  .cu-info__hours-item { font-size: 15px; }
+  .cu-form__input,
+  .cu-form__textarea { font-size: 15px; }
+  .cu-form__input { height: 48px; }
+  .cu-form__textarea { height: 120px; }
+}
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Contact Us",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Hero"
+    },
+    {
+      "type": "image_picker",
+      "id": "hero_image",
+      "label": "Hero background image"
+    },
+    {
+      "type": "text",
+      "id": "hero_heading",
+      "label": "Hero heading",
+      "default": "Contact Us"
+    },
+    {
+      "type": "header",
+      "content": "Contact Info"
+    },
+    {
+      "type": "text",
+      "id": "info_heading",
+      "label": "Section heading",
+      "default": "Get in a touch"
+    },
+    {
+      "type": "text",
+      "id": "address",
+      "label": "Address",
+      "default": "No.02, Main Road, Malabe"
+    },
+    {
+      "type": "text",
+      "id": "email",
+      "label": "Email",
+      "default": "artisanstouch@gmail.com"
+    },
+    {
+      "type": "text",
+      "id": "phone",
+      "label": "Phone",
+      "default": "+94 11 234 5678"
+    },
+    {
+      "type": "text",
+      "id": "hours_label",
+      "label": "Store hours label",
+      "default": "Store Hours:"
+    },
+    {
+      "type": "text",
+      "id": "hours_weekday",
+      "label": "Weekday hours",
+      "default": "Monday - Friday: 10am - 6pm"
+    },
+    {
+      "type": "text",
+      "id": "hours_saturday",
+      "label": "Saturday hours",
+      "default": "Saturday: 11am - 5pm"
+    },
+    {
+      "type": "text",
+      "id": "hours_sunday",
+      "label": "Sunday hours",
+      "default": "Sunday: Closed"
+    },
+    {
+      "type": "header",
+      "content": "Contact Form"
+    },
+    {
+      "type": "text",
+      "id": "form_heading",
+      "label": "Form heading",
+      "default": "Send us a message"
+    },
+    {
+      "type": "text",
+      "id": "label_name",
+      "label": "Name field label",
+      "default": "Name"
+    },
+    {
+      "type": "text",
+      "id": "label_email",
+      "label": "Email field label",
+      "default": "Email"
+    },
+    {
+      "type": "text",
+      "id": "label_subject",
+      "label": "Subject field label",
+      "default": "Subject"
+    },
+    {
+      "type": "text",
+      "id": "label_message",
+      "label": "Message field label",
+      "default": "Message"
+    },
+    {
+      "type": "text",
+      "id": "submit_label",
+      "label": "Submit button text",
+      "default": "Send Message"
+    },
+    {
+      "type": "header",
+      "content": "Map"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_map",
+      "label": "Show map",
+      "default": true
+    },
+    {
+      "type": "html",
+      "id": "map_embed",
+      "label": "Google Maps embed code (paste full <iframe> tag)",
+      "info": "Leave blank to use the default Malabe location."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Contact Us"
+    }
+  ]
+}
+{% endschema %}
