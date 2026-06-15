@@ -12,6 +12,7 @@
     "main": {
       "type": "collection",
       "settings": {
+        "fallback_image": "shopify://shop_images/c74ac9756a9b5a428e9763648960e421398ad505.jpg",
         "heading_prefix": "Our",
         "products_per_page": 8,
         "show_price_filter": true,

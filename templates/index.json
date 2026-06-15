@@ -62,12 +62,12 @@
         "card_1_description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam condimentum, enim et scelerisque rutrum, purus ligula iaculis diam,",
         "card_1_bg": "#ffe4e4",
         "card_1_button": "SHOP NOW",
-        "card_1_url": "",
+        "card_1_url": "shopify://collections/bridal-jewellery",
         "card_2_title": "Costume Jewellery",
         "card_2_description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam condimentum, enim et scelerisque rutrum, purus ligula iaculis diam, ac pretium justo mi elementum turpis.",
         "card_2_bg": "#fff6e4",
         "card_2_button": "SHOP NOW",
-        "card_2_url": ""
+        "card_2_url": "shopify://collections/costume-jewellery"
       }
     },
     "new_arrivals": {
