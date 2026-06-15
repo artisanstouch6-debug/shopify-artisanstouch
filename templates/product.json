@@ -11,7 +11,23 @@
   "sections": {
     "main": {
       "type": "product",
-      "settings": {}
+      "blocks": {
+        "review_qWVCWp": {
+          "type": "review",
+          "settings": {
+            "reviewer_name": "Customer Name",
+            "rating": 5,
+            "review_text": "Great product! Highly recommend."
+          }
+        }
+      },
+      "block_order": [
+        "review_qWVCWp"
+      ],
+      "settings": {
+        "materials_care": "Please handle with care. Clean with a soft, dry cloth. Avoid contact with water and harsh chemicals.",
+        "shipping_info": "Free delivery on orders over LKR 5,000. Standard delivery 3–5 business days. Express delivery available at checkout."
+      }
     }
   },
   "order": [

@@ -1,12 +1,16 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
     "main": {
       "type": "about",
-      "settings": {
-        "hero_heading": "About Us",
-        "story_text": "<p>Founded in 2018, Artisans Touch was born from a passion for creating timeless pieces that celebrate life’s most precious moments. Each piece is carefully handcrafted by skilled artisans who pour their hearts into every detail.<\/p><p>We believe that jewellery is more than just an accessory. it’s a way to express your unique style and commemorate the moments that matter most. From everyday costume pieces to bespoke bridal collections, we’re committed to crafting jewellery that will be cherished for generations.<\/p><p>Our commitment to ethical sourcing and sustainable practices ensures that every piece you wear reflects not only beauty, but also values that matter.<\/p>",
-        "quote": "“Every Piece tells a story, crafted with intention and care.”"
-      },
       "blocks": {
         "pillar-1": {
           "type": "pillar",
@@ -30,8 +34,21 @@
           }
         }
       },
-      "block_order": ["pillar-1", "pillar-2", "pillar-3"]
+      "block_order": [
+        "pillar-1",
+        "pillar-2",
+        "pillar-3"
+      ],
+      "settings": {
+        "hero_image": "shopify://shop_images/14e4773a70a965172bf22f06f6c258725b0c3b1e.jpg",
+        "hero_heading": "About Us",
+        "story_image": "shopify://shop_images/fd9de17c08e03e64fac0e897c6773d5940d36a6f.jpg",
+        "story_text": "<p>Founded in 2018, Artisans Touch was born from a passion for creating timeless pieces that celebrate life’s most precious moments. Each piece is carefully handcrafted by skilled artisans who pour their hearts into every detail.</p><p>We believe that jewellery is more than just an accessory. it’s a way to express your unique style and commemorate the moments that matter most. From everyday costume pieces to bespoke bridal collections, we’re committed to crafting jewellery that will be cherished for generations.</p><p>Our commitment to ethical sourcing and sustainable practices ensures that every piece you wear reflects not only beauty, but also values that matter.</p>",
+        "quote": "“Every Piece tells a story, crafted with intention and care.”"
+      }
     }
   },
-  "order": ["main"]
+  "order": [
+    "main"
+  ]
 }
