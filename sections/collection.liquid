@@ -25,8 +25,10 @@
 <section class="coll-banner full-width">
   {%- if collection.image -%}
     {{ collection.image | image_url: width: 2000 | image_tag: class: 'coll-banner__bg', loading: 'eager', fetchpriority: 'high', alt: '' }}
+  {%- elsif section.settings.fallback_image -%}
+    {{ section.settings.fallback_image | image_url: width: 2000 | image_tag: class: 'coll-banner__bg', loading: 'eager', fetchpriority: 'high', alt: '' }}
   {%- else -%}
-    <div class="coll-banner__bg coll-banner__bg--empty"></div>
+    <img src="{{ 'hero-bg.jpg' | asset_url }}" alt="" class="coll-banner__bg" loading="eager">
   {%- endif -%}
   <div class="coll-banner__overlay"></div>
   <div class="coll-banner__text">
@@ -385,8 +387,9 @@
 /* ── Banner ──────────────────────────────────────── */
 .coll-banner {
   position: relative;
-  height: 100vh;
-  min-height: 560px;
+  height: 55vh;
+  min-height: 320px;
+  max-height: 500px;
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -991,6 +994,16 @@
 {
   "name": "Collection",
   "settings": [
+    {
+      "type": "header",
+      "content": "Banner"
+    },
+    {
+      "type": "image_picker",
+      "id": "fallback_image",
+      "label": "Fallback banner image",
+      "info": "Shown when a collection has no image (e.g. All Products)"
+    },
     {
       "type": "header",
       "content": "Section heading"
