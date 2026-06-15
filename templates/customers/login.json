@@ -1,0 +1,11 @@
+{
+  "sections": {
+    "main": {
+      "type": "customers-login",
+      "settings": {
+        "tagline": "Handcrafted jewellery, made with love."
+      }
+    }
+  },
+  "order": ["main"]
+}
