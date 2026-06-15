@@ -142,8 +142,9 @@
 /* ── Hero ────────────────────────────────────────── */
 .cu-hero {
   position: relative;
-  height: 100vh;
-  min-height: 560px;
+  height: 55vh;
+  min-height: 320px;
+  max-height: 520px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -430,38 +431,45 @@
 @media (max-width: 1200px) {
   .cu-content__inner { padding: 64px 80px; gap: 60px; }
   .cu-map { padding: 0 80px 64px; }
-  .cu-hero__title { font-size: 52px; }
+  .cu-hero__title { font-size: 48px; }
 }
 
 @media (max-width: 960px) {
+  .cu-hero { height: 45vh; min-height: 260px; max-height: 380px; }
+  .cu-hero__title { font-size: 38px; }
   .cu-content__inner {
     grid-template-columns: 1fr;
-    padding: 48px 48px;
-    gap: 48px;
+    padding: 48px 40px;
+    gap: 44px;
   }
-  .cu-map { padding: 0 48px 56px; }
-  .cu-map__frame { height: 320px; }
-  .cu-hero__title { font-size: 42px; }
+  .cu-map { padding: 0 40px 56px; }
+  .cu-map__frame { height: 300px; }
   .cu-info__heading,
-  .cu-form__heading { font-size: 28px; }
+  .cu-form__heading { font-size: 26px; }
 }
 
 @media (max-width: 600px) {
-  .cu-hero { min-height: 360px; }
-  .cu-hero__title { font-size: 32px; }
-  .cu-content__inner { padding: 36px 24px; gap: 40px; }
-  .cu-map { padding: 0 24px 48px; }
-  .cu-map__frame { height: 260px; }
+  .cu-hero { height: 40vh; min-height: 220px; max-height: 300px; }
+  .cu-hero__title { font-size: 28px; }
+  .cu-hero__text { padding: 0 20px; }
+  .cu-content__inner { padding: 32px 20px; gap: 36px; }
+  .cu-map { padding: 0 20px 40px; }
+  .cu-map__frame { height: 220px; border-radius: 10px; }
+  .cu-info { gap: 28px; }
   .cu-info__heading,
-  .cu-form__heading { font-size: 24px; }
+  .cu-form__heading { font-size: 22px; }
   .cu-info__text,
   .cu-info__link,
   .cu-info__hours-label,
-  .cu-info__hours-item { font-size: 15px; }
+  .cu-info__hours-item { font-size: 14px; }
+  .cu-info__row { gap: 12px; }
+  .cu-info__icon { width: 20px; height: 20px; }
+  .cu-form-wrap { gap: 24px; }
   .cu-form__input,
   .cu-form__textarea { font-size: 15px; }
   .cu-form__input { height: 48px; }
-  .cu-form__textarea { height: 120px; }
+  .cu-form__textarea { height: 110px; }
+  .cu-form__submit { padding: 15px 20px; font-size: 15px; margin-top: 24px; }
 }
 {% endstylesheet %}
 

@@ -67,8 +67,9 @@
 /* ── Hero ────────────────────────────────────────── */
 .au-hero {
   position: relative;
-  height: 100vh;
-  min-height: 560px;
+  height: 55vh;
+  min-height: 320px;
+  max-height: 520px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -216,21 +217,22 @@
 }
 
 @media (max-width: 960px) {
+  .au-hero { height: 45vh; min-height: 240px; max-height: 360px; }
+  .au-hero__title { font-size: 38px; }
   .au-story__inner {
     grid-template-columns: 1fr;
-    padding: 48px 48px;
+    padding: 48px 40px;
     gap: 32px;
   }
   .au-story__img { height: 360px; }
-  .au-pillars__inner { padding: 36px 48px 60px; }
+  .au-pillars__inner { padding: 36px 40px 60px; }
   .au-pillars__quote { font-size: 26px; }
   .au-pillars__grid { grid-template-columns: 1fr; gap: 32px; }
-  .au-hero__title { font-size: 42px; }
 }
 
 @media (max-width: 600px) {
-  .au-hero { min-height: 360px; }
-  .au-hero__title { font-size: 32px; }
+  .au-hero { height: 40vh; min-height: 200px; max-height: 280px; }
+  .au-hero__title { font-size: 28px; }
   .au-story__inner { padding: 36px 24px; }
   .au-story__text { font-size: 16px; }
   .au-story__img { height: 260px; }
