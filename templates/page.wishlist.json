@@ -1,0 +1,11 @@
+{
+  "sections": {
+    "main": {
+      "type": "page-wishlist",
+      "settings": {
+        "hero_heading": "My Wishlist"
+      }
+    }
+  },
+  "order": ["main"]
+}

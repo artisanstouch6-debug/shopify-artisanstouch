@@ -70,7 +70,14 @@
     <ul class="at-modal__nav-list">
       {% if linklists[section.settings.menu].links.size > 0 %}
         {% for link in linklists[section.settings.menu].links %}
-          <li><a href="{{ link.url }}" class="at-modal__nav-link">{{ link.title }}</a></li>
+          {%- assign link_title_down = link.title | downcase -%}
+          {%- if link_title_down == 'profile' -%}
+            <li><a href="https://shopify.com/{{ shop.id }}/account" class="at-modal__nav-link">{{ link.title }}</a></li>
+          {%- elsif link_title_down == 'wish list' or link_title_down == 'wishlist' -%}
+            <li><a href="/pages/wishlist" class="at-modal__nav-link">{{ link.title }}</a></li>
+          {%- else -%}
+            <li><a href="{{ link.url }}" class="at-modal__nav-link">{{ link.title }}</a></li>
+          {%- endif -%}
         {% endfor %}
       {% else %}
         <li><a href="{{ routes.root_url }}" class="at-modal__nav-link">Home</a></li>
@@ -232,7 +239,9 @@
           </div>
         </div>
         <div class="at-cart-footer">
-          <a href="{{ routes.checkout }}" class="at-btn at-cart-checkout">Proceed to Checkout</a>
+          <form action="/cart/checkout" method="post" id="at-cart-checkout-form">
+            <button type="submit" class="at-btn at-cart-checkout">Proceed to Checkout</button>
+          </form>
         </div>
       {% endif %}
     </div>
@@ -370,7 +379,7 @@
         '<div class="at-cart-totals__row"><span>Estimated Taxes</span><span>Calculated at checkout</span></div>' +
         '<div class="at-cart-totals__row at-cart-totals__row--bold"><span>Sub Total Amount</span><span class="js-cart-subtotal">' + formatMoney(cart.total_price) + '</span></div>' +
         '</div>' +
-        '<div class="at-cart-footer"><a href="/checkout" class="at-btn at-cart-checkout">Proceed to Checkout</a></div>';
+        '<div class="at-cart-footer"><form action="/cart/checkout" method="post"><button type="submit" class="at-btn at-cart-checkout">Proceed to Checkout</button></form></div>';
 
       el.innerHTML = '<div class="at-cart-items">' + items + '</div>' + totals;
     }

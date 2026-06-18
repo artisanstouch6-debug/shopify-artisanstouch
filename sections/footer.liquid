@@ -19,8 +19,22 @@
       <h3 class="site-footer__col-heading">{{ section.settings.links_heading }}</h3>
       <ul class="site-footer__links">
         {%- for link in linklists[section.settings.menu].links -%}
-          <li><a href="{{ link.url }}" class="site-footer__link">{{ link.title }}</a></li>
+          {%- assign link_title_down = link.title | downcase -%}
+          {%- if link_title_down == 'profile' -%}
+            <li><a href="https://shopify.com/{{ shop.id }}/account" class="site-footer__link">{{ link.title }}</a></li>
+          {%- elsif link_title_down == 'wish list' or link_title_down == 'wishlist' -%}
+            <li><a href="/pages/wishlist" class="site-footer__link">{{ link.title }}</a></li>
+          {%- else -%}
+            <li><a href="{{ link.url }}" class="site-footer__link">{{ link.title }}</a></li>
+          {%- endif -%}
         {%- endfor -%}
+        {%- assign footer_link_titles = linklists[section.settings.menu].links | map: 'title' | join: ',' | downcase -%}
+        {%- unless footer_link_titles contains 'profile' -%}
+          <li><a href="https://shopify.com/{{ shop.id }}/account" class="site-footer__link">Profile</a></li>
+        {%- endunless -%}
+        {%- unless footer_link_titles contains 'wish' -%}
+          <li><a href="/pages/wishlist" class="site-footer__link">Wish List</a></li>
+        {%- endunless -%}
       </ul>
     </div>
 
