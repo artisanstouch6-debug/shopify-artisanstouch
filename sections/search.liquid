@@ -1,65 +1,498 @@
-{% comment %}
-  This section is used in the search template to render search results for
-  products, articles, and pages.
+<!-- ── Search Hero ───────────────────────────────── -->
+<section class="sr-hero full-width">
+  <div class="sr-hero__overlay"></div>
+  <div class="sr-hero__text">
+    <h1 class="sr-hero__title">Search</h1>
+  </div>
+</section>
 
-  https://shopify.dev/docs/storefronts/themes/architecture/templates/search
-{% endcomment %}
+<!-- ── Search Body ───────────────────────────────── -->
+<section class="sr-body full-width">
+  <div class="sr-inner">
 
-<h1>{{ 'search.title' | t }}</h1>
+    <!-- Search form -->
+    <form action="{{ routes.search_url }}" method="get" class="sr-form" role="search">
+      <input type="hidden" name="type" value="product">
+      <div class="sr-form__wrap">
+        <svg class="sr-form__icon" width="20" height="20" viewBox="0 0 24 24" fill="none">
+          <circle cx="11" cy="11" r="8" stroke="#999" stroke-width="1.5"/>
+          <path d="M21 21L16.65 16.65" stroke="#999" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <input
+          class="sr-form__input"
+          type="search"
+          name="q"
+          value="{{ search.terms | escape }}"
+          placeholder="Search for jewellery…"
+          autocomplete="off"
+          aria-label="Search">
+        {%- if search.terms != blank -%}
+          <a href="{{ routes.search_url }}" class="sr-form__clear" aria-label="Clear search">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+              <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </a>
+        {%- endif -%}
+        <button type="submit" class="sr-form__btn">Search</button>
+      </div>
+    </form>
 
-<form action="{{ routes.search_url }}" method="get" role="search">
-  <input
-    type="search"
-    size="50"
-    name="q"
-    value="{{ search.terms | escape }}"
-    placeholder="{{ 'search.placeholder' | t }}"
-  >
-  <button type="submit">{{ 'search.submit' | t }}</button>
-</form>
+    {%- if search.performed -%}
 
-{% if search.performed %}
-  {% if search.results_count == 0 %}
-    <p>{{ 'search.no_results_html' | t: terms: search.terms }}</p>
-  {% else %}
-    <p>{{ 'search.results_for_html' | t: terms: search.terms, count: search.results_count }}</p>
+      {%- if search.results_count == 0 -%}
+        <!-- No results -->
+        <div class="sr-empty">
+          <svg width="56" height="56" viewBox="0 0 24 24" fill="none">
+            <circle cx="11" cy="11" r="8" stroke="#ddd" stroke-width="1.2"/>
+            <path d="M21 21L16.65 16.65" stroke="#ddd" stroke-width="1.2" stroke-linecap="round"/>
+            <path d="M8 8L14 14M14 8L8 14" stroke="#ddd" stroke-width="1.2" stroke-linecap="round"/>
+          </svg>
+          <p class="sr-empty__title">No results for "<strong>{{ search.terms | escape }}</strong>"</p>
+          <p class="sr-empty__sub">Try a different keyword or browse our collections.</p>
+          <a href="{{ routes.all_products_collection_url }}" class="sr-shop-btn">Shop All</a>
+        </div>
 
-    <div class="search-results">
-      {% paginate search.results by 20 %}
-        {% # Search result items may be an article, a page, or a product. %}
-        {% for result in search.results %}
-          <div class="search-result">
-            {% assign featured_image = result.featured_image | default: result.image %}
-            {% if featured_image %}
-              {% render 'image', class: 'search-result__image', image: featured_image, url: result.url, width: 400 %}
-            {% endif %}
-            <div class="search-result__content">
-              <p>
-                {{ result.title | link_to: result.url }}
-                {% if result.price %}
-                  {{ result.price | money_with_currency }}
-                {% endif %}
-              </p>
-            </div>
+      {%- else -%}
+        <!-- Result count -->
+        <p class="sr-count">
+          {{ search.results_count }} result{% if search.results_count != 1 %}s{% endif %} for "<strong>{{ search.terms | escape }}</strong>"
+        </p>
+
+        <!-- Results grid -->
+        {%- paginate search.results by 20 -%}
+          <div class="sr-grid">
+            {%- for result in search.results -%}
+              {%- if result.object_type == 'product' -%}
+                <div class="sr-card">
+                  <a href="{{ result.url }}" class="sr-card__img-link">
+                    <div class="sr-card__img-wrap">
+                      {%- if result.featured_image -%}
+                        {{ result.featured_image | image_url: width: 600, height: 600, crop: 'center'
+                          | image_tag: class: 'sr-card__img', loading: 'lazy', alt: result.title }}
+                      {%- else -%}
+                        <div class="sr-card__img-ph">{{ 'product-1' | placeholder_svg_tag }}</div>
+                      {%- endif -%}
+                    </div>
+                  </a>
+                  <div class="sr-card__info">
+                    <a href="{{ result.url }}" class="sr-card__name">{{ result.title }}</a>
+                    <p class="sr-card__price">{{ result.price | money }}</p>
+                    <a href="{{ result.url }}" class="sr-card__cta">View Product</a>
+                  </div>
+                </div>
+              {%- else -%}
+                <!-- Article or page result -->
+                <div class="sr-card sr-card--article">
+                  <a href="{{ result.url }}" class="sr-card__article-link">
+                    {%- if result.image -%}
+                      <div class="sr-card__img-wrap">
+                        {{ result.image | image_url: width: 600, height: 400, crop: 'center'
+                          | image_tag: class: 'sr-card__img', loading: 'lazy', alt: result.title }}
+                      </div>
+                    {%- endif -%}
+                    <div class="sr-card__info">
+                      <span class="sr-card__type">{{ result.object_type | capitalize }}</span>
+                      <p class="sr-card__name">{{ result.title }}</p>
+                    </div>
+                  </a>
+                </div>
+              {%- endif -%}
+            {%- endfor -%}
           </div>
-        {% endfor %}
 
-        {{ paginate | default_pagination }}
-      {% endpaginate %}
-    </div>
-  {% endif %}
-{% endif %}
+          <!-- Pagination -->
+          {%- if paginate.pages > 1 -%}
+            <nav class="sr-pagination" aria-label="Search pagination">
+              {%- if paginate.previous -%}
+                <a href="{{ paginate.previous.url }}" class="sr-page-btn" aria-label="Previous">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </a>
+              {%- else -%}
+                <span class="sr-page-btn sr-page-btn--disabled">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </span>
+              {%- endif -%}
+
+              {%- for part in paginate.parts -%}
+                {%- if part.is_link -%}
+                  <a href="{{ part.url }}" class="sr-page-btn">{{ part.title }}</a>
+                {%- elsif part.title == paginate.current_page -%}
+                  <span class="sr-page-btn sr-page-btn--active">{{ part.title }}</span>
+                {%- else -%}
+                  <span class="sr-page-btn sr-page-btn--gap">…</span>
+                {%- endif -%}
+              {%- endfor -%}
+
+              {%- if paginate.next -%}
+                <a href="{{ paginate.next.url }}" class="sr-page-btn" aria-label="Next">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </a>
+              {%- else -%}
+                <span class="sr-page-btn sr-page-btn--disabled">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </span>
+              {%- endif -%}
+            </nav>
+          {%- endif -%}
+        {%- endpaginate -%}
+
+      {%- endif -%}
+
+    {%- else -%}
+      <!-- Landing state — no search performed yet -->
+      <div class="sr-landing">
+        <p class="sr-landing__text">Type a keyword above to search our collection.</p>
+        <a href="{{ routes.all_products_collection_url }}" class="sr-shop-btn">Browse All Products</a>
+      </div>
+    {%- endif -%}
+
+  </div>
+</section>
 
 {% stylesheet %}
-  .search-results {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  }
-  .search-results .prev,
-  .search-results .page,
-  .search-results .next {
-    grid-column: 1 / -1;
-  }
+/* ── Page bg ───────────────────────────────────── */
+body.template-search {
+  background: #fff8f8;
+  padding-top: 0 !important;
+}
+
+/* ── Hero ──────────────────────────────────────── */
+.sr-hero {
+  position: relative;
+  height: 40vh;
+  min-height: 280px;
+  background: #1a1a1a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.sr-hero__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, #1a1200 0%, #2d1f00 100%);
+}
+
+.sr-hero__text {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+}
+
+.sr-hero__title {
+  font-family: var(--font-heading);
+  font-size: 64px;
+  font-weight: 400;
+  color: #fff;
+  margin: 0;
+  letter-spacing: 0.04em;
+}
+
+/* ── Body ──────────────────────────────────────── */
+.sr-body {
+  background: #fff8f8;
+  min-height: 50vh;
+}
+
+.sr-inner {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 56px 120px 100px;
+}
+
+/* ── Search form ───────────────────────────────── */
+.sr-form {
+  margin-bottom: 48px;
+}
+
+.sr-form__wrap {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  background: #fff;
+  border: 1.5px solid #e8d8d8;
+  border-radius: 50px;
+  padding: 0 8px 0 20px;
+  max-width: 680px;
+  margin: 0 auto;
+  transition: border-color 0.2s;
+}
+
+.sr-form__wrap:focus-within {
+  border-color: var(--coral-pink, #ff9696);
+}
+
+.sr-form__icon {
+  flex-shrink: 0;
+  margin-right: 8px;
+}
+
+.sr-form__input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: none;
+  font-family: var(--font-body);
+  font-size: 15px;
+  color: #111;
+  padding: 14px 0;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* hide native clear button */
+.sr-form__input::-webkit-search-cancel-button { display: none; }
+.sr-form__input::-ms-clear { display: none; }
+
+.sr-form__input::placeholder { color: #bbb; }
+
+.sr-form__clear {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  color: #bbb;
+  text-decoration: none;
+  flex-shrink: 0;
+  transition: color 0.2s;
+}
+
+.sr-form__clear:hover { color: #888; }
+
+.sr-form__btn {
+  flex-shrink: 0;
+  height: 40px;
+  padding: 0 24px;
+  background: var(--coral-pink, #ff9696);
+  border: none;
+  border-radius: 50px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+  margin: 5px;
+  transition: opacity 0.2s;
+}
+
+.sr-form__btn:hover { opacity: 0.85; }
+
+/* ── Result count ──────────────────────────────── */
+.sr-count {
+  font-family: var(--font-body);
+  font-size: 15px;
+  color: #888;
+  margin: 0 0 32px;
+}
+
+.sr-count strong { color: #111; }
+
+/* ── Product grid ──────────────────────────────── */
+.sr-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 32px 24px;
+}
+
+/* ── Product card ──────────────────────────────── */
+.sr-card {
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.sr-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.08);
+}
+
+.sr-card__img-link,
+.sr-card__article-link { text-decoration: none; display: block; }
+
+.sr-card__img-wrap {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background: #f5eeeb;
+}
+
+.sr-card__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s ease;
+}
+
+.sr-card:hover .sr-card__img { transform: scale(1.04); }
+
+.sr-card__img-ph {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f5eeeb;
+}
+
+.sr-card__info {
+  padding: 16px 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+
+.sr-card__name {
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  color: #111;
+  text-decoration: none;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.sr-card__name:hover { color: var(--coral-pink, #ff9696); }
+
+.sr-card__type {
+  font-family: var(--font-body);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #aaa;
+}
+
+.sr-card__price {
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 700;
+  color: #111;
+  margin: 0;
+}
+
+.sr-card__cta {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 8px 18px;
+  border: 1.5px solid var(--coral-pink, #ff9696);
+  border-radius: 20px;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--coral-pink, #ff9696);
+  text-decoration: none;
+  text-align: center;
+  align-self: flex-start;
+  transition: background 0.2s, color 0.2s;
+}
+
+.sr-card__cta:hover {
+  background: var(--coral-pink, #ff9696);
+  color: #fff;
+}
+
+/* ── Empty / landing states ────────────────────── */
+.sr-empty,
+.sr-landing {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 80px 0 40px;
+  text-align: center;
+}
+
+.sr-empty__title {
+  font-family: var(--font-body);
+  font-size: 18px;
+  color: #333;
+  margin: 0;
+}
+
+.sr-empty__sub,
+.sr-landing__text {
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: #999;
+  margin: 0;
+}
+
+.sr-shop-btn {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 12px 36px;
+  background: var(--coral-pink, #ff9696);
+  border-radius: 26px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+
+.sr-shop-btn:hover { opacity: 0.85; }
+
+/* ── Pagination ────────────────────────────────── */
+.sr-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 56px;
+}
+
+.sr-page-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  height: 40px;
+  padding: 0 6px;
+  border-radius: 8px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+  color: #555;
+  text-decoration: none;
+  background: #fff;
+  border: 1px solid #e8d8d8;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.sr-page-btn:hover { border-color: var(--coral-pink, #ff9696); color: var(--coral-pink, #ff9696); }
+.sr-page-btn--active { background: var(--coral-pink, #ff9696); color: #fff; border-color: var(--coral-pink, #ff9696); }
+.sr-page-btn--disabled { opacity: 0.35; pointer-events: none; }
+.sr-page-btn--gap { border: none; background: none; pointer-events: none; }
+
+/* ── Responsive ────────────────────────────────── */
+@media (max-width: 1200px) {
+  .sr-inner { padding: 48px 60px 80px; }
+  .sr-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 900px) {
+  .sr-inner { padding: 40px 32px 64px; }
+  .sr-grid { grid-template-columns: repeat(2, 1fr); gap: 24px 16px; }
+  .sr-hero__title { font-size: 48px; }
+  .sr-hero { min-height: 220px; }
+}
+
+@media (max-width: 560px) {
+  .sr-inner { padding: 28px 16px 56px; }
+  .sr-grid { grid-template-columns: repeat(2, 1fr); gap: 16px 12px; }
+  .sr-hero__title { font-size: 36px; }
+  .sr-form__btn { padding: 0 16px; font-size: 13px; }
+}
 {% endstylesheet %}
 
 {% schema %}
