@@ -1,8 +1,17 @@
 <!-- ── Search Hero ───────────────────────────────── -->
 <section class="sr-hero full-width">
+  {%- if section.settings.hero_image != blank -%}
+    {{ section.settings.hero_image | image_url: width: 1800 | image_tag:
+        class: 'sr-hero__bg',
+        loading: 'eager',
+        fetchpriority: 'high',
+        alt: '' }}
+  {%- else -%}
+    <div class="sr-hero__bg sr-hero__bg--empty"></div>
+  {%- endif -%}
   <div class="sr-hero__overlay"></div>
   <div class="sr-hero__text">
-    <h1 class="sr-hero__title">Search</h1>
+    <h1 class="sr-hero__title">{{ section.settings.hero_heading | default: 'Search' }}</h1>
   </div>
 </section>
 
@@ -159,19 +168,32 @@ body.template-search {
 /* ── Hero ──────────────────────────────────────── */
 .sr-hero {
   position: relative;
-  height: 40vh;
-  min-height: 280px;
-  background: #1a1a1a;
+  height: 55vh;
+  min-height: 360px;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow: hidden;
 }
 
+.sr-hero__bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+.sr-hero__bg--empty {
+  background: linear-gradient(135deg, #1a1200 0%, #2d1f00 100%);
+}
+
 .sr-hero__overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, #1a1200 0%, #2d1f00 100%);
+  background: rgba(0, 0, 0, 0.50);
 }
 
 .sr-hero__text {
@@ -182,7 +204,7 @@ body.template-search {
 
 .sr-hero__title {
   font-family: var(--font-heading);
-  font-size: 64px;
+  font-size: 72px;
   font-weight: 400;
   color: #fff;
   margin: 0;
@@ -484,7 +506,7 @@ body.template-search {
   .sr-inner { padding: 40px 32px 64px; }
   .sr-grid { grid-template-columns: repeat(2, 1fr); gap: 24px 16px; }
   .sr-hero__title { font-size: 48px; }
-  .sr-hero { min-height: 220px; }
+  .sr-hero { min-height: 260px; height: 40vh; }
 }
 
 @media (max-width: 560px) {
@@ -498,6 +520,18 @@ body.template-search {
 {% schema %}
 {
   "name": "t:general.search",
-  "settings": []
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "hero_image",
+      "label": "Hero background image"
+    },
+    {
+      "type": "text",
+      "id": "hero_heading",
+      "label": "Hero heading",
+      "default": "Search"
+    }
+  ]
 }
 {% endschema %}
