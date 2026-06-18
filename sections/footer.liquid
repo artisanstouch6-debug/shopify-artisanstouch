@@ -78,16 +78,34 @@
     <div class="site-footer__col">
       <h3 class="site-footer__col-heading">{{ section.settings.newsletter_heading }}</h3>
       <p class="site-footer__newsletter-sub">{{ section.settings.newsletter_subheading }}</p>
+
       {% form 'customer', id: 'footer-newsletter' %}
-        <div class="site-footer__newsletter-form">
-          <input type="hidden" name="contact[tags]" value="newsletter">
-          <input class="site-footer__newsletter-input" type="email" name="contact[email]" placeholder="{{ section.settings.newsletter_placeholder }}" required autocomplete="email">
-          <button type="submit" class="site-footer__newsletter-btn" aria-label="Subscribe">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+        <input type="hidden" name="contact[tags]" value="newsletter">
+        <div class="site-footer__newsletter-form" id="footer-newsletter-form">
+          <input
+            class="site-footer__newsletter-input"
+            type="email"
+            name="contact[email]"
+            id="footer-newsletter-email"
+            placeholder="{{ section.settings.newsletter_placeholder }}"
+            required
+            autocomplete="email">
+          <button type="button" class="site-footer__newsletter-btn" id="footer-newsletter-btn" aria-label="Subscribe">
+            <svg class="nl-icon-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none">
               <path d="M5 12H19M12 5L19 12L12 19" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <svg class="nl-icon-spinner" width="16" height="16" viewBox="0 0 24 24" fill="none" style="display:none">
+              <circle cx="12" cy="12" r="10" stroke="white" stroke-width="2" stroke-dasharray="32" stroke-dashoffset="12"/>
             </svg>
           </button>
         </div>
+        <p class="site-footer__nl-success" id="footer-newsletter-success" style="display:none">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><polyline points="20 6 9 17 4 12" stroke="#a88754" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Thank you for subscribing!
+        </p>
+        <p class="site-footer__nl-error" id="footer-newsletter-error" style="display:none">
+          Something went wrong. Please try again.
+        </p>
       {% endform %}
 
       <div class="site-footer__payment">
@@ -122,6 +140,66 @@
     </div>
   </div>
 </footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var form     = document.getElementById('footer-newsletter');
+  var btn      = document.getElementById('footer-newsletter-btn');
+  var emailEl  = document.getElementById('footer-newsletter-email');
+  var formWrap = document.getElementById('footer-newsletter-form');
+  var success  = document.getElementById('footer-newsletter-success');
+  var errorEl  = document.getElementById('footer-newsletter-error');
+  if (!form || !btn) return;
+
+  var arrow   = btn.querySelector('.nl-icon-arrow');
+  var spinner = btn.querySelector('.nl-icon-spinner');
+
+  btn.addEventListener('click', function () {
+    var email = emailEl.value.trim();
+    if (!email || !emailEl.checkValidity()) {
+      emailEl.reportValidity();
+      return;
+    }
+
+    btn.disabled = true;
+    arrow.style.display   = 'none';
+    spinner.style.display = '';
+    errorEl.style.display = 'none';
+
+    /* collect all hidden fields (authenticity_token etc) from the form */
+    var params = new URLSearchParams(new FormData(form));
+    params.set('contact[email]', email);
+    params.set('contact[tags]', 'newsletter');
+
+    fetch(form.action, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'X-Requested-With': 'XMLHttpRequest'
+      },
+      body: params.toString()
+    })
+    .then(function (r) {
+      btn.disabled          = false;
+      spinner.style.display = 'none';
+      arrow.style.display   = '';
+      if (r.ok) {
+        formWrap.style.display = 'none';
+        success.style.display  = 'flex';
+        emailEl.value = '';
+      } else {
+        errorEl.style.display = '';
+      }
+    })
+    .catch(function () {
+      btn.disabled          = false;
+      spinner.style.display = 'none';
+      arrow.style.display   = '';
+      errorEl.style.display = '';
+    });
+  });
+});
+</script>
 
 {% stylesheet %}
   .site-footer {
@@ -271,6 +349,25 @@
   }
 
   .site-footer__newsletter-btn:hover { opacity: 0.8; }
+  .site-footer__newsletter-btn:disabled { opacity: 0.6; cursor: default; }
+
+  .nl-icon-spinner {
+    animation: nl-spin 0.8s linear infinite;
+    transform-origin: center;
+  }
+  @keyframes nl-spin { to { transform: rotate(360deg); } }
+
+  .site-footer__nl-success,
+  .site-footer__nl-error {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-heading);
+    font-size: 12px;
+    margin: 6px 0 0;
+  }
+  .site-footer__nl-success { color: var(--brand-gold, #a88754); }
+  .site-footer__nl-error   { color: #e07070; }
 
   .site-footer__payment {
     display: flex;
