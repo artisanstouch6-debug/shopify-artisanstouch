@@ -1,55 +1,291 @@
 {% comment %}
-  This section is used in the list-collections template to render a list of
-  collections.
-
-  https://shopify.dev/docs/storefronts/themes/architecture/templates/collection
+  Collections listing page — Artisans Touch branded design.
 {% endcomment %}
 
-<h1>{{ 'collections.title' | t }}</h1>
+<div class="col-listing full-width">
 
-<div
-  class="collections {{ section.settings.grid_item_width }}"
-  style="--grid-gap: {{ section.settings.grid_gap }}px"
->
-  {% for collection in collections %}
-    <a class="collection-card" href="{{ collection.url }}">
-      {% if collection.featured_image %}
-        {% render 'image',
-          class: 'collection-card__image',
-          image: collection.featured_image,
-          width: 600,
-          height: 600,
-          crop: 'center'
-        %}
-      {% endif %}
+  <div class="col-listing__header">
+    <p class="col-listing__eyebrow">{{ section.settings.eyebrow | default: 'Artisans Touch' }}</p>
+    <h1 class="col-listing__title">
+      {{ section.settings.heading | default: 'Our Collections' }}
+    </h1>
+    <div class="col-listing__rule">
+      <span class="col-listing__rule-line"></span>
+      <img src="{{ 'heading-swirl.svg' | asset_url }}" alt="" class="col-listing__rule-swirl" aria-hidden="true">
+      <span class="col-listing__rule-line"></span>
+    </div>
+    {% if section.settings.subheading != blank %}
+      <p class="col-listing__subtitle">{{ section.settings.subheading }}</p>
+    {% endif %}
+  </div>
 
-      <div class="collection-card__content">
-        <p>{{ collection.title }}</p>
+  <div class="col-listing__grid col-listing__grid--{{ section.settings.columns }}col">
+    {% for collection in collections %}
+      <a class="col-card" href="{{ collection.url }}">
+        <div class="col-card__media">
+          {% if collection.featured_image %}
+            {% render 'image',
+              class: 'col-card__img',
+              image: collection.featured_image,
+              width: 700,
+              height: 875,
+              crop: 'center'
+            %}
+          {% else %}
+            <div class="col-card__img col-card__img--placeholder"></div>
+          {% endif %}
+          <div class="col-card__overlay">
+            <span class="col-card__cta">
+              Shop Collection
+              <img src="{{ 'icon-arrow.svg' | asset_url }}" width="16" height="16" alt="" class="col-card__cta-arrow" aria-hidden="true">
+            </span>
+          </div>
+        </div>
+        <div class="col-card__info">
+          <h2 class="col-card__name">{{ collection.title }}</h2>
+          <span class="col-card__accent"></span>
+          {% if section.settings.show_count %}
+            <p class="col-card__count">{{ collection.all_products_count }} {{ collection.all_products_count | pluralize: 'Piece', 'Pieces' }}</p>
+          {% endif %}
+        </div>
+      </a>
+    {% endfor %}
+  </div>
 
-        {% if collection.description %}
-          <p>{{ collection.description | strip_html | truncatewords: 15 }}</p>
-        {% endif %}
-      </div>
-    </a>
-  {% endfor %}
 </div>
 
 {% stylesheet %}
-  .collections {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(var(--collection-card-size), 100%), 1fr));
-    gap: var(--grid-gap);
+  /* ── Page wrapper ── */
+  .col-listing {
+    grid-column: 1 / -1;
+    width: 100%;
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 72px 80px 96px;
+    box-sizing: border-box;
   }
-  .collections--compact {
-    --collection-card-size: 160px;
-  }
-  .collections--full {
-    --collection-card-size: 280px;
-  }
-  .collection-card {
+
+  /* ── Header ── */
+  .col-listing__header {
+    text-align: center;
+    margin-bottom: 56px;
     display: flex;
     flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .col-listing__eyebrow {
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--coral-pink, #ff9696);
+    margin: 0;
+  }
+
+  .col-listing__title {
+    font-family: var(--font-heading);
+    font-size: 48px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0;
+    line-height: 1.1;
+  }
+
+  .col-listing__rule {
+    display: flex;
+    align-items: center;
+    gap: 16px;
     width: 100%;
+    max-width: 320px;
+    margin-top: 4px;
+  }
+
+  .col-listing__rule-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--brand-gold, #c9a96e));
+  }
+
+  .col-listing__rule:last-child .col-listing__rule-line {
+    background: linear-gradient(to left, transparent, var(--brand-gold, #c9a96e));
+  }
+
+  .col-listing__rule-swirl {
+    width: 48px;
+    height: auto;
+    flex-shrink: 0;
+    opacity: 0.85;
+  }
+
+  .col-listing__subtitle {
+    font-family: var(--font-body);
+    font-size: 16px;
+    color: var(--gray, #828282);
+    margin: 0;
+    max-width: 480px;
+    line-height: 1.6;
+  }
+
+  /* ── Grid ── */
+  .col-listing__grid {
+    display: grid;
+    gap: 32px;
+  }
+
+  .col-listing__grid--2col { grid-template-columns: repeat(2, 1fr); }
+  .col-listing__grid--3col { grid-template-columns: repeat(3, 1fr); }
+  .col-listing__grid--4col { grid-template-columns: repeat(4, 1fr); }
+
+  /* ── Card ── */
+  .col-card {
+    display: flex;
+    flex-direction: column;
+    text-decoration: none;
+    color: inherit;
+    gap: 0;
+  }
+
+  /* ── Card image area ── */
+  .col-card__media {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #f4f0eb;
+  }
+
+  .col-card__img {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  .col-card__img > img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    border-radius: 12px;
+    transition: transform 0.55s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .col-card__img--placeholder {
+    background: linear-gradient(135deg, #f0ebe3 0%, #e8ddd0 100%);
+    border-radius: 12px;
+  }
+
+  /* Hover overlay */
+  .col-card__overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.1) 55%, transparent 100%);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 28px;
+    opacity: 0;
+    transition: opacity 0.35s ease;
+    border-radius: 12px;
+  }
+
+  .col-card:hover .col-card__overlay { opacity: 1; }
+  .col-card:hover .col-card__img > img { transform: scale(1.05); }
+
+  .col-card__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255,255,255,0.95);
+    color: #1a1a1a;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 10px 22px;
+    border-radius: 24px;
+    transform: translateY(8px);
+    transition: transform 0.35s ease, background 0.2s;
+    white-space: nowrap;
+  }
+
+  .col-card:hover .col-card__cta {
+    transform: translateY(0);
+    background: #fff;
+  }
+
+  .col-card__cta-arrow {
+    display: block;
+    flex-shrink: 0;
+    transform: rotate(90deg);
+    opacity: 0.7;
+  }
+
+  /* ── Card info ── */
+  .col-card__info {
+    padding: 18px 4px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .col-card__name {
+    font-family: var(--font-heading);
+    font-size: 20px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin: 0;
+    line-height: 1.2;
+  }
+
+  .col-card__accent {
+    display: block;
+    width: 32px;
+    height: 2px;
+    background: var(--brand-gold, #c9a96e);
+    border-radius: 2px;
+    margin-top: 2px;
+  }
+
+  .col-card__count {
+    font-family: var(--font-body);
+    font-size: 13px;
+    color: var(--gray, #828282);
+    margin: 0;
+    letter-spacing: 0.04em;
+  }
+
+  /* ── Tablet ── */
+  @media (min-width: 769px) and (max-width: 1099px) {
+    .col-listing { padding: 56px 40px 72px; }
+    .col-listing__title { font-size: 38px; }
+    .col-listing__grid--4col { grid-template-columns: repeat(2, 1fr); }
+    .col-listing__grid--3col { grid-template-columns: repeat(2, 1fr); }
+    .col-listing__grid--2col { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  /* ── Mobile ── */
+  @media (max-width: 768px) {
+    .col-listing { padding: 40px 20px 64px; }
+    .col-listing__header { margin-bottom: 36px; gap: 10px; }
+    .col-listing__title { font-size: 32px; }
+    .col-listing__subtitle { font-size: 14px; }
+    .col-listing__grid--2col,
+    .col-listing__grid--3col,
+    .col-listing__grid--4col { grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .col-card__name { font-size: 16px; }
+    .col-card__info { padding: 12px 2px 0; }
+  }
+
+  @media (max-width: 420px) {
+    .col-listing__grid--2col,
+    .col-listing__grid--3col,
+    .col-listing__grid--4col { grid-template-columns: 1fr; gap: 24px; }
   }
 {% endstylesheet %}
 
@@ -58,24 +294,39 @@
   "name": "t:general.collections_grid",
   "settings": [
     {
-      "type": "select",
-      "id": "grid_item_width",
-      "label": "t:labels.grid_item_width",
-      "options": [
-        { "value": "collections--compact", "label": "t:options.size.small" },
-        { "value": "collections--full", "label": "t:options.size.large" }
-      ],
-      "default": "collections--full"
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow text",
+      "default": "Artisans Touch"
     },
     {
-      "type": "range",
-      "id": "grid_gap",
-      "label": "t:labels.grid_gap",
-      "min": 0,
-      "max": 50,
-      "step": 5,
-      "unit": "px",
-      "default": 10
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Our Collections"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading (optional)",
+      "default": "Explore our curated jewellery collections, crafted with love and precision."
+    },
+    {
+      "type": "select",
+      "id": "columns",
+      "label": "Columns (desktop)",
+      "options": [
+        { "value": "2", "label": "2 columns" },
+        { "value": "3", "label": "3 columns" },
+        { "value": "4", "label": "4 columns" }
+      ],
+      "default": "3"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_count",
+      "label": "Show product count",
+      "default": true
     }
   ],
   "presets": [{ "name": "t:general.collections_grid" }]

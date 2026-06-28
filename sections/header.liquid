@@ -165,13 +165,6 @@
       {% endif %}
     </div>
     <div class="at-modal__bar-actions">
-      <button class="at-modal__icon js-at-modal" data-modal="search" aria-label="Search">
-        <img src="{{ 'icon-search.svg' | asset_url }}" width="24" height="24" alt="">
-      </button>
-      <button class="at-modal__icon at-modal__cart-btn js-at-modal" data-modal="cart" aria-label="Cart" aria-current="true">
-        {% if cart.item_count > 0 %}<span class="site-header__cart-count js-cart-badge">{{ cart.item_count }}</span>{% else %}<span class="site-header__cart-count js-cart-badge" style="display:none;">0</span>{% endif %}
-        <img src="{{ 'icon-bag.svg' | asset_url }}" width="24" height="24" alt="">
-      </button>
       <button class="at-modal__icon at-modal__close-btn js-at-close" aria-label="Close cart">
         <img src="{{ 'icon-close.svg' | asset_url }}" width="24" height="24" alt="">
       </button>
@@ -179,7 +172,7 @@
   </div>
 
   <div class="at-modal__cart-area">
-    <h2 class="at-modal__cart-title">Shopping Cart</h2>
+    <h2 class="at-modal__cart-title">Your Cart</h2>
     <div id="at-cart-content">
       {% if cart.item_count == 0 %}
         <p class="at-cart-empty">Your cart is empty.</p>
@@ -201,11 +194,11 @@
                   <span>Qty:</span>
                   <div class="at-cart-item__qty-ctrl">
                     <button class="js-cart-qty" data-key="{{ item.key }}" data-qty="{{ item.quantity | minus: 1 }}" aria-label="Decrease">
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M5 12H19" stroke="#FF9696" stroke-width="1.5" stroke-linecap="round"/></svg>
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 12H19" stroke="#FF9696" stroke-width="1.5" stroke-linecap="round"/></svg>
                     </button>
                     <span class="at-cart-item__qty-num">{{ item.quantity }}</span>
                     <button class="js-cart-qty" data-key="{{ item.key }}" data-qty="{{ item.quantity | plus: 1 }}" aria-label="Increase">
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="#FF9696" stroke-width="1.5" stroke-linecap="round"/></svg>
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 5V19M5 12H19" stroke="#FF9696" stroke-width="1.5" stroke-linecap="round"/></svg>
                     </button>
                   </div>
                 </div>
@@ -213,7 +206,7 @@
               <div class="at-cart-item__right">
                 <p class="at-cart-item__price">{{ item.line_price | money }}</p>
                 <button class="at-cart-item__remove js-cart-remove" data-key="{{ item.key }}" aria-label="Remove {{ item.title }}">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" stroke="#FF9696" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6" stroke="#FF9696" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
                 </button>
               </div>
             </div>
@@ -222,25 +215,13 @@
 
         <div class="at-cart-totals">
           <div class="at-cart-totals__row">
-            <span>Total Amount</span>
-            <span class="js-cart-total">{{ cart.total_price | money }}</span>
-          </div>
-          <div class="at-cart-totals__row">
-            <span>Shipping Fee</span>
-            <span>Calculated at checkout</span>
-          </div>
-          <div class="at-cart-totals__row">
-            <span>Estimated Taxes</span>
-            <span>Calculated at checkout</span>
-          </div>
-          <div class="at-cart-totals__row at-cart-totals__row--bold">
-            <span>Sub Total Amount</span>
+            <span>Subtotal</span>
             <span class="js-cart-subtotal">{{ cart.total_price | money }}</span>
           </div>
         </div>
         <div class="at-cart-footer">
-          <form action="/cart/checkout" method="post" id="at-cart-checkout-form">
-            <button type="submit" class="at-btn at-cart-checkout">Proceed to Checkout</button>
+          <form action="/cart/checkout" method="post">
+            <button type="submit" class="at-cart-checkout">Proceed to Checkout</button>
           </form>
         </div>
       {% endif %}
@@ -273,15 +254,15 @@
     runScroll();
 
     /* ── Modal system ── */
-    var modals = {
-      nav:    document.getElementById('at-modal-nav'),
+    var overlay = {
+      nav: document.getElementById('at-modal-nav'),
       search: document.getElementById('at-modal-search'),
-      cart:   document.getElementById('at-modal-cart')
+      cart: document.getElementById('at-modal-cart')
     };
 
-    function openModal(name) {
-      Object.keys(modals).forEach(function(k) {
-        var m = modals[k];
+    function openOverlay(name) {
+      Object.keys(overlay).forEach(function(k) {
+        var m = overlay[k];
         if (!m) return;
         if (k === name) {
           m.classList.add('at-modal--open');
@@ -301,7 +282,7 @@
     }
 
     function closeAll() {
-      Object.values(modals).forEach(function(m) {
+      Object.values(overlay).forEach(function(m) {
         if (!m) return;
         m.classList.remove('at-modal--open');
         m.setAttribute('aria-hidden', 'true');
@@ -309,15 +290,20 @@
       document.body.classList.remove('at-modal-open');
     }
 
-    /* open triggers (header + inside modals) */
+    function openModal(name) {
+      openOverlay(name);
+    }
+
+    /* open triggers */
     document.addEventListener('click', function(e) {
+      if (e.target.closest('.pcard__atc') || e.target.closest('.pcard__wish')) return;
+
       var btn = e.target.closest('.js-at-modal');
       if (btn) {
         var name = btn.dataset.modal;
-        if (modals[name] && modals[name].classList.contains('at-modal--open')) {
-          closeAll();
-        } else {
-          openModal(name);
+        var m = overlay[name];
+        if (m) {
+          m.classList.contains('at-modal--open') ? closeAll() : openModal(name);
         }
         return;
       }
@@ -338,9 +324,17 @@
     }
 
     function refreshBadges(count) {
+      /* Reveal the header so the badge update is visible even when scrolled */
+      document.body.classList.remove('nav-hidden');
+
       document.querySelectorAll('.js-cart-badge').forEach(function(el) {
         el.textContent = count;
         el.style.display = count > 0 ? '' : 'none';
+        if (count > 0) {
+          el.classList.remove('cart-badge--bump');
+          void el.offsetWidth;
+          el.classList.add('cart-badge--bump');
+        }
       });
     }
 
@@ -374,12 +368,11 @@
       }).join('');
 
       var totals = '<div class="at-cart-totals">' +
-        '<div class="at-cart-totals__row"><span>Total Amount</span><span class="js-cart-total">' + formatMoney(cart.total_price) + '</span></div>' +
-        '<div class="at-cart-totals__row"><span>Shipping Fee</span><span>Calculated at checkout</span></div>' +
-        '<div class="at-cart-totals__row"><span>Estimated Taxes</span><span>Calculated at checkout</span></div>' +
-        '<div class="at-cart-totals__row at-cart-totals__row--bold"><span>Sub Total Amount</span><span class="js-cart-subtotal">' + formatMoney(cart.total_price) + '</span></div>' +
+        '<div class="at-cart-totals__row"><span>Subtotal</span><span class="js-cart-subtotal">' + formatMoney(cart.total_price) + '</span></div>' +
         '</div>' +
-        '<div class="at-cart-footer"><form action="/cart/checkout" method="post"><button type="submit" class="at-btn at-cart-checkout">Proceed to Checkout</button></form></div>';
+        '<div class="at-cart-footer">' +
+          '<form action="/cart/checkout" method="post"><button type="submit" class="at-cart-checkout">Proceed to Checkout</button></form>' +
+        '</div>';
 
       el.innerHTML = '<div class="at-cart-items">' + items + '</div>' + totals;
     }
@@ -412,7 +405,7 @@
       }
     });
 
-    document.addEventListener('cart:refresh', function() {
+    document.addEventListener('at:cart:refresh', function() {
       fetch('/cart.js')
         .then(function(r) { return r.json(); })
         .then(function(cart) {
@@ -420,6 +413,10 @@
           renderCartContent(cart);
         });
     });
+
+    /* Open/close cart from any section via custom events */
+    document.addEventListener('at:open:cart', function() { openModal('cart'); });
+    document.addEventListener('at:close:cart', function() { closeAll(); });
   })();
 </script>
 
@@ -461,12 +458,20 @@
   }
   .site-header__cart { position: relative; }
   .site-header__cart-count {
-    position: absolute; top: -8px; right: -8px;
+    position: absolute; top: -6px; right: -4px;
     background-color: var(--coral-pink, #ff9696); color: white;
     font-size: 10px; width: 16px; height: 16px; border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
     font-family: var(--font-body); font-weight: 600; pointer-events: none;
+    z-index: 1;
   }
+  @keyframes badgeBump {
+    0%   { transform: scale(1); }
+    35%  { transform: scale(1.6); }
+    65%  { transform: scale(0.85); }
+    100% { transform: scale(1); }
+  }
+  .cart-badge--bump { animation: badgeBump 0.45s cubic-bezier(0.36, 0.07, 0.19, 0.97); }
   .site-header__hamburger {
     display: flex; flex-direction: column; gap: 8px; align-items: flex-end;
     justify-content: center; width: 27px; background: none; border: none;
@@ -608,7 +613,7 @@
     display: flex; flex-direction: column; align-items: flex-end;
     justify-content: space-between; flex-shrink: 0; min-height: 80px;
   }
-  .at-cart-item__price { font-family: var(--font-body); font-size: 20px; color: white; margin: 0; white-space: nowrap; }
+  .at-cart-item__price { font-family: var(--font-body); font-size: 20px; color: white; margin: 0; }
   .at-cart-item__remove {
     background: none; border: none; cursor: pointer; padding: 0;
     width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;
@@ -620,7 +625,6 @@
   .at-cart-totals__row { display: flex; align-items: center; justify-content: space-between; }
   .at-cart-totals__row span:first-child { font-family: var(--font-body); font-size: 16px; color: #828282; }
   .at-cart-totals__row span:last-child { font-family: var(--font-body); font-size: 24px; color: #828282; text-align: right; }
-  .at-cart-totals__row--bold span { color: white !important; font-weight: 600; }
   .at-cart-footer { padding-top: 40px; display: flex; justify-content: center; }
   .at-cart-checkout {
     display: inline-flex; align-items: center; gap: 10px;
@@ -642,7 +646,9 @@
     .site-header { height: 80px; }
     .site-header__inner { padding: 0 20px; }
     .site-header__logo-img { height: 65px !important; max-width: 180px; }
-    .site-header__actions { gap: 14px; }
+    .site-header__actions { gap: 20px; }
+    .site-header__icon { width: 32px; height: 32px; }
+    .site-header__hamburger { padding: 4px 0; }
     .at-modal__bar { height: 80px; padding: 0 20px; }
     .at-modal__logo-img { height: 60px !important; max-width: 160px; }
     .at-modal__bar-actions { gap: 18px; }

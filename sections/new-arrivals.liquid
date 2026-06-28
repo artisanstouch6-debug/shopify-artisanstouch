@@ -317,6 +317,83 @@
     .pgrid__nav { gap: 12px; }
     .pgrid__nav-btn svg { width: 28px; height: 28px; }
   }
+
+  /* ── Toast notifications ── */
+  #at-toast-container {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none;
+  }
+
+  .at-toast {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #1a1a1a;
+    color: white;
+    padding: 14px 18px;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.28);
+    font-family: var(--font-body);
+    min-width: 240px;
+    max-width: 300px;
+    border-left: 4px solid #22c55e;
+    transform: translateX(calc(100% + 28px));
+    opacity: 0;
+    transition: transform 0.38s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.25s ease;
+  }
+
+  .at-toast--in {
+    transform: translateX(0);
+    opacity: 1;
+  }
+
+  .at-toast--out {
+    transform: translateX(calc(100% + 28px));
+    opacity: 0;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+  }
+
+  .at-toast__icon {
+    width: 30px;
+    height: 30px;
+    background: #22c55e;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .at-toast__text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    overflow: hidden;
+  }
+
+  .at-toast__title {
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .at-toast__msg {
+    font-size: 12px;
+    color: #a0a0a0;
+  }
+
+  @media (max-width: 480px) {
+    #at-toast-container { bottom: 16px; right: 16px; left: 16px; }
+    .at-toast { min-width: 0; max-width: 100%; }
+  }
 {% endstylesheet %}
 
 <script>
@@ -334,25 +411,6 @@
       if (track) track.scrollBy({ left: -305, behavior: 'smooth' });
     });
 
-    /* ── Add to cart ── */
-    if (track) track.querySelectorAll('.pcard__atc').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        var variantId = btn.getAttribute('data-variant-id');
-        if (!variantId) return;
-        btn.disabled = true;
-        fetch('/cart/add.js', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ id: variantId, quantity: 1 })
-        })
-        .then(function (res) { return res.json(); })
-        .then(function () {
-          document.dispatchEvent(new CustomEvent('cart:refresh'));
-          btn.disabled = false;
-        })
-        .catch(function () { btn.disabled = false; });
-      });
-    });
   })();
 </script>
 
@@ -366,26 +424,101 @@ if (!window._artisansWishInit) {
   function _saveWL(a) { localStorage.setItem(_WISH_KEY, JSON.stringify(a)); }
   function _inWL(id) { return _getWL().some(function(i){ return String(i.id) === String(id); }); }
 
-  function _initWishBtn(btn) {
-    if (_inWL(btn.dataset.id)) btn.classList.add('pcard__wish--on');
-    btn.addEventListener('click', function(e) {
-      e.preventDefault();
-      e.stopPropagation();
-      var id = btn.dataset.id;
-      if (!id) return;
-      var list = _getWL();
-      if (_inWL(id)) {
-        _saveWL(list.filter(function(i){ return String(i.id) !== String(id); }));
-        btn.classList.remove('pcard__wish--on');
-      } else {
-        list.push({ id: id, title: btn.dataset.title, price: btn.dataset.price, image: btn.dataset.image, url: btn.dataset.url });
-        _saveWL(list);
-        btn.classList.add('pcard__wish--on');
-      }
+  /* Event delegation — catches buttons from any section, any load order */
+  document.addEventListener('click', function(e) {
+    var btn = e.target.closest('.pcard__wish');
+    if (!btn) return;
+    e.preventDefault();
+    e.stopPropagation();
+    var id = btn.dataset.id;
+    if (!id) return;
+    var list = _getWL();
+    if (_inWL(id)) {
+      _saveWL(list.filter(function(i){ return String(i.id) !== String(id); }));
+      btn.classList.remove('pcard__wish--on');
+    } else {
+      list.push({ id: id, title: btn.dataset.title, price: btn.dataset.price, image: btn.dataset.image, url: btn.dataset.url });
+      _saveWL(list);
+      btn.classList.add('pcard__wish--on');
+    }
+  });
+
+  /* Set initial visual state once the full DOM is ready */
+  function _markSavedBtns() {
+    document.querySelectorAll('.pcard__wish').forEach(function(btn) {
+      if (_inWL(btn.dataset.id)) btn.classList.add('pcard__wish--on');
     });
   }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', _markSavedBtns);
+  } else {
+    _markSavedBtns();
+  }
+}
 
-  document.querySelectorAll('.pcard__wish').forEach(_initWishBtn);
+/* ── Global add-to-cart handler with toast feedback (runs once) ── */
+if (!window._artisansAtcInit) {
+  window._artisansAtcInit = true;
+
+  var _toastWrap = document.createElement('div');
+  _toastWrap.id = 'at-toast-container';
+  document.body.appendChild(_toastWrap);
+
+  function _showToast(title) {
+    var t = document.createElement('div');
+    t.className = 'at-toast';
+    t.innerHTML =
+      '<div class="at-toast__icon">' +
+        '<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17L4 12" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
+      '</div>' +
+      '<div class="at-toast__text">' +
+        '<span class="at-toast__title">' + (title || 'Item') + '</span>' +
+        '<span class="at-toast__msg">Added to cart!</span>' +
+      '</div>';
+    _toastWrap.appendChild(t);
+    requestAnimationFrame(function() {
+      requestAnimationFrame(function() { t.classList.add('at-toast--in'); });
+    });
+    setTimeout(function() {
+      t.classList.remove('at-toast--in');
+      t.classList.add('at-toast--out');
+      setTimeout(function() { if (t.parentNode) t.parentNode.removeChild(t); }, 400);
+    }, 3000);
+  }
+
+  document.addEventListener('click', function(e) {
+    var btn = e.target.closest('.pcard__atc');
+    if (!btn || btn.disabled) return;
+    var variantId = btn.getAttribute('data-variant-id');
+    if (!variantId) return;
+
+    btn.disabled = true;
+    var pcard = btn.closest('.pcard');
+    var titleEl = pcard ? pcard.querySelector('.pcard__title') : null;
+    var productTitle = titleEl ? titleEl.textContent.trim() : 'Item';
+
+    var origHTML = btn.innerHTML;
+    btn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17L4 12" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+    fetch('/cart/add.js', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: variantId, quantity: 1 })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function() {
+      return fetch('/cart.js').then(function(r) { return r.json(); });
+    })
+    .then(function(cart) {
+      document.querySelectorAll('.js-cart-badge').forEach(function(el) {
+        el.textContent = cart.item_count;
+        el.style.display = cart.item_count > 0 ? '' : 'none';
+      });
+      document.dispatchEvent(new CustomEvent('at:cart:refresh'));
+      setTimeout(function() { btn.innerHTML = origHTML; btn.disabled = false; }, 2000);
+    })
+    .catch(function() { btn.innerHTML = origHTML; btn.disabled = false; });
+  });
 }
 </script>
 
