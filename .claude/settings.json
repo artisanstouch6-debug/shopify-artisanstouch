@@ -5,7 +5,9 @@
       "Bash(curl -s -L \"https://www.figma.com/api/mcp/asset/72e94ac4-c68b-4a98-bf16-fb2a2cc09971\" -o /Users/bavaram/Repo/shopify-artisanstouch/assets/about-story.jpg)",
       "Bash(curl -s -L \"https://www.figma.com/api/mcp/asset/0e9a334b-75dc-4382-b220-98ce97ba69a2\" -o /Users/bavaram/Repo/shopify-artisanstouch/assets/about-hero.jpg)",
       "Bash(git stash *)",
-      "Bash(git pull *)"
+      "Bash(git pull *)",
+      "Bash(shopify version *)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" \"https://ucqv7z-0z.myshopify.com/\")"
     ]
   }
 }
