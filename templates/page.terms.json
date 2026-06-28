@@ -11,7 +11,114 @@
   "sections": {
     "main": {
       "type": "page-terms",
-      "settings": {}
+      "settings": {
+        "eyebrow": "Artisans Touch",
+        "title": "Terms & Conditions",
+        "intro": "<p>Welcome to Artisans Touch. By accessing or purchasing from our store, you agree to be bound by the following terms and conditions. Please read them carefully before placing an order.</p>"
+      },
+      "blocks": {
+        "block-general": {
+          "type": "policy_section",
+          "settings": {
+            "heading": "1. General",
+            "content": "<p>These terms apply to all visitors, users, and customers of Artisans Touch (“we,” “us,” or “our”). By using our website or making a purchase, you agree to these terms in full. If you do not agree, please do not use our website.</p>",
+            "highlight": false
+          }
+        },
+        "block-products": {
+          "type": "policy_section",
+          "settings": {
+            "heading": "2. Products",
+            "content": "<p>All jewellery products listed on our store are subject to availability. We reserve the right to discontinue any product at any time. Product images are for illustrative purposes; slight colour variations may occur due to photography and screen settings. We strive to ensure all product descriptions are accurate, but we do not warrant that descriptions or other content is error-free.</p>",
+            "highlight": false
+          }
+        },
+        "block-pricing": {
+          "type": "policy_section",
+          "settings": {
+            "heading": "3. Pricing & Payment",
+            "content": "<p>All prices are displayed in the currency shown at checkout and include applicable taxes unless otherwise stated. We accept all major credit/debit cards and other payment methods listed at checkout. Prices are subject to change without notice. Payment must be received in full before an order is dispatched.</p>",
+            "highlight": false
+          }
+        },
+        "block-orders": {
+          "type": "policy_section",
+          "settings": {
+            "heading": "4. Orders & Cancellations",
+            "content": "<p>Once an order is placed, it enters processing immediately. Cancellation requests must be made within 24 hours of placing the order by contacting us at artisanstouch@gmail.com. We reserve the right to cancel any order due to stock unavailability or payment issues, and will issue a full refund in such cases.</p>",
+            "highlight": false
+          }
+        },
+        "block-shipping": {
+          "type": "policy_section",
+          "settings": {
+            "heading": "5. Shipping & Delivery",
+            "content": "<p>We aim to dispatch all orders within 2–5 business days. Delivery times vary by location and carrier. Shipping costs are calculated at checkout. We are not responsible for delays caused by customs, postal services, or circumstances beyond our control. Risk of loss and title for items pass to you upon delivery.</p>",
+            "highlight": false
+          }
+        },
+        "block-returns": {
+          "type": "policy_section",
+          "settings": {
+            "heading": "6. Returns & Refunds",
+            "content": "<p>We accept returns within 14 days of delivery for items that are unused, unworn, in their original condition, and in original packaging. Custom or personalised jewellery is non-refundable unless faulty. Items showing signs of wear, alteration, or damage will not be accepted. To initiate a return, please contact us at artisanstouch@gmail.com with your order number. Refunds will be processed within 5–10 business days of receiving the returned item.</p>",
+            "highlight": false
+          }
+        },
+        "block-ip": {
+          "type": "policy_section",
+          "settings": {
+            "heading": "7. Intellectual Property",
+            "content": "<p>All content on this website including images, text, logos, designs, and graphics are the property of Artisans Touch and may not be reproduced, distributed, transmitted, or used without prior written permission. Unauthorised use may give rise to a claim for damages and/or constitute a criminal offence.</p>",
+            "highlight": false
+          }
+        },
+        "block-liability": {
+          "type": "policy_section",
+          "settings": {
+            "heading": "8. Limitation of Liability",
+            "content": "<p>Artisans Touch shall not be liable for any indirect, incidental, special, or consequential damages arising from the use of our products or website, including but not limited to loss of profits, data, or goodwill. Our total liability to you shall not exceed the amount paid for the specific product in question.</p>",
+            "highlight": false
+          }
+        },
+        "block-law": {
+          "type": "policy_section",
+          "settings": {
+            "heading": "9. Governing Law",
+            "content": "<p>These terms and conditions are governed by and construed in accordance with the laws of Sri Lanka. Any disputes arising in connection with these terms shall be subject to the exclusive jurisdiction of the courts of Sri Lanka.</p>",
+            "highlight": false
+          }
+        },
+        "block-changes": {
+          "type": "policy_section",
+          "settings": {
+            "heading": "10. Changes to Terms",
+            "content": "<p>We reserve the right to update or modify these terms at any time without prior notice. Changes will be posted on this page. Continued use of our website after any changes constitutes your acceptance of the revised terms. We recommend reviewing this page periodically.</p>",
+            "highlight": false
+          }
+        },
+        "block-contact": {
+          "type": "policy_section",
+          "settings": {
+            "heading": "Contact Us",
+            "content": "<p>If you have any questions about these Terms & Conditions, please reach out to us:</p><ul><li><strong>Email:</strong> artisanstouch@gmail.com</li><li><strong>Phone:</strong> +94 11 234 5678</li><li><strong>Address:</strong> No.02, Main Road, Malabe</li></ul>",
+            "highlight": true
+          }
+        }
+      },
+      "block_order": [
+        "block-general",
+        "block-products",
+        "block-pricing",
+        "block-orders",
+        "block-shipping",
+        "block-returns",
+        "block-ip",
+        "block-liability",
+        "block-law",
+        "block-changes",
+        "block-contact"
+      ]
     }
   },
   "order": ["main"]

@@ -2,8 +2,10 @@
 
   <div class="policy-page__hero">
     <div class="policy-page__hero-inner">
-      <p class="policy-page__eyebrow">Artisans Touch</p>
-      <h1 class="policy-page__title">Terms &amp; Conditions</h1>
+      {% if section.settings.eyebrow != blank %}
+        <p class="policy-page__eyebrow">{{ section.settings.eyebrow }}</p>
+      {% endif %}
+      <h1 class="policy-page__title">{{ section.settings.title | default: page.title }}</h1>
       <div class="policy-page__rule">
         <span class="policy-page__rule-line"></span>
         <span class="policy-page__rule-diamond"></span>
@@ -15,67 +17,20 @@
   <div class="policy-page__body">
     <div class="policy-page__content">
 
-      <p class="policy-intro">Welcome to Artisans Touch. By accessing or purchasing from our store, you agree to be bound by the following terms and conditions. Please read them carefully before placing an order.</p>
+      {% if section.settings.intro != blank %}
+        <div class="policy-intro">{{ section.settings.intro }}</div>
+      {% endif %}
 
-      <div class="policy-section">
-        <h2>1. General</h2>
-        <p>These terms apply to all visitors, users, and customers of Artisans Touch (&ldquo;we,&rdquo; &ldquo;us,&rdquo; or &ldquo;our&rdquo;). By using our website or making a purchase, you agree to these terms in full. If you do not agree, please do not use our website.</p>
-      </div>
-
-      <div class="policy-section">
-        <h2>2. Products</h2>
-        <p>All jewellery products listed on our store are subject to availability. We reserve the right to discontinue any product at any time. Product images are for illustrative purposes; slight colour variations may occur due to photography and screen settings. We strive to ensure all product descriptions are accurate, but we do not warrant that product descriptions or other content is error-free.</p>
-      </div>
-
-      <div class="policy-section">
-        <h2>3. Pricing &amp; Payment</h2>
-        <p>All prices are displayed in the currency shown at checkout and include applicable taxes unless otherwise stated. We accept all major credit/debit cards and other payment methods listed at checkout. Prices are subject to change without notice. Payment must be received in full before an order is dispatched.</p>
-      </div>
-
-      <div class="policy-section">
-        <h2>4. Orders &amp; Cancellations</h2>
-        <p>Once an order is placed, it enters processing immediately. Cancellation requests must be made within 24 hours of placing the order by contacting us at <a href="mailto:artisanstouch@gmail.com">artisanstouch@gmail.com</a>. We reserve the right to cancel any order due to stock unavailability or payment issues, and will issue a full refund in such cases.</p>
-      </div>
-
-      <div class="policy-section">
-        <h2>5. Shipping &amp; Delivery</h2>
-        <p>We aim to dispatch all orders within 2&ndash;5 business days. Delivery times vary by location and carrier. Shipping costs are calculated at checkout. We are not responsible for delays caused by customs, postal services, or circumstances beyond our control. Risk of loss and title for items pass to you upon delivery.</p>
-      </div>
-
-      <div class="policy-section">
-        <h2>6. Returns &amp; Refunds</h2>
-        <p>We accept returns within 14 days of delivery for items that are unused, unworn, in their original condition, and in original packaging. Custom or personalised jewellery is non-refundable unless faulty. Items showing signs of wear, alteration, or damage will not be accepted. To initiate a return, please contact us at <a href="mailto:artisanstouch@gmail.com">artisanstouch@gmail.com</a> with your order number and reason for return. Refunds will be processed within 5&ndash;10 business days of receiving the returned item.</p>
-      </div>
-
-      <div class="policy-section">
-        <h2>7. Intellectual Property</h2>
-        <p>All content on this website including images, text, logos, designs, and graphics are the property of Artisans Touch and may not be reproduced, distributed, transmitted, or used without prior written permission. Unauthorised use may give rise to a claim for damages and/or constitute a criminal offence.</p>
-      </div>
-
-      <div class="policy-section">
-        <h2>8. Limitation of Liability</h2>
-        <p>Artisans Touch shall not be liable for any indirect, incidental, special, or consequential damages arising from the use of our products or website, including but not limited to loss of profits, data, or goodwill. Our total liability to you shall not exceed the amount paid for the specific product in question.</p>
-      </div>
-
-      <div class="policy-section">
-        <h2>9. Governing Law</h2>
-        <p>These terms and conditions are governed by and construed in accordance with the laws of Sri Lanka. Any disputes arising in connection with these terms shall be subject to the exclusive jurisdiction of the courts of Sri Lanka.</p>
-      </div>
-
-      <div class="policy-section">
-        <h2>10. Changes to Terms</h2>
-        <p>We reserve the right to update or modify these terms at any time without prior notice. Changes will be posted on this page. Continued use of our website after any changes constitutes your acceptance of the revised terms. We recommend reviewing this page periodically.</p>
-      </div>
-
-      <div class="policy-section policy-section--contact">
-        <h2>Contact Us</h2>
-        <p>If you have any questions about these Terms &amp; Conditions, please reach out to us:</p>
-        <ul>
-          <li><strong>Email:</strong> <a href="mailto:artisanstouch@gmail.com">artisanstouch@gmail.com</a></li>
-          <li><strong>Phone:</strong> +94 11 234 5678</li>
-          <li><strong>Address:</strong> No.02, Main Road, Malabe</li>
-        </ul>
-      </div>
+      {% for block in section.blocks %}
+        {% if block.type == 'policy_section' %}
+          <div class="policy-section{% if block.settings.highlight %} policy-section--contact{% endif %}" {{ block.shopify_attributes }}>
+            {% if block.settings.heading != blank %}
+              <h2>{{ block.settings.heading }}</h2>
+            {% endif %}
+            <div class="policy-section__body">{{ block.settings.content }}</div>
+          </div>
+        {% endif %}
+      {% endfor %}
 
     </div>
   </div>
@@ -85,11 +40,9 @@
 {% stylesheet %}
   .policy-page { grid-column: 1 / -1; width: 100%; }
 
-  /* Hero */
   .policy-page__hero {
     background: linear-gradient(135deg, #1a0f06 0%, #2d1a08 50%, #1a0f06 100%);
-    padding: 80px 24px 72px;
-    text-align: center;
+    padding: 80px 24px 72px; text-align: center;
   }
   .policy-page__hero-inner { max-width: 640px; margin: 0 auto; }
   .policy-page__eyebrow {
@@ -116,19 +69,15 @@
     transform: rotate(45deg); flex-shrink: 0;
   }
 
-  /* Body */
-  .policy-page__body {
-    background: #fff8f8; padding: 72px 24px 96px;
-  }
-  .policy-page__content {
-    max-width: 780px; margin: 0 auto;
-  }
+  .policy-page__body { background: #fff8f8; padding: 72px 24px 96px; }
+  .policy-page__content { max-width: 780px; margin: 0 auto; }
 
   .policy-intro {
     font-family: var(--font-body); font-size: 17px; color: #555;
     line-height: 1.8; margin: 0 0 48px;
     padding-bottom: 32px; border-bottom: 1px solid #e8d8cc;
   }
+  .policy-intro p { margin: 0; }
 
   .policy-section { margin-bottom: 40px; }
   .policy-section h2 {
@@ -137,19 +86,20 @@
     padding-bottom: 8px; border-bottom: 2px solid var(--brand-gold, #c9a96e);
     display: inline-block;
   }
-  .policy-section p {
+  .policy-section__body p {
     font-family: var(--font-body); font-size: 15px; color: #555;
     line-height: 1.85; margin: 12px 0 0;
   }
-  .policy-section a {
+  .policy-section__body a {
     color: var(--coral-pink, #ff9696); text-decoration: underline;
     text-underline-offset: 2px;
   }
-  .policy-section ul {
+  .policy-section__body ul, .policy-section__body ol {
     font-family: var(--font-body); font-size: 15px; color: #555;
     line-height: 1.85; margin: 12px 0 0; padding-left: 20px;
   }
-  .policy-section ul li { margin-bottom: 6px; }
+  .policy-section__body li { margin-bottom: 6px; }
+  .policy-section__body strong { color: #333; }
 
   .policy-section--contact {
     background: #f5e6da; border-radius: 16px; padding: 32px 36px; margin-top: 56px;
@@ -167,6 +117,51 @@
 {% schema %}
 {
   "name": "Terms & Conditions",
-  "settings": []
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow text",
+      "default": "Artisans Touch"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Page title",
+      "default": "Terms & Conditions"
+    },
+    {
+      "type": "richtext",
+      "id": "intro",
+      "label": "Introduction paragraph"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "policy_section",
+      "name": "Policy Section",
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Section heading"
+        },
+        {
+          "type": "richtext",
+          "id": "content",
+          "label": "Section content"
+        },
+        {
+          "type": "checkbox",
+          "id": "highlight",
+          "label": "Highlight background (for contact section)",
+          "default": false
+        }
+      ]
+    }
+  ],
+  "presets": [
+    { "name": "Terms & Conditions" }
+  ]
 }
 {% endschema %}
