@@ -40,7 +40,7 @@
         "autoplay": true,
         "autoplay_speed": 5000,
         "heading": "Jewellery to Make an Impression for all the Occasion",
-        "subheading": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec tristique suscipit quam, in sagittis massa porttitor nec. Vivamus sed turpis diam.",
+        "subheading": "Discover beautifully handcrafted jewellery that blends timeless elegance with exceptional craftsmanship, designed to celebrate every moment, from everyday sophistication to life's most memorable occasions.",
         "button_label": "SHOP NOW",
         "button_url": "",
         "stat_1_number": "12",
@@ -59,12 +59,12 @@
         "heading_line1": "Discover Jewellery",
         "heading_line2": "Collection",
         "card_1_title": "Bridal Jewellery",
-        "card_1_description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam condimentum, enim et scelerisque rutrum, purus ligula iaculis diam,",
+        "card_1_description": "Celebrate your special day with exquisitely crafted bridal jewellery that reflects timeless elegance and exceptional craftsmanship. From breathtaking necklaces to delicate earrings, each piece is designed to make you shine on the moments you'll cherish forever.",
         "card_1_bg": "#ffe4e4",
         "card_1_button": "SHOP NOW",
         "card_1_url": "shopify://collections/bridal-jewellery",
         "card_2_title": "Costume Jewellery",
-        "card_2_description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam condimentum, enim et scelerisque rutrum, purus ligula iaculis diam, ac pretium justo mi elementum turpis.",
+        "card_2_description": "Express your unique style with our thoughtfully curated costume jewellery collection. Designed to complement every outfit, our pieces combine contemporary trends with timeless elegance, making everyday fashion effortlessly sophisticated.",
         "card_2_bg": "#fff6e4",
         "card_2_button": "SHOP NOW",
         "card_2_url": "shopify://collections/costume-jewellery"
@@ -84,7 +84,7 @@
       "type": "feature-story",
       "settings": {
         "heading": "Creates Lasting Memories of Each occasion",
-        "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras consectetur, massa sed viverra aliquet, sem justo finibus eros, semper suscipit tellus neque sed dui.",
+        "description": "Every milestone deserves to be celebrated with timeless elegance. Our handcrafted jewellery is thoughtfully designed to capture life's most precious moments, transforming memories into treasured keepsakes that last for generations.",
         "button_label": "SHOP NOW",
         "button_url": ""
       }
