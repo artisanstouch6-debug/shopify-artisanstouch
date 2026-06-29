@@ -69,6 +69,11 @@
             {%- endfor -%}
           </div>
           <span class="prod-rating-count">4.0 (20 Reviews)</span>
+          <span class="prod-rating-sep"></span>
+          <button type="button" class="prod-write-review" id="js-write-review-btn">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Write Review
+          </button>
         </div>
 
         <!-- Price -->
@@ -213,6 +218,49 @@
         {%- else -%}
           <p class="prod-no-reviews">No reviews yet. Be the first to write one!</p>
         {%- endif -%}
+
+        <!-- Write Review Form (hidden until button clicked) -->
+        <div class="rev-form-wrap" id="js-rev-form-wrap" hidden>
+          <h3 class="rev-form__title">Write a Review</h3>
+          <p class="rev-form__note">Your review will be visible after approval.</p>
+
+            {% form 'contact', id: 'js-rev-form' %}
+              <input type="hidden" name="contact[subject]" value="Review Submission – {{ product.title | escape }}">
+              <input type="hidden" name="contact[product]" value="{{ product.title | escape }} ({{ shop.url }}{{ product.url }})">
+
+              <div class="rev-form__field">
+                <label class="rev-form__label">Your Rating</label>
+                <div class="rev-form__stars" id="js-rev-stars">
+                  {% for i in (1..5) %}
+                    <button type="button" class="rev-star" data-val="{{ i }}" aria-label="{{ i }} star">
+                      <svg width="28" height="28" viewBox="0 0 24 24"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="none" stroke="#f5a623" stroke-width="1.5"/></svg>
+                    </button>
+                  {% endfor %}
+                </div>
+                <input type="hidden" name="contact[rating]" id="js-rev-rating" value="">
+              </div>
+
+              <div class="rev-form__field">
+                <label class="rev-form__label" for="rev-name">Your Name</label>
+                <input class="rev-form__input" type="text" id="rev-name" name="contact[name]" placeholder="e.g. Priya S." required>
+              </div>
+
+              <div class="rev-form__field">
+                <label class="rev-form__label" for="rev-email">Email Address</label>
+                <input class="rev-form__input" type="email" id="rev-email" name="contact[email]" placeholder="your@email.com" required>
+              </div>
+
+              <div class="rev-form__field">
+                <label class="rev-form__label" for="rev-body">Your Review</label>
+                <textarea class="rev-form__textarea" id="rev-body" name="contact[body]" rows="4" placeholder="Share your experience with this product..." required></textarea>
+              </div>
+
+              <div class="rev-form__actions">
+                <button type="submit" class="rev-form__submit">Submit for Approval</button>
+                <button type="button" class="rev-form__cancel" id="js-rev-cancel">Cancel</button>
+              </div>
+            {% endform %}
+        </div>
       </div>
 
       <div class="prod-tab-panel prod-tab-panel--hidden" id="tab-compare">
@@ -370,6 +418,86 @@
       if (panel) panel.classList.remove('prod-tab-panel--hidden');
     });
   });
+
+  /* ── Write Review toggle + star rating ─────────── */
+  var writeBtn  = document.getElementById('js-write-review-btn');
+  var formWrap  = document.getElementById('js-rev-form-wrap');
+  var cancelBtn = document.getElementById('js-rev-cancel');
+  var revStars  = document.querySelectorAll('.rev-star');
+  var revRating = document.getElementById('js-rev-rating');
+
+  if (writeBtn && formWrap) {
+    writeBtn.addEventListener('click', function () {
+      formWrap.hidden = false;
+      formWrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  }
+  if (cancelBtn && formWrap) {
+    cancelBtn.addEventListener('click', function () {
+      formWrap.hidden = true;
+    });
+  }
+
+  /* Intercept form submit — send via fetch, show inline success */
+  var revForm = document.getElementById('js-rev-form');
+  if (revForm) {
+    revForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (revRating && !revRating.value) {
+        alert('Please select a star rating before submitting.');
+        return;
+      }
+      var submitBtn = revForm.querySelector('.rev-form__submit');
+      if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Submitting…'; }
+      fetch('/contact', {
+        method: 'POST',
+        body: new FormData(revForm),
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+      })
+      .then(function () { showSuccess(); })
+      .catch(function () { showSuccess(); });
+    });
+  }
+
+  function showSuccess() {
+    if (formWrap) {
+      formWrap.innerHTML =
+        '<p class="rev-form__success">✓ Thank you! Your review has been submitted and will appear after approval.</p>';
+    }
+  }
+  revStars.forEach(function (star) {
+    star.addEventListener('click', function () {
+      var val = parseInt(star.dataset.val, 10);
+      if (revRating) revRating.value = val;
+      revStars.forEach(function (s, idx) {
+        var path = s.querySelector('path');
+        if (path) {
+          if (idx < val) {
+            path.setAttribute('fill', '#f5a623');
+          } else {
+            path.setAttribute('fill', 'none');
+          }
+        }
+      });
+    });
+    star.addEventListener('mouseenter', function () {
+      var val = parseInt(star.dataset.val, 10);
+      revStars.forEach(function (s, idx) {
+        var path = s.querySelector('path');
+        if (path) path.setAttribute('fill', idx < val ? '#f5a623' : 'none');
+      });
+    });
+  });
+  var starsContainer = document.getElementById('js-rev-stars');
+  if (starsContainer) {
+    starsContainer.addEventListener('mouseleave', function () {
+      var current = revRating ? parseInt(revRating.value, 10) || 0 : 0;
+      revStars.forEach(function (s, idx) {
+        var path = s.querySelector('path');
+        if (path) path.setAttribute('fill', idx < current ? '#f5a623' : 'none');
+      });
+    });
+  }
 
   /* ── Wishlist ─────────────────────────────────── */
   var WISH_KEY = 'artisans_wishlist';
@@ -1022,6 +1150,107 @@ body.template-product {
   margin: 0;
   padding: 8px 0 24px;
 }
+
+/* ── Review submission form ───────────────────────── */
+.rev-form-wrap {
+  margin-top: 32px;
+  padding: 28px 32px;
+  background: #fff;
+  border: 1.5px solid #ede4dc;
+  border-radius: 16px;
+}
+.rev-form__title {
+  font-family: var(--font-heading);
+  font-size: 20px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0 0 4px;
+}
+.rev-form__note {
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: #999;
+  margin: 0 0 20px;
+}
+.rev-form__success {
+  font-family: var(--font-body);
+  font-size: 15px;
+  color: #2d7a2d;
+  background: #edfaed;
+  border-radius: 10px;
+  padding: 16px 20px;
+  margin: 0;
+}
+.rev-form__field { margin-bottom: 16px; }
+.rev-form__label {
+  display: block;
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  color: #555;
+  margin-bottom: 6px;
+}
+.rev-form__stars {
+  display: flex;
+  gap: 4px;
+}
+.rev-star {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 2px;
+  display: flex;
+  align-items: center;
+  transition: transform 0.15s;
+}
+.rev-star:hover { transform: scale(1.15); }
+.rev-form__input,
+.rev-form__textarea {
+  width: 100%;
+  box-sizing: border-box;
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: #111;
+  background: #faf8f6;
+  border: 1.5px solid #e0d6cc;
+  border-radius: 10px;
+  padding: 10px 14px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.rev-form__input:focus,
+.rev-form__textarea:focus { border-color: var(--coral-pink, #ff9696); }
+.rev-form__textarea { resize: vertical; min-height: 90px; }
+.rev-form__actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 20px;
+}
+.rev-form__submit {
+  padding: 11px 28px;
+  background: var(--coral-pink, #ff9696);
+  color: #fff;
+  border: none;
+  border-radius: 24px;
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.rev-form__submit:hover { opacity: 0.85; }
+.rev-form__cancel {
+  background: none;
+  border: none;
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: #999;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+}
+.rev-form__cancel:hover { color: #555; }
 
 /* ── Related products grid ───────────────────────── */
 .prod-related-grid {

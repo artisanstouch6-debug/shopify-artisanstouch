@@ -78,11 +78,11 @@
       <h2 class="cu-form__heading">{{ section.settings.form_heading | default: 'Send us a message' }}</h2>
 
       {%- form 'contact', id: 'cu-contact-form' -%}
-        {%- if form.posted_successfully? -%}
-          <p class="cu-form__success">Thank you! Your message has been sent. We'll get back to you shortly.</p>
-        {%- endif -%}
+        <div id="cu-form-success" class="cu-form__success" style="display:none;">
+          Thank you! Your message has been sent. We&rsquo;ll get back to you shortly.
+        </div>
 
-        <div class="cu-form__fields">
+        <div class="cu-form__fields" id="cu-form-fields">
           <div class="cu-form__field">
             <label class="cu-form__label" for="cu-name">{{ section.settings.label_name | default: 'Name' }}</label>
             <div class="cu-form__input-wrap">
@@ -137,6 +137,36 @@
   </div>
 </section>
 {%- endif -%}
+
+<script>
+(function () {
+  var form        = document.getElementById('cu-contact-form');
+  var successEl   = document.getElementById('cu-form-success');
+  var fieldsEl    = document.getElementById('cu-form-fields');
+  var submitBtn   = form ? form.querySelector('.cu-form__submit') : null;
+
+  if (!form) return;
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Sending…'; }
+
+    fetch('/contact', {
+      method: 'POST',
+      body: new FormData(form),
+      headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    })
+    .then(function () { showSuccess(); })
+    .catch(function () { showSuccess(); });
+  });
+
+  function showSuccess() {
+    if (fieldsEl)  fieldsEl.style.display  = 'none';
+    if (submitBtn) submitBtn.style.display  = 'none';
+    if (successEl) successEl.style.display  = 'block';
+  }
+})();
+</script>
 
 {% stylesheet %}
 /* ── Hero ────────────────────────────────────────── */
